@@ -1,0 +1,31 @@
+<VertexLayout vertexLayout="TexturedModel" numVerticies="24" />
+
+<Vertex> <Pos x="-0.5f" y=" 0.5f" z=" -0.5f" /> <Normal x="0.0f" y="0.0f" z="-1.0f" /> <TextureUV u="0.0f" v="0.0f" /> </Vertex>
+<Vertex> <Pos x=" 0.5f" y="-0.5f" z=" -0.5f" /> <Normal x="0.0f" y="0.0f" z="-1.0f" /> <TextureUV u="1.0f" v="1.0f" /> </Vertex>
+<Vertex> <Pos x="-0.5f" y="-0.5f" z=" -0.5f" /> <Normal x="0.0f" y="0.0f" z="-1.0f" /> <TextureUV u="0.0f" v="1.0f" /> </Vertex>
+<Vertex> <Pos x=" 0.5f" y=" 0.5f" z=" -0.5f" /> <Normal x="0.0f" y="0.0f" z="-1.0f" /> <TextureUV u="1.0f" v="0.0f" /> </Vertex>
+
+<Vertex> <Pos x=" 0.5f" y=" 0.5f" z="  0.5f" /> <Normal x="0.0f" y="0.0f" z="1.0f" /> <TextureUV u="1.0f" v="0.0f" /> </Vertex>
+<Vertex> <Pos x="-0.5f" y=" 0.5f" z="  0.5f" /> <Normal x="0.0f" y="0.0f" z="1.0f" /> <TextureUV u="0.0f" v="1.0f" /> </Vertex>
+<Vertex> <Pos x=" 0.5f" y="-0.5f" z="  0.5f" /> <Normal x="0.0f" y="0.0f" z="1.0f" /> <TextureUV u="1.0f" v="1.0f" /> </Vertex>
+<Vertex> <Pos x="-0.5f" y="-0.5f" z="  0.5f" /> <Normal x="0.0f" y="0.0f" z="1.0f" /> <TextureUV u="0.0f" v="0.0f" /> </Vertex>
+            
+<Vertex> <Pos x="-0.5f" y=" 0.5f" z=" -0.5f" /> <Normal x="0.0f" y="1.0f" z="0.0f" /> <TextureUV u="1.0f" v="1.0f" /> </Vertex>
+<Vertex> <Pos x=" 0.5f" y=" 0.5f" z=" -0.5f" /> <Normal x="0.0f" y="1.0f" z="0.0f" /> <TextureUV u="1.0f" v="0.0f" /> </Vertex>
+<Vertex> <Pos x=" 0.5f" y=" 0.5f" z="  0.5f" /> <Normal x="0.0f" y="1.0f" z="0.0f" /> <TextureUV u="0.0f" v="0.0f" /> </Vertex>
+<Vertex> <Pos x="-0.5f" y=" 0.5f" z="  0.5f" /> <Normal x="0.0f" y="1.0f" z="0.0f" /> <TextureUV u="0.0f" v="1.0f" /> </Vertex>
+
+<Vertex> <Pos x="-0.5f" y="-0.5f" z=" -0.5f" /> <Normal x="0.0f" y="-1.0f" z="0.0f" /> <TextureUV u="0.0f" v="1.0f" /> </Vertex>
+<Vertex> <Pos x=" 0.5f" y="-0.5f" z=" -0.5f" /> <Normal x="0.0f" y="-1.0f" z="0.0f" /> <TextureUV u="0.0f" v="0.0f" /> </Vertex>
+<Vertex> <Pos x=" 0.5f" y="-0.5f" z="  0.5f" /> <Normal x="0.0f" y="-1.0f" z="0.0f" /> <TextureUV u="1.0f" v="0.0f" /> </Vertex>
+<Vertex> <Pos x="-0.5f" y="-0.5f" z="  0.5f" /> <Normal x="0.0f" y="-1.0f" z="0.0f" /> <TextureUV u="1.0f" v="1.0f" /> </Vertex>
+
+<Vertex> <Pos x="-0.5f" y=" 0.5f" z=" -0.5f" /> <Normal x="-1.0f" y="0.0f" z="0.0f" /> <TextureUV u="1.0f" v="0.0f" /> </Vertex>
+<Vertex> <Pos x="-0.5f" y=" 0.5f" z="  0.5f" /> <Normal x="-1.0f" y="0.0f" z="0.0f" /> <TextureUV u="0.0f" v="0.0f" /> </Vertex>
+<Vertex> <Pos x="-0.5f" y="-0.5f" z=" -0.5f" /> <Normal x="-1.0f" y="0.0f" z="0.0f" /> <TextureUV u="1.0f" v="1.0f" /> </Vertex>
+<Vertex> <Pos x="-0.5f" y="-0.5f" z="  0.5f" /> <Normal x="-1.0f" y="0.0f" z="0.0f" /> <TextureUV u="0.0f" v="1.0f" /> </Vertex>
+
+<Vertex> <Pos x=" 0.5f" y=" 0.5f" z=" -0.5f" /> <Normal x="1.0f" y="0.0f" z="0.0f" /> <TextureUV u="0.0f" v="0.0f" /> </Vertex>
+<Vertex> <Pos x=" 0.5f" y=" 0.5f" z="  0.5f" /> <Normal x="1.0f" y="0.0f" z="0.0f" /> <TextureUV u="1.0f" v="0.0f" /> </Vertex>
+<Vertex> <Pos x=" 0.5f" y="-0.5f" z=" -0.5f" /> <Normal x="1.0f" y="0.0f" z="0.0f" /> <TextureUV u="0.0f" v="1.0f" /> </Vertex>
+<Vertex> <Pos x=" 0.5f" y="-0.5f" z="  0.5f" /> <Normal x="1.0f" y="0.0f" z="0.0f" /> <TextureUV u="1.0f" v="1.0f" /> </Vertex>

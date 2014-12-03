@@ -1,0 +1,5 @@
+<TriggerCameraDown type="gameobject" objtype="triggerdown" ID="128">
+    <Trigger type="component" Script="pancameradown" StartPosX="-5.000000" StartPosY="-5.000000" StartPosZ="-10.000000" EndPosX="5.000000" EndPosY="5.000000" EndPosZ="10.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+    <Transform type="component" PosX="-900.000000" PosY="-900.000000" PosZ="-900.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+    <Sprite type="component" SizeX="10.000000" SizeY="10.000000" TextureName="transparent_red" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1" BackgroundSprite="0"/>
+</TriggerCameraDown>

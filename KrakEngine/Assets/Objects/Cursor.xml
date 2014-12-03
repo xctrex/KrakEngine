@@ -1,0 +1,21 @@
+<Cursor type="gameobject">
+	<Transform type="component"
+			PosX="-10"
+			PosY="-10"
+			PosZ="6.1"
+	/>
+	<Image type="component" 
+			PosX="0.100000" 
+			PosY="0.100000" 
+			PosZ="100.000000" 
+			Width="80.000000" 
+			Height="80.000000" 
+			Image="AnimatedCursor"
+			AnimationLength="1.0"
+			AnimationNumFrames="4"
+			AnimationStartFrame="0"
+			FrameWidth="1024"
+			FrameHeight="1024"
+			Animated="true"/>
+
+</Cursor>

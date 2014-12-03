@@ -1,0 +1,20 @@
+<level id="6">
+<Script type="script" name="level6" />
+<FPS type="gameobject"/>
+<Player type="gameobject">
+	<Transform type="component"
+			PosX="0"
+			PosY="2"
+			PosZ="0"
+	/>
+	<Camera type="component"
+        CameraDepth="-16"
+        CameraHeight="10"
+        LookHeight="10"
+    />
+	<Audio type="component"
+        jump="SoundEffect"
+	/>
+</Player>
+<Cursor type="gameobject" />
+</level>

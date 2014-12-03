@@ -1,0 +1,310 @@
+<?xml version="1.0" ?>
+<Texture 
+    Name="Default" 
+    Path="Assets\Textures\reftexture.dds"
+/>
+<Texture
+    Name="Cursor"
+    Path="Assets\Textures\Cursor.png"
+/>
+<Texture
+    Name="AnimatedCursor"
+    Path="Assets\Textures\AnimatedCursor.png"
+/>
+<Texture 
+    Name="Hat" 
+    Path="Assets\Textures\Hat.dds"
+/>
+<Texture 
+    Name="HatGirl" 
+    Path="Assets\Textures\hatgirl.png"
+/>
+<Texture 
+    Name="AnimatedHat" 
+    Path="Assets\Textures\AnimatedHatHiRes.dds"
+/>
+<Texture 
+    Name="Explosion" 
+    Path="Assets\Textures\Explosion.dds"
+/>
+<Texture 
+    Name="fireman" 
+    Path="Assets\Textures\fireman.dds"
+/>
+<Texture 
+    Name="mime" 
+    Path="Assets\Textures\AnimatedMime.dds"
+/>
+<Texture 
+    Name="FireStation" 
+    Path="Assets\Textures\FireStation.dds"
+/>
+<Texture 
+    Name="water" 
+    Path="Assets\Textures\water.dds"
+/>
+<Texture 
+    Name="background" 
+    Path="Assets\Textures\background.dds"
+/>
+<Texture 
+    Name="button" 
+    Path="Assets\Textures\button_back.png"
+/>
+<Texture 
+    Name="buttonHover" 
+    Path="Assets\Textures\button_back2.png"
+/>
+<Texture
+	Name="blueback"
+	Path="Assets\Textures\blueback.png"
+/>
+<Texture
+	Name="rightarrow"
+	Path="Assets\Textures\rightarrow.png"
+/>
+<Texture
+	Name="leftarrow"
+	Path="Assets\Textures\leftarrow.png"
+/>
+<Texture
+	Name="Train"
+	Path="Assets\Textures\train.dds"
+/>
+<Texture
+	Name="bricks"
+	Path="Assets\Textures\bricks.dds"
+/>
+<Texture
+	Name="bricks2"
+	Path="Assets\Textures\bricks2.dds"
+/>
+<Texture
+	Name="street"
+	Path="Assets\Textures\street.dds"
+/>
+<Texture
+	Name="platform"
+	Path="Assets\Textures\platform.dds"
+/>
+<Texture
+	Name="crate"
+	Path="Assets\Textures\crate.dds"
+/>
+<Texture
+	Name="crate_mime"
+	Path="Assets\Textures\crate_mime.dds"
+/>
+<Texture
+	Name="building1"
+	Path="Assets\Textures\building1.dds"
+/>
+<Texture
+	Name="policeBox"
+	Path="Assets\Textures\policeBox.dds"
+/>
+<Texture
+	Name="car"
+	Path="Assets\Textures\car.dds"
+/>
+<Texture
+	Name="transparent_blue"
+	Path="Assets\Textures\transBlue.dds"
+/>
+<Texture
+	Name="transparent_red"
+	Path="Assets\Textures\transRed.dds"
+/>
+<Texture
+	Name="credits"
+	Path="Assets\Textures\credits.png"
+/>
+<Texture
+	Name="controls"
+	Path="Assets\Textures\HowToPlay.png"
+/>
+<Texture
+	Name="controlsKB"
+	Path="Assets\Textures\HowToPlayKB.png"
+/>
+<Texture
+	Name="digipenlogo"
+	Path="Assets\Textures\DigiPenLogo.png"
+/>
+<Texture
+	Name="victory"
+	Path="Assets\Textures\victory.png"
+/>
+<Texture
+	Name="goninjalogo"
+	Path="Assets\Textures\goninjalogo.png"
+/>
+<Texture
+	Name="ControllerRequired"
+	Path="Assets\Textures\controllerRequired.png"
+/>
+<Texture
+	Name="howtoplay"
+	Path="Assets\Textures\controllerRequired.png"
+/>
+<Texture
+	Name="main_menu"
+	Path="Assets\Textures\main_menu.png"
+/>
+<Texture
+	Name="options"
+	Path="Assets\Textures\options.png"
+/>
+<Texture
+	Name="Apply Changes?"
+	Path="Assets\Textures\apply.png"
+/>
+<Texture
+	Name="How To Play"
+	Path="Assets\Textures\how_to_play.png"
+/>
+<Texture
+	Name="credits_menu"
+	Path="Assets\Textures\credits_menu.png"
+/>
+<Texture
+	Name="Are you sure?"
+	Path="Assets\Textures\quit.png"
+/>
+<Texture
+	Name="Paused"
+	Path="Assets\Textures\paused.png"
+/>
+<Texture
+	Name="Go to main menu?"
+	Path="Assets\Textures\return.png"
+/>
+<Texture
+	Name="restart"
+	Path="Assets\Textures\restart.png"
+/>
+<Texture
+	Name="Cheat Menu"
+	Path="Assets\Textures\cheats.png"
+/>
+<Texture
+	Name="sky"
+	Path="Assets\Textures\sky.dds"
+/>
+<Texture
+	Name="hills"
+	Path="Assets\Textures\hills.dds"
+/>
+<Texture
+	Name="grate"
+	Path="Assets\Textures\grate.dds"
+/>
+<Texture
+	Name="AnimatedSmoke"
+	Path="Assets\Textures\AnimatedSmoke.dds"
+/>
+<Texture
+	Name="AnimatedSwearing"
+	Path="Assets\Textures\AnimatedSwearing.dds"
+/>
+<Texture
+	Name="hatgirl"
+	Path="Assets\Textures\hatgirl.dds"
+/>
+<Texture
+	Name="wind"
+	Path="Assets\Textures\wind.dds"
+/>
+<Texture
+	Name="hatgirl"
+		Path="Assets\Textures\hatgirl.png"
+
+	/>
+<Texture
+	Name="heart"
+	Path="Assets\Textures\heart.dds"
+/>
+<Texture
+	Name="sceneOne"
+	Path="Assets\Textures\scene1.png"
+/>
+<Texture
+	Name="sceneTwo"
+	Path="Assets\Textures\scene2.png"
+/>
+<Texture
+	Name="sceneThree"
+	Path="Assets\Textures\scene3.png"
+/>
+<Texture
+	Name="sceneFour"
+	Path="Assets\Textures\scene4.png"
+/>
+<Texture
+	Name="AnimatedMime"
+	Path="Assets\Textures\AnimatedMime.dds"
+/>
+<Texture
+	Name="AnimatedFireman"
+	Path="Assets\Textures\AnimatedFireman.dds"
+/>
+<Texture
+	Name="tutorialImage"
+	Path="Assets\Textures\tutorialImage.dds"
+/>
+<Texture
+	Name="tutorialImage2"
+	Path="Assets\Textures\tutorialImage2.dds"
+/>
+<Texture
+	Name="jumpUI"
+	Path="Assets\Textures\jumpUI.dds"
+/>
+<Texture
+	Name="jumpUI2"
+	Path="Assets\Textures\jumpUI2.dds"
+/>
+<Texture
+	Name="lanesUI"
+	Path="Assets\Textures\lanesUI.dds"
+/>
+<Texture
+	Name="lanesUI2"
+	Path="Assets\Textures\lanesUI2.dds"
+/>
+<Texture
+	Name="charUI"
+	Path="Assets\Textures\charactersUI.dds"
+/>
+<Texture
+	Name="charUI2"
+	Path="Assets\Textures\charactersUI.dds"
+/>
+<Texture
+	Name="actionUI"
+	Path="Assets\Textures\actionUI.dds"
+/>
+<Texture
+	Name="actionUI2"
+	Path="Assets\Textures\actionUI2.dds"
+/>
+<Texture
+	Name="leaveUI"
+	Path="Assets\Textures\leaveUI.dds"
+/>
+<Texture
+	Name="leaveUI2"
+	Path="Assets\Textures\leaveUI2.dds"
+/>
+<Texture
+	Name="cursorUI"
+	Path="Assets\Textures\cursorUI.dds"
+/>
+<Texture
+	Name="cursorUI2"
+	Path="Assets\Textures\cursorUI2.dds"
+/>
+<Texture
+	Name="city"
+	Path="Assets\Textures\city.dds"
+/>

@@ -1,0 +1,5 @@
+    <movecameraTrigger type="gameobject" objtype="trigger">
+        <Transform type="component" PosX="0.000000" PosY="0.000000" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Trigger type="component" Script="pancameraup" StartPosX="-5.000000" StartPosY="-5.000000" StartPosZ="-10.000000" EndPosX="5.000000" EndPosY="5.000000" EndPosZ="10.000000" Triggered="0" Once="0"/>
+        <Sprite type="component" SizeX="10.000000" SizeY="10.000000" TextureName="transparent_blue" AnimationLength="0.000000" NumFrames="1.000000" FrameWidth="1.000000" FrameHeight="1.000000"/>
+    </movecameraTrigger>

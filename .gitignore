@@ -41,3 +41,15 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+#KrakEngine stuff
+/Debug
+/*.sdf
+/*.opensdf
+/*.suo
+/Release
+/Debug
+/ipch
+/*.psess
+/*.exe
+/*.zip

@@ -1,0 +1,9 @@
+<ImageObject type="gameobject">
+<Image type="component"
+	PosX="0.0"
+	PosY="0.0"
+	Width="0"
+	Height="0"
+	Image=""
+/>
+</ImageObject>

@@ -1,0 +1,52 @@
+<level id="0">
+<Script type="script" name="awesome" />
+<FPS type="gameobject"/>
+<EGG type="gameobject">
+    <Image type="component"
+        PosX="0.1"
+        PosY="0.1"
+        Width="40"
+        Height="40"
+        />
+</EGG>
+<EGG2 type="gameobject">
+    <Image type="component"
+        PosX="0.1"
+        PosY="0.1"
+        PosZ="1"
+        Width="10"
+        Height="10"
+        />
+</EGG2>
+<Player type="gameobject">
+	<Transform type="component"
+			PosX="-4"
+			PosY="10"
+			PosZ="0"
+	/>
+	<Sprite type="component"
+		  SizeX="2.0f"
+		  SizeY="2.0f"
+		  TextureName="Hat"
+    />
+	<Camera type="component"
+        CameraDepth="-16"
+        CameraHeight="5"
+        LookHeight="5"
+        YOffset="2.5"
+    />
+	<Audio type="component"
+        jump="SoundEffect"
+	/>
+</Player>
+<Cursor type="gameobject" />
+<Background type="gameobject">
+    <Transform type="component"
+        PosZ="10"
+    />
+    <Sprite type="component"
+        SizeX="500"
+        SizeY="70"
+    />
+</Background>
+</level>

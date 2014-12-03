@@ -1,0 +1,5 @@
+<object_static_fire type="gameobject" objtype="fire" ID="127">
+    <Transform type="component" PosX="-900.000000" PosY="-900.000000" PosZ="-900.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+    <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="30.000000" SizeY="1.000000" SizeZ="6.000000" NoGravity="0" counter="0"/>
+    <Model type="component" SizeX="30.000000" SizeY="1.000000" SizeZ="6.000000" ModelName="RedBoxModel" VertexType="AlbedoModel" TextureName="Default"/>
+</object_static_fire>

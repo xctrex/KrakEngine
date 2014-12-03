@@ -1,0 +1,17 @@
+<level>
+    <Floor type="gameobject">
+        <Model SizeX="26.300253" SizeY="43.099915" SizeZ="109.298904"/>
+    </Floor>
+    <Floor type="gameobject">
+        <Model SizeX="50.000000" SizeY="93.599144" SizeZ="72.099480"/>
+    </Floor>
+    <Floor type="gameobject">
+        <Model SizeX="50.000000" SizeY="25.800060" SizeZ="77.199394"/>
+    </Floor>
+    <Floor type="gameobject">
+        <Model SizeX="14.300207" SizeY="114.498825" SizeZ="19.300039"/>
+    </Floor>
+    <Floor type="gameobject">
+        <Model SizeX="178.401886" SizeY="16.900028" SizeZ="6.000000"/>
+    </Floor>
+</level>

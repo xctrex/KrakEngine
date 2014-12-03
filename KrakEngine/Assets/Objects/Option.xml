@@ -1,0 +1,16 @@
+<Option type="gameobject">
+	<Text type="component"
+		PosX="0.2"
+		PosY="0"
+		Content=""
+	/>
+	<Image type="component"
+        PosX="0.5"
+        PosY="0.5"
+        Width="200"
+        Height="60"
+		Image="button"
+    />
+	<Transform type="component" />
+	<Audio type="component" jump="0" action1="2" action2="0"/>
+</Option>

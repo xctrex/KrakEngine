@@ -1,0 +1,43 @@
+<object_NPC type="gameobject">
+	<Transform type="component"
+			PosX="0"
+			PosY="10"
+			PosZ="0"
+	/>
+	<RigidBody type="component"
+			 velocityX="0.0f"
+			 velocityY="0.0f"
+			 speed="3.0f"
+			 mass="1.0f"
+			 friction="0.5f"
+		     BodyType="1"
+			 SizeX="2.0f"
+			 SizeY="2.0f"
+			 SizeZ="2.0f"
+	/>
+	<Sprite type="component"
+			  SizeX="2.0f"
+			  SizeY="2.0f"
+			  TextureName="AnimatedHat"
+              IdleAnimationLength="1.0"
+              IdleAnimationStartFrame="0"
+			  IdleAnimationNumFrames="4"
+              RunAnimationLength="1.0"
+              RunAnimationStartFrame="4"
+			  RunAnimationNumFrames="4"
+              JumpAnimationLength="2.0"
+              JumpAnimationStartFrame="8"
+			  JumpAnimationNumFrames="8"
+              FrameWidth="0.25"
+              FrameHeight="0.25"
+    />
+    <Camera type="component"
+        CameraDepth="-16"
+        CameraHeight="10"
+        LookHeight="10"
+    />
+	<Controller type="component"
+		player="true"
+	/>
+	<Audio type="component" jump="Jump" action1="PopOn" action2="PopOff"/>
+</object_NPC>

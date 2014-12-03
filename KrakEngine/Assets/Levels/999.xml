@@ -1,0 +1,18 @@
+<level id="999">
+<FPS type="gameobject" />
+<Cursor type="gameobject" >
+	<Camera type="component"
+        CameraDepth="-16"
+        CameraHeight="5"
+        LookHeight="5"
+        YOffset="2.5"
+    />
+</Cursor>
+<Text type="gameobject">
+	<Text type="component"
+		PosX="0.8"
+		PosY="0.8"
+		Content="LOADING"
+	/>
+</Text>
+</level>

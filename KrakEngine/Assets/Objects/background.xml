@@ -1,0 +1,16 @@
+<Floor type="gameobject">
+	<Transform type="component"
+			PosX="0"
+			PosY="10"
+			PosZ="-20"
+	/>
+	<Sprite type="component"
+			  SizeX="500.0f"
+			  SizeY="60.0f"
+			  TextureName="background"
+              AnimationLength="1.0"
+              NumFrames="1"
+              FrameWidth="1"
+              FrameHeight="1"
+    />
+</Floor>

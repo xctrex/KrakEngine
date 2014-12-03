@@ -1,0 +1,25 @@
+<level>
+<FPS type="gameobject"/>
+<Cursor type="gameobject">
+	<Camera type="component"
+        CameraDepth="-10"
+        CameraHeight="0"
+        LookHeight="0"
+        YOffset="0"
+		Free="true"
+    />
+	 <Transform type="component" 
+		 PosX="0.000000" 
+		 PosY="0.000000" 
+		 PosZ="0.000000" 
+	 />  
+</Cursor>
+<Cursor type="gameobject">
+ <Transform type="component" 
+		 PosX="0.000000" 
+		 PosY="0.000000" 
+		 PosZ="0.000000" 
+	 />  
+</Cursor>
+
+</level>

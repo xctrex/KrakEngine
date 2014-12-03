@@ -1,0 +1,152 @@
+<level>
+    <player type="gameobject" objtype="player">
+        <Transform type="component" PosX="0.000000" PosY="10.000000" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="2.000000" mass="1.000000" friction="0.500000" BodyType="1" SizeX="2.000000" SizeY="2.000000" SizeZ="2.000000"/>
+        <Controller type="component" player="1"/>
+        <Sprite type="component" SizeX="2.000000" SizeY="2.000000" TextureName="Hat" AnimationLength="0.000000" NumFrames="1.000000" FrameWidth="1.000000" FrameHeight="1.000000"/>
+        <Camera type="component" CameraDepth="-16.000000" CameraHeight="10.000000" LookHeight="10.000000" YOffset="0.000000" Free="0"/>
+    </player>
+    <FPS type="gameobject" objtype="">
+        <Text type="component" PosX="0.050000" PosY="0.050000" PosZ="10.000000" Content="FPS"/>
+    </FPS>
+    <Cursor type="gameobject" objtype="">
+        <Transform type="component" PosX="10.000000" PosY="10.000000" PosZ="-2.100000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Sprite type="component" SizeX="1.000000" SizeY="1.000000" TextureName="Hat" AnimationLength="2.000000" NumFrames="1.000000" FrameWidth="1.000000" FrameHeight="1.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="3.000000" mass="0.000000" friction="0.500000" BodyType="0" SizeX="1.000000" SizeY="1.000000" SizeZ="1.000000"/>
+    </Cursor>
+    <flameo type="gameobject" objtype="flameo">
+        <Sprite type="component" SizeX="3.000000" SizeY="4.000000" TextureName="fireman" AnimationLength="0.000000" NumFrames="1.000000" FrameWidth="1.000000" FrameHeight="1.000000"/>
+        <Transform type="component" PosX="147.904419" PosY="13.050031" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Spawner type="component" Script="carspawn"/>
+    </flameo>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="2.699998" PosY="-5.100001" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="47.199741" SizeY="1.000000" SizeZ="8.600010"/>
+        <Model type="component" SizeX="47.199741" SizeY="1.000000" SizeZ="8.600010" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="-25.049904" PosY="9.000016" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="20.500145" SizeY="29.199841" SizeZ="8.150008"/>
+        <Model type="component" SizeX="20.500145" SizeY="29.199841" SizeZ="8.150008" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="19.250011" PosY="-0.650000" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="4.000000" SizeY="8.000000" SizeZ="8.450017"/>
+        <Model type="component" SizeX="4.000000" SizeY="8.000000" SizeZ="8.450017" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="23.150028" PosY="1.300000" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="4.000000" SizeY="12.000000" SizeZ="8.900019"/>
+        <Model type="component" SizeX="4.000000" SizeY="12.000000" SizeZ="8.900019" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="26.700050" PosY="2.149998" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="4.000000" SizeY="16.000000" SizeZ="8.000015"/>
+        <Model type="component" SizeX="4.000000" SizeY="16.000000" SizeZ="8.000015" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="15.600002" PosY="-2.449998" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="4.000000" SizeY="4.000000" SizeZ="8.250016"/>
+        <Model type="component" SizeX="4.000000" SizeY="4.000000" SizeZ="8.250016" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="57.849411" PosY="9.500017" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="59.399555" SizeY="1.000000" SizeZ="9.600014"/>
+        <Model type="component" SizeX="59.399555" SizeY="1.000000" SizeZ="9.600014" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="-2.399998" PosY="9.600019" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="25.000080" SizeY="1.000000" SizeZ="8.150008"/>
+        <Model type="component" SizeX="25.000080" SizeY="1.000000" SizeZ="8.150008" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="16.050041" PosY="9.650019" PosZ="4.750000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="23.550098" SizeY="1.000000" SizeZ="2.799994"/>
+        <Model type="component" SizeX="23.550098" SizeY="1.000000" SizeZ="2.799994" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="17.600018" PosY="9.300017" PosZ="-2.249999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="30.049999" SizeY="1.000000" SizeZ="2.449994"/>
+        <Model type="component" SizeX="30.049999" SizeY="1.000000" SizeZ="2.449994" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <flameo type="gameobject" objtype="flameo">
+        <Sprite type="component" SizeX="3.000000" SizeY="4.000000" TextureName="fireman" AnimationLength="0.000000" NumFrames="1.000000" FrameWidth="1.000000" FrameHeight="1.000000"/>
+        <Transform type="component" PosX="147.104370" PosY="13.000031" PosZ="4.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Spawner type="component" Script="carspawn"/>
+    </flameo>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="142.254074" PosY="18.350006" PosZ="1.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="14.650208" SizeY="17.250023" SizeZ="4.699995"/>
+        <Model type="component" SizeX="14.650208" SizeY="17.250023" SizeZ="4.699995" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="178.356277" PosY="30.549820" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="19.500160" SizeY="43.449623" SizeZ="5.099997"/>
+        <Model type="component" SizeX="19.500160" SizeY="43.449623" SizeZ="5.099997" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="168.505676" PosY="14.300035" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="12.150199" SizeY="1.000000" SizeZ="8.650010"/>
+        <Model type="component" SizeX="12.150199" SizeY="1.000000" SizeZ="8.650010" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="174.656052" PosY="23.599926" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="23.100105" SizeY="1.000000" SizeZ="11.600021"/>
+        <Model type="component" SizeX="23.100105" SizeY="1.000000" SizeZ="11.600021" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="186.356766" PosY="13.550033" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="13.400204" SizeY="1.000000" SizeZ="9.550014"/>
+        <Model type="component" SizeX="13.400204" SizeY="1.000000" SizeZ="9.550014" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="176.906189" PosY="18.700001" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="30.000000" SizeY="1.000000" SizeZ="9.050012"/>
+        <Model type="component" SizeX="30.000000" SizeY="1.000000" SizeZ="9.050012" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="78.400185" PosY="14.700037" PosZ="4.750000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="16.300209" SizeY="10.250020" SizeZ="19.899979"/>
+        <Model type="component" SizeX="16.300209" SizeY="10.250020" SizeZ="19.899979" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="154.654831" PosY="9.350017" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="124.603180" SizeY="1.000000" SizeZ="8.350009"/>
+        <Model type="component" SizeX="124.603180" SizeY="1.000000" SizeZ="8.350009" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="89.900887" PosY="2.249999" PosZ="0.050000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="5.650174" SizeY="1.000000" SizeZ="9.800014"/>
+        <Model type="component" SizeX="5.650174" SizeY="1.000000" SizeZ="9.800014" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="90.250908" PosY="6.000005" PosZ="1.899999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="5.000172" SizeY="1.000000" SizeZ="6.250001"/>
+        <Model type="component" SizeX="5.000172" SizeY="1.000000" SizeZ="6.250001" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="87.100716" PosY="5.700004" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="1.000000" SizeY="6.650006" SizeZ="6.000000"/>
+        <Model type="component" SizeX="1.000000" SizeY="6.650006" SizeZ="6.000000" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="92.751060" PosY="6.000005" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="1.000000" SizeY="6.750008" SizeZ="6.000000"/>
+        <Model type="component" SizeX="1.000000" SizeY="6.750008" SizeZ="6.000000" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="39.049690" PosY="18.150009" PosZ="0.299999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="3.350168" SizeY="16.600033" SizeZ="4.049993"/>
+        <Model type="component" SizeX="3.350168" SizeY="16.600033" SizeZ="4.049993" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="67.799538" PosY="12.800031" PosZ="4.349998" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="6.950179" SizeY="7.800012" SizeZ="8.450009"/>
+        <Model type="component" SizeX="6.950179" SizeY="7.800012" SizeZ="8.450009" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+    <floor type="gameobject" objtype="floor">
+        <Transform type="component" PosX="68.399574" PosY="11.700027" PosZ="-1.999999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Physics type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" BodyType="1" SizeX="4.050168" SizeY="3.299998" SizeZ="6.850003"/>
+        <Model type="component" SizeX="4.050168" SizeY="3.299998" SizeZ="6.850003" ModelName="BoxModel" VertexType="TexturedModel" TextureName="Default"/>
+    </floor>
+</level>

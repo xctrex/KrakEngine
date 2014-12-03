@@ -1,0 +1,34 @@
+<level>
+    <FPS type="gameobject" objtype="" ID="0">
+        <Text type="component" PosX="0.050000" PosY="0.050000" PosZ="10.000000" Content="FPS"/>
+        <Camera type="component" CameraDepth="-20.000000" CameraHeight="15.000000" LookHeight="0.000000" YOffset="15.000000" Free="1"/>
+    </FPS>
+    <Cursor type="gameobject" objtype="" ID="1">
+        <Image type="component" PosX="0.100000" PosY="0.100000" PosZ="100.000000" Width="80.000000" Height="80.000000" Image="Cursor" Animated="0"/>
+        <Transform type="component" PosX="-10.000000" PosY="-10.000000" PosZ="6.100000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+    </Cursor>
+    <floor type="gameobject" objtype="" ID="10">
+        <Transform type="component" PosX="0" PosY="0" PosZ="0" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="1.000000" SizeY="1.000000" SizeZ="1.00000" NoGravity="0" counter="0"/>      
+    </floor>
+    <salamander type="gameobject" objtype="" ID="2">
+        <Transform type="component" PosX="0" PosY="0" PosZ="0" RotX="-90.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="1.000000" SizeY="1.000000" SizeZ="1.00000" NoGravity="0" counter="0"/>
+    </salamander>
+    <tad type="gameobject" objtype="" ID="3">
+        <Transform type="component" PosX="0" PosY="0" PosZ="0" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="1.000000" SizeY="1.000000" SizeZ="1.00000" NoGravity="0" counter="0"/>      
+    </tad>
+    <crow type="gameobject" objtype="" ID="4">
+        <Transform type="component" PosX="0" PosY="0" PosZ="0" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="1.000000" SizeY="1.000000" SizeZ="1.00000" NoGravity="0" counter="0"/>
+    </crow>
+    <joe type="gameobject" objtype="" ID="5">
+        <Transform type="component" PosX="0" PosY="0" PosZ="0" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="1.000000" SizeY="1.000000" SizeZ="1.00000" NoGravity="0" counter="0"/>
+    </joe>
+    <tube type="gameobject" objtype="" ID="6">
+        <Transform type="component" PosX="0" PosY="0" PosZ="0" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="1.000000" SizeY="1.000000" SizeZ="1.00000" NoGravity="0" counter="0"/>
+    </tube>
+</level>

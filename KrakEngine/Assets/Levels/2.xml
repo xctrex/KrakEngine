@@ -1,0 +1,659 @@
+<level>
+    <FPS type="gameobject" objtype="" ID="132">
+        <Text type="component" PosX="0.050000" PosY="0.050000" PosZ="10.000000" Content="FPS"/>
+    </FPS>
+    <Cursor type="gameobject" objtype="" ID="133">
+        <Image type="component" PosX="0.100000" PosY="0.100000" PosZ="100.000000" Width="80.000000" Height="80.000000" Image="AnimatedCursor" AnimationLength="1.000000" AnimationNumFrames="4.000000" AnimationStartFrame="0.000000" FrameWidth="1024.000000" FrameHeight="1024.000000" Animated="1"/>
+        <Transform type="component" PosX="-10.000000" PosY="-10.000000" PosZ="6.100000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+    </Cursor>
+    <player type="gameobject" objtype="player" ID="5">
+        <Transform type="component" PosX="60.899643" PosY="-3.700001" PosZ="-4.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="6.000000" mass="1.000000" friction="0.500000" restitution="0.000000" BodyType="1" SizeX="2.000000" SizeY="2.000000" SizeZ="2.000000" NoGravity="0" counter="0"/>
+        <Particle type="component" MaxTime="25.000000" MinTime="15.000000" MaxVelocityX="30.000000" MaxVelocityY="5.000000" MaxVelocityZ="0.000000" MinVelocityX="15.000000" MinVelocityY="2.000000" MinVelocityZ="0.000000" CenterX="0.000000" CenterY="-6.299996" CenterZ="0.000000" BoundingValuesX="5.000000" BoundingValuesY="5.000000" BoundingValuesZ="4.000000" MinParticles="1" MaxParticles="5" script="" enabled="1"/>
+        <Controller type="component" player="1" immobile="0"/>
+        <Sprite type="component" SizeX="2.000000" SizeY="2.000000" TextureName="AnimatedHat" IdleAnimationLength="1.000000" IdleAnimationNumFrames="4.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="4.000000" RunAnimationStartFrame="4.000000" JumpAnimationLength="2.000000" JumpAnimationNumFrames="8.000000" JumpAnimationStartFrame="8.000000" FrameWidth="0.250000" FrameHeight="0.250000" Right="1"/>
+        <Camera type="component" CameraDepth="-18.000000" CameraHeight="10.000000" LookHeight="10.000000" YOffset="5.000000" Free="0"/>
+    </player>
+    <floor type="gameobject" objtype="floor" ID="6">
+        <Transform type="component" PosX="30.600082" PosY="-9.600000" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="233.604980" SizeY="8.999998" SizeZ="11.600012" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="233.604980" SizeY="8.999998" SizeZ="11.600012" ModelName="BoxModel_Wrap2" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="7">
+        <Transform type="component" PosX="50.399803" PosY="22.800051" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="13.700017" SizeY="56.699707" SizeZ="13.400019" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="13.700017" SizeY="56.699707" SizeZ="13.400019" ModelName="BoxModel_4Faces" VertexType="TexturedModel" TextureName="building1"/>
+    </floor>
+    <fire type="gameobject" objtype="fire" ID="8">
+        <Trigger type="component" Script="playAudioOne" StartPosX="88.000000" StartPosY="-33.000000" StartPosZ="-4.000000" EndPosX="163.000000" EndPosY="-13.000000" EndPosZ="4.000000" StartFocusX="108.000000" StartFocusY="-33.000000" StartFocusZ="-4.000000" EndFocusX="143.000000" EndFocusY="-32.000000" EndFocusZ="4.000000" Triggered="0" Once="0" Button="0"/>
+        <Transform type="component" PosX="127.998619" PosY="-36.100021" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="12.399933" SizeY="60.000000" SizeZ="10.300007" NoGravity="0" counter="100"/>
+        <Model type="component" SizeX="12.399933" SizeY="3.699998" SizeZ="10.300007" ModelName="RedBoxModel" VertexType="AlbedoModel" TextureName="Default"/>
+        <Particle type="component" MaxTime="60.000000" MinTime="20.000000" MaxVelocityX="5.000000" MaxVelocityY="10.000000" MaxVelocityZ="0.000000" MinVelocityX="0.000000" MinVelocityY="2.000000" MinVelocityZ="0.000000" CenterX="127.998619" CenterY="-26.000000" CenterZ="0.000000" BoundingValuesX="5.000000" BoundingValuesY="5.000000" BoundingValuesZ="4.000000" MinParticles="1" MaxParticles="5" script="fireParticle" enabled="1"/>
+        <Audio type="component" jump="0" action1="Fire" action2="0"/>
+    </fire>
+    <TrafficTrigger type="gameobject" objtype="trigger" ID="9">
+        <Trigger type="component" Script="playAudioOne" StartPosX="29.949829" StartPosY="-40.250095" StartPosZ="0.000000" EndPosX="111.849152" EndPosY="-22.550068" EndPosZ="0.000000" StartFocusX="35.000000" StartFocusY="-40.250095" StartFocusZ="0.000000" EndFocusX="100.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Audio type="component" jump="0" action1="Traffic" action2="0"/>
+    </TrafficTrigger>
+    <steammachine type="gameobject" objtype="steammachine" ID="10">
+        <Transform type="component" PosX="127.998619" PosY="-36.100021" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="12.399933" SizeY="60.000000" SizeZ="10.300007" NoGravity="0" counter="100"/>
+        <Particle type="component" MaxTime="30.000000" MinTime="20.000000" MaxVelocityX="5.000000" MaxVelocityY="10.000000" MaxVelocityZ="0.000000" MinVelocityX="0.000000" MinVelocityY="2.000000" MinVelocityZ="0.000000" CenterX="303.000000" CenterY="5.000000" CenterZ="0.000000" BoundingValuesX="15.000000" BoundingValuesY="10.000000" BoundingValuesZ="4.000000" MinParticles="20" MaxParticles="20" script="" enabled="1"/>
+    </steammachine>
+    <floor type="gameobject" objtype="floor" ID="11">
+        <Transform type="component" PosX="181.101852" PosY="-62.399620" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="160.700531" SizeY="60.499649" SizeZ="12.600016" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="160.700531" SizeY="60.499649" SizeZ="12.600016" ModelName="BoxModel_Wrap4" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="12">
+        <Transform type="component" PosX="204.703293" PosY="-31.300081" PosZ="-0.400000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="18.599957" SizeY="24.400055" SizeZ="13.000017" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="18.599957" SizeY="24.400055" SizeZ="13.000017" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <mime type="gameobject" objtype="mime" ID="13">
+        <Transform type="component" PosX="165.400894" PosY="-28.200069" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="3.000000" mass="1.000000" friction="0.500000" restitution="0.000000" BodyType="1" SizeX="3.000000" SizeY="4.000000" SizeZ="3.000000" NoGravity="0" counter="0"/>
+        <Sprite type="component" SizeX="3.000000" SizeY="4.000000" TextureName="AnimatedMime" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="4.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="0.250000" FrameHeight="1.000000" Right="1"/>
+        <Controller type="component" player="0" immobile="0"/>
+        <AI type="component" state="1" leftDestinationX="-10.000000" leftDestinationY="0.000000" leftDestinationZ="0.000000" rightDestinationX="10.000000" rightDestinationY="0.000000" rightDestinationZ="0.000000"/>
+        <Action type="component" Action1="mimedown" Action2="mimedown"/>
+        <Audio type="component" jump="0" action1="Mime" action2="PopOff"/>
+    </mime>
+    <fireman type="gameobject" objtype="fireman" ID="14">
+        <Transform type="component" PosX="202.203140" PosY="-14.600018" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="3.000000" mass="1.000000" friction="0.500000" restitution="0.000000" BodyType="1" SizeX="3.000000" SizeY="4.000000" SizeZ="3.000000" NoGravity="0" counter="0"/>
+        <Particle type="component" MaxTime="25.000000" MinTime="15.000000" MaxVelocityX="30.000000" MaxVelocityY="5.000000" MaxVelocityZ="0.000000" MinVelocityX="15.000000" MinVelocityY="2.000000" MinVelocityZ="0.000000" CenterX="0.000000" CenterY="0.000000" CenterZ="0.000000" BoundingValuesX="0.000000" BoundingValuesY="0.000000" BoundingValuesZ="0.000000" MinParticles="1" MaxParticles="5" script="" enabled="1"/>
+        <Sprite type="component" SizeX="3.000000" SizeY="4.000000" TextureName="AnimatedFireman" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="4.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="0.250000" FrameHeight="1.000000" Right="1"/>
+        <Controller type="component" player="0" immobile="0"/>
+        <AI type="component" state="1" leftDestinationX="-10.000000" leftDestinationY="0.000000" leftDestinationZ="0.000000" rightDestinationX="10.000000" rightDestinationY="0.000000" rightDestinationZ="0.000000"/>
+        <Action type="component" Action1="fireman" Action2="fireman"/>
+        <Audio type="component" jump="0" action1="Water" action2="PopOff"/>
+    </fireman>
+    <triggerdown type="gameobject" objtype="triggerdown" ID="15">
+        <Transform type="component" PosX="167.000992" PosY="-1.900000" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Trigger type="component" Script="pancameradown" StartPosX="143.901062" StartPosY="-34.199795" StartPosZ="0.000000" EndPosX="190.100922" EndPosY="30.399794" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Sprite type="component" SizeX="46.199867" SizeY="64.599586" TextureName="transparent_red" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+    </triggerdown>
+    <triggerup type="gameobject" objtype="triggerup" ID="16">
+        <Transform type="component" PosX="201.103073" PosY="-15.000021" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Trigger type="component" Script="pancameraup" StartPosX="185.403030" StartPosY="-27.050049" StartPosZ="0.000000" EndPosX="216.803116" EndPosY="-2.949994" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Sprite type="component" SizeX="31.400082" SizeY="24.100054" TextureName="transparent_blue" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+    </triggerup>
+    <floor type="gameobject" objtype="floor" ID="17">
+        <Transform type="component" PosX="101.299026" PosY="-31.300081" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="1.000000" SizeY="5.599997" SizeZ="10.200006" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="1.000000" SizeY="5.599997" SizeZ="10.200006" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="18">
+        <Transform type="component" PosX="87.399239" PosY="-46.599861" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="30.000000" SizeY="1.000000" SizeZ="10.100006" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="30.000000" SizeY="1.000000" SizeZ="10.100006" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="19">
+        <Transform type="component" PosX="34.100052" PosY="-36.800011" PosZ="0.800000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="13.799938" SizeY="9.600000" SizeZ="10.400007" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="13.799938" SizeY="9.600000" SizeZ="10.400007" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="20">
+        <Transform type="component" PosX="-19.500040" PosY="-69.999504" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="279.507782" SizeY="62.099625" SizeZ="10.400007" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="279.507782" SizeY="62.099625" SizeZ="10.400007" ModelName="BoxModel_Wrap6" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <carspawn type="gameobject" objtype="carspawn" ID="21">
+        <Sprite type="component" SizeX="3.000000" SizeY="4.000000" TextureName="fireman" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+        <Transform type="component" PosX="38.999977" PosY="-35.500031" PosZ="-4.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Spawner type="component" Script="carspawnright" mintime="30" maxtime="30"/>
+    </carspawn>
+    <carkill type="gameobject" objtype="carkill" ID="22">
+        <Transform type="component" PosX="119.398750" PosY="-39.199974" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="1.000000" SizeY="8.899998" SizeZ="11.100010" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="1.000000" SizeY="8.899998" SizeZ="11.100010" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </carkill>
+    <floor type="gameobject" objtype="floor" ID="23">
+        <Transform type="component" PosX="99.099060" PosY="-32.000084" PosZ="4.299998" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="4.999919" SizeY="1.000000" SizeZ="5.100001" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="4.999919" SizeY="1.000000" SizeZ="5.100001" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="24">
+        <Transform type="component" PosX="99.899048" PosY="-35.800026" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="5.699919" SizeY="1.000000" SizeZ="3.399999" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="5.699919" SizeY="1.000000" SizeZ="3.399999" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="25">
+        <Transform type="component" PosX="99.799049" PosY="-39.599968" PosZ="3.299999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="6.899918" SizeY="1.000000" SizeZ="2.899999" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="6.899918" SizeY="1.000000" SizeZ="2.899999" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="26">
+        <Transform type="component" PosX="101.799019" PosY="-42.599922" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="9.899923" SizeY="1.000000" SizeZ="2.800003" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="9.899923" SizeY="1.000000" SizeZ="2.800003" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <fire type="gameobject" objtype="fire" ID="27">
+        <Trigger type="component" Script="playAudioOne" StartPosX="-68.500000" StartPosY="-70.000000" StartPosZ="-4.000000" EndPosX="8.000000" EndPosY="-15.000000" EndPosZ="4.000000" StartFocusX="-36.000000" StartFocusY="-40.000000" StartFocusZ="-4.000000" EndFocusX="-20.000000" EndFocusY="-13.000000" EndFocusZ="4.000000" Triggered="0" Once="0" Button="0"/>
+        <Transform type="component" PosX="-28.500072" PosY="-50.899796" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="9.099920" SizeY="60.000000" SizeZ="8.600000" NoGravity="0" counter="100"/>
+        <Model type="component" SizeX="9.099920" SizeY="22.900051" SizeZ="8.600000" ModelName="RedBoxModel" VertexType="AlbedoModel" TextureName="Default"/>
+        <Particle type="component" MaxTime="60.000000" MinTime="20.000000" MaxVelocityX="5.000000" MaxVelocityY="10.000000" MaxVelocityZ="0.000000" MinVelocityX="0.000000" MinVelocityY="2.000000" MinVelocityZ="0.000000" CenterX="-28.500072" CenterY="-50.899796" CenterZ="0.000000" BoundingValuesX="5.000000" BoundingValuesY="25.000000" BoundingValuesZ="4.000000" MinParticles="1" MaxParticles="5" script="fireParticle" enabled="1"/>
+        <Audio type="component" jump="0" action1="Fire" action2="0"/>
+    </fire>
+    <steammachine type="gameobject" objtype="steammachine" ID="28">
+        <Transform type="component" PosX="-28.500072" PosY="-50.899796" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="9.099920" SizeY="60.000000" SizeZ="8.600000" NoGravity="0" counter="100"/>
+        <Particle type="component" MaxTime="30.000000" MinTime="20.000000" MaxVelocityX="5.000000" MaxVelocityY="10.000000" MaxVelocityZ="0.000000" MinVelocityX="0.000000" MinVelocityY="2.000000" MinVelocityZ="0.000000" CenterX="303.000000" CenterY="5.000000" CenterZ="0.000000" BoundingValuesX="15.000000" BoundingValuesY="10.000000" BoundingValuesZ="4.000000" MinParticles="20" MaxParticles="20" script="" enabled="1"/>
+    </steammachine>
+    <floor type="gameobject" objtype="floor" ID="29">
+        <Transform type="component" PosX="-24.100056" PosY="-37.599998" PosZ="0.700000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="4.599998" SizeY="16.600027" SizeZ="10.500008" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="4.599998" SizeY="16.600027" SizeZ="10.500008" ModelName="BoxModel" VertexType="TexturedModel" TextureName="platform"/>
+    </floor>
+    <mime type="gameobject" objtype="mime" ID="30">
+        <Transform type="component" PosX="-7.399995" PosY="-36.800011" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="3.000000" mass="1.000000" friction="0.500000" restitution="0.000000" BodyType="1" SizeX="3.000000" SizeY="4.000000" SizeZ="3.000000" NoGravity="0" counter="0"/>
+        <Sprite type="component" SizeX="3.000000" SizeY="4.000000" TextureName="AnimatedMime" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="4.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="0.250000" FrameHeight="1.000000" Right="1"/>
+        <Controller type="component" player="0" immobile="0"/>
+        <AI type="component" state="1" leftDestinationX="-10.000000" leftDestinationY="0.000000" leftDestinationZ="0.000000" rightDestinationX="10.000000" rightDestinationY="0.000000" rightDestinationZ="0.000000"/>
+        <Action type="component" Action1="mimedown" Action2="mimedown"/>
+        <Audio type="component" jump="0" action1="Mime" action2="PopOff"/>
+    </mime>
+    <fireman type="gameobject" objtype="fireman" ID="31">
+        <Transform type="component" PosX="-0.300000" PosY="-36.300018" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="3.000000" mass="1.000000" friction="0.500000" restitution="0.000000" BodyType="1" SizeX="3.000000" SizeY="4.000000" SizeZ="3.000000" NoGravity="0" counter="0"/>
+        <Particle type="component" MaxTime="25.000000" MinTime="15.000000" MaxVelocityX="30.000000" MaxVelocityY="5.000000" MaxVelocityZ="0.000000" MinVelocityX="15.000000" MinVelocityY="2.000000" MinVelocityZ="0.000000" CenterX="0.000000" CenterY="0.000000" CenterZ="0.000000" BoundingValuesX="0.000000" BoundingValuesY="0.000000" BoundingValuesZ="0.000000" MinParticles="1" MaxParticles="5" script="" enabled="1"/>
+        <Sprite type="component" SizeX="3.000000" SizeY="4.000000" TextureName="AnimatedFireman" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="4.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="0.250000" FrameHeight="1.000000" Right="1"/>
+        <Controller type="component" player="0" immobile="0"/>
+        <AI type="component" state="1" leftDestinationX="-10.000000" leftDestinationY="0.000000" leftDestinationZ="0.000000" rightDestinationX="10.000000" rightDestinationY="0.000000" rightDestinationZ="0.000000"/>
+        <Action type="component" Action1="fireman" Action2="fireman"/>
+        <Audio type="component" jump="0" action1="Water" action2="PopOff"/>
+    </fireman>
+    <floor type="gameobject" objtype="floor" ID="32">
+        <Transform type="component" PosX="-196.102768" PosY="8.399998" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="76.399330" SizeY="220.604263" SizeZ="11.000010" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="76.399330" SizeY="220.604263" SizeZ="11.000010" ModelName="BoxModel_Wrap6" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="33">
+        <Transform type="component" PosX="-87.599236" PosY="-15.900023" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="11.199928" SizeY="41.899933" SizeZ="12.700016" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="11.199928" SizeY="41.899933" SizeZ="12.700016" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <mime type="gameobject" objtype="mime" ID="34">
+        <Transform type="component" PosX="-98.299072" PosY="-35.100037" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="3.000000" mass="1.000000" friction="0.500000" restitution="0.000000" BodyType="1" SizeX="3.000000" SizeY="4.000000" SizeZ="3.000000" NoGravity="0" counter="0"/>
+        <Sprite type="component" SizeX="3.000000" SizeY="4.000000" TextureName="AnimatedMime" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="4.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="0.250000" FrameHeight="1.000000" Right="1"/>
+        <Controller type="component" player="0" immobile="0"/>
+        <AI type="component" state="1" leftDestinationX="-10.000000" leftDestinationY="0.000000" leftDestinationZ="0.000000" rightDestinationX="10.000000" rightDestinationY="0.000000" rightDestinationZ="0.000000"/>
+        <Action type="component" Action1="mimedown" Action2="mimedown"/>
+        <Audio type="component" jump="0" action1="Mime" action2="PopOff"/>
+    </mime>
+    <triggerupdraft type="gameobject" objtype="triggerupdraft" ID="35">
+        <Transform type="component" PosX="-127.398643" PosY="-41.299942" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Trigger type="component" Script="updraft" StartPosX="-137.198669" StartPosY="-46.449944" StartPosZ="0.000000" EndPosX="-117.598625" EndPosY="-36.149940" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="1"/>
+        <Particle type="component" MaxTime="60.000000" MinTime="20.000000" MaxVelocityX="5.000000" MaxVelocityY="10.000000" MaxVelocityZ="0.000000" MinVelocityX="0.000000" MinVelocityY="2.000000" MinVelocityZ="0.000000" CenterX="-127.398643" CenterY="-41.299942" CenterZ="0.000000" BoundingValuesX="5.000000" BoundingValuesY="5.000000" BoundingValuesZ="4.000000" MinParticles="1" MaxParticles="5" script="windParticle" enabled="0"/>
+        <Sprite type="component" SizeX="19.600037" SizeY="10.300001" TextureName="mime" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+		<Audio type="component" jump="0" action1="Wind" action2="0"/>
+    </triggerupdraft>
+    <triggerup type="gameobject" objtype="triggerup" ID="36">
+        <Transform type="component" PosX="-126.498642" PosY="-3.699999" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Trigger type="component" Script="pancameraup" StartPosX="-158.748444" StartPosY="-13.350017" StartPosZ="0.000000" EndPosX="-94.248848" EndPosY="5.950019" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Sprite type="component" SizeX="64.499588" SizeY="19.300035" TextureName="transparent_blue" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+    </triggerup>
+    <triggerzoom type="gameobject" objtype="triggerzoom" ID="37">
+        <Trigger type="component" Script="zoomin" StartPosX="-110.599030" StartPosY="-8.200013" StartPosZ="0.000000" EndPosX="-92.999008" EndPosY="9.600017" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Transform type="component" PosX="-101.799019" PosY="-0.099998" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Sprite type="component" SizeX="17.600029" SizeY="17.800030" TextureName="mime" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+    </triggerzoom>
+    <triggerzoom type="gameobject" objtype="triggerup" ID="38">
+        <Trigger type="component" Script="zoomout" StartPosX="-94.749191" StartPosY="-41.949978" StartPosZ="0.000000" EndPosX="-86.049194" EndPosY="-35.449986" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Transform type="component" PosX="-90.399193" PosY="-38.699982" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Sprite type="component" SizeX="8.699996" SizeY="6.499994" TextureName="fireman" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+    </triggerzoom>
+    <triggerzoom type="gameobject" objtype="triggerup" ID="39">
+        <Trigger type="component" Script="zoomout" StartPosX="-156.098557" StartPosY="-19.850174" StartPosZ="0.000000" EndPosX="-95.898895" EndPosY="-13.350181" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Transform type="component" PosX="-125.998726" PosY="-16.600178" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Sprite type="component" SizeX="60.199654" SizeY="6.499994" TextureName="fireman" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+    </triggerzoom>
+    <triggerzoom type="gameobject" objtype="triggerup" ID="40">
+        <Trigger type="component" Script="zoomin" StartPosX="-87.899277" StartPosY="-40.549988" StartPosZ="0.000000" EndPosX="-81.899277" EndPosY="-36.049988" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Transform type="component" PosX="-83.799294" PosY="-38.299988" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Sprite type="component" SizeX="5.999996" SizeY="4.499996" TextureName="mime" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+    </triggerzoom>
+    <floor type="gameobject" objtype="floor" ID="41">
+        <Transform type="component" PosX="-91.199181" PosY="-4.400000" PosZ="-2.100000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="18.299955" SizeY="1.000000" SizeZ="6.400000" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="18.299955" SizeY="1.000000" SizeZ="6.400000" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="42">
+        <Transform type="component" PosX="-114.398827" PosY="-9.400000" PosZ="3.399999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="42.899841" SizeY="1.000000" SizeZ="6.000000" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="42.899841" SizeY="1.000000" SizeZ="6.000000" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="43">
+        <Transform type="component" PosX="-101.799019" PosY="-8.899998" PosZ="-4.199998" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="18.599957" SizeY="1.000000" SizeZ="3.500003" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="18.599957" SizeY="1.000000" SizeZ="3.500003" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="44">
+        <Transform type="component" PosX="-101.999016" PosY="-4.699997" PosZ="3.199999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="17.700031" SizeY="8.299995" SizeZ="6.000000" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="17.700031" SizeY="8.299995" SizeZ="6.000000" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="45">
+        <Transform type="component" PosX="-95.199120" PosY="3.199999" PosZ="-3.499999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="9.399921" SizeY="1.000000" SizeZ="3.900002" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="9.399921" SizeY="1.000000" SizeZ="3.900002" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <triggerup type="gameobject" objtype="triggerup" ID="46">
+        <Transform type="component" PosX="-74.299438" PosY="15.000021" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Trigger type="component" Script="pancameraup" StartPosX="-98.649353" StartPosY="5.550004" StartPosZ="0.000000" EndPosX="-49.949524" EndPosY="24.450039" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Sprite type="component" SizeX="48.699829" SizeY="18.900034" TextureName="transparent_blue" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+    </triggerup>
+    <floor type="gameobject" objtype="floor" ID="47">
+        <Transform type="component" PosX="13.500017" PosY="22.800051" PosZ="-0.300000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="15.400023" SizeY="56.699707" SizeZ="13.400019" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="15.400023" SizeY="56.699707" SizeZ="13.400019" ModelName="BoxModel_4Faces" VertexType="TexturedModel" TextureName="building1"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="48">
+        <Transform type="component" PosX="25.200058" PosY="35.000038" PosZ="2.400000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="10.699926" SizeY="1.000000" SizeZ="7.199998" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="10.699926" SizeY="1.000000" SizeZ="7.199998" ModelName="BoxModel" VertexType="TexturedModel" TextureName="platform"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="49">
+        <Transform type="component" PosX="22.900049" PosY="16.800026" PosZ="-0.100000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="13.299936" SizeY="1.000000" SizeZ="10.500008" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="13.299936" SizeY="1.000000" SizeZ="10.500008" ModelName="BoxModel" VertexType="TexturedModel" TextureName="platform"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="50">
+        <Transform type="component" PosX="44.699890" PosY="16.800026" PosZ="-0.200000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="17.699953" SizeY="1.000000" SizeZ="9.400003" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="17.699953" SizeY="1.000000" SizeZ="9.400003" ModelName="BoxModel" VertexType="TexturedModel" TextureName="platform"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="51">
+        <Transform type="component" PosX="41.399940" PosY="35.200035" PosZ="-2.699999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="20.799965" SizeY="1.000000" SizeZ="5.700000" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="20.799965" SizeY="1.000000" SizeZ="5.700000" ModelName="BoxModel" VertexType="TexturedModel" TextureName="platform"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="52">
+        <Transform type="component" PosX="-41.199944" PosY="-1.300001" PosZ="-0.400000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="33.599983" SizeY="3.199999" SizeZ="10.600008" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="33.599983" SizeY="3.199999" SizeZ="10.600008" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="53">
+        <Transform type="component" PosX="-29.700075" PosY="19.400038" PosZ="-0.100000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="9.299921" SizeY="43.399910" SizeZ="10.200006" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="9.299921" SizeY="43.399910" SizeZ="10.200006" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="54">
+        <Transform type="component" PosX="-35.800026" PosY="3.700000" PosZ="-2.599999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="6.999918" SizeY="1.000000" SizeZ="2.800004" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="6.999918" SizeY="1.000000" SizeZ="2.800004" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="55">
+        <Transform type="component" PosX="-34.700043" PosY="7.599996" PosZ="1.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="9.199921" SizeY="1.000000" SizeZ="4.600001" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="9.199921" SizeY="1.000000" SizeZ="4.600001" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="56">
+        <Transform type="component" PosX="-36.600014" PosY="11.700008" PosZ="2.799999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="7.899917" SizeY="1.000000" SizeZ="3.400003" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="7.899917" SizeY="1.000000" SizeZ="3.400003" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="57">
+        <Transform type="component" PosX="-35.400032" PosY="16.100025" PosZ="-2.500000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="8.999920" SizeY="1.000000" SizeZ="3.900002" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="8.999920" SizeY="1.000000" SizeZ="3.900002" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="58">
+        <Transform type="component" PosX="-36.600014" PosY="19.300037" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="7.799917" SizeY="1.000000" SizeZ="5.000001" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="7.799917" SizeY="1.000000" SizeZ="5.000001" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="59">
+        <Transform type="component" PosX="-34.900040" PosY="23.400053" PosZ="2.899999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="11.599930" SizeY="1.000000" SizeZ="2.900000" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="11.599930" SizeY="1.000000" SizeZ="2.900000" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="60">
+        <Transform type="component" PosX="-36.400017" PosY="27.500067" PosZ="-2.200000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="11.899931" SizeY="1.000000" SizeZ="5.700000" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="11.899931" SizeY="1.000000" SizeZ="5.700000" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <fireman type="gameobject" objtype="fireman" ID="61">
+        <Transform type="component" PosX="-39.099976" PosY="30.500078" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="3.000000" mass="1.000000" friction="0.500000" restitution="0.000000" BodyType="1" SizeX="3.000000" SizeY="4.000000" SizeZ="3.000000" NoGravity="0" counter="0"/>
+        <Particle type="component" MaxTime="25.000000" MinTime="15.000000" MaxVelocityX="30.000000" MaxVelocityY="5.000000" MaxVelocityZ="0.000000" MinVelocityX="15.000000" MinVelocityY="2.000000" MinVelocityZ="0.000000" CenterX="0.000000" CenterY="0.000000" CenterZ="0.000000" BoundingValuesX="0.000000" BoundingValuesY="0.000000" BoundingValuesZ="0.000000" MinParticles="1" MaxParticles="5" script="" enabled="1"/>
+        <Sprite type="component" SizeX="3.000000" SizeY="4.000000" TextureName="AnimatedFireman" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="4.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="0.250000" FrameHeight="1.000000" Right="1"/>
+        <Controller type="component" player="0" immobile="0"/>
+        <AI type="component" state="1" leftDestinationX="-10.000000" leftDestinationY="0.000000" leftDestinationZ="0.000000" rightDestinationX="10.000000" rightDestinationY="0.000000" rightDestinationZ="0.000000"/>
+        <Action type="component" Action1="fireman" Action2="fireman2"/>
+        <Audio type="component" jump="0" action1="Water" action2="PopOff"/>
+    </fireman>
+    <floor type="gameobject" objtype="floor" ID="62">
+        <Transform type="component" PosX="-41.799934" PosY="29.200075" PosZ="-2.599999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="1.000000" SizeY="3.199999" SizeZ="4.900001" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="1.000000" SizeY="3.199999" SizeZ="4.900001" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="63">
+        <Transform type="component" PosX="-8.799995" PosY="3.299997" PosZ="-0.300000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="3.899999" SizeY="26.800066" SizeZ="10.900009" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="3.899999" SizeY="26.800066" SizeZ="10.900009" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="64">
+        <Transform type="component" PosX="-11.300005" PosY="-1.300002" PosZ="1.400000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="6.499918" SizeY="1.000000" SizeZ="4.400002" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="6.499918" SizeY="1.000000" SizeZ="4.400002" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="65">
+        <Transform type="component" PosX="-10.900003" PosY="2.699998" PosZ="-3.199999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="7.099917" SizeY="1.000000" SizeZ="4.900001" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="7.099917" SizeY="1.000000" SizeZ="4.900001" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="66">
+        <Transform type="component" PosX="-23.300051" PosY="6.399994" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="8.899920" SizeY="1.000000" SizeZ="9.400003" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="8.899920" SizeY="1.000000" SizeZ="9.400003" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="67">
+        <Transform type="component" PosX="-19.400036" PosY="7.499993" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="1.000000" SizeY="1.700000" SizeZ="9.100002" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="1.000000" SizeY="1.700000" SizeZ="9.100002" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="68">
+        <Transform type="component" PosX="-22.500048" PosY="7.499993" PosZ="-4.099998" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="6.199996" SizeY="2.899999" SizeZ="1.000000" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="6.199996" SizeY="2.899999" SizeZ="1.000000" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="69">
+        <Transform type="component" PosX="-22.900049" PosY="7.699994" PosZ="3.799999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="8.199995" SizeY="3.499999" SizeZ="1.000000" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="8.199995" SizeY="3.499999" SizeZ="1.000000" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <mime type="gameobject" objtype="mime" ID="70">
+        <Transform type="component" PosX="-23.400051" PosY="9.199997" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="3.000000" mass="1.000000" friction="0.500000" restitution="0.000000" BodyType="1" SizeX="3.000000" SizeY="4.000000" SizeZ="3.000000" NoGravity="0" counter="0"/>
+        <Sprite type="component" SizeX="3.000000" SizeY="4.000000" TextureName="AnimatedMime" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="4.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="0.250000" FrameHeight="1.000000" Right="1"/>
+        <Controller type="component" player="0" immobile="0"/>
+        <AI type="component" state="1" leftDestinationX="-10.000000" leftDestinationY="0.000000" leftDestinationZ="0.000000" rightDestinationX="10.000000" rightDestinationY="0.000000" rightDestinationZ="0.000000"/>
+        <Action type="component" Action1="mimedown" Action2="mimedown"/>
+        <Audio type="component" jump="0" action1="Mime" action2="PopOff"/>
+    </mime>
+    <floor type="gameobject" objtype="floor" ID="71">
+        <Transform type="component" PosX="-10.900005" PosY="5.899997" PosZ="3.299999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="6.099918" SizeY="1.000000" SizeZ="4.200002" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="6.099918" SizeY="1.000000" SizeZ="4.200002" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="72">
+        <Transform type="component" PosX="-8.799997" PosY="23.600054" PosZ="3.899999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="1.000000" SizeY="25.900063" SizeZ="1.000000" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="1.000000" SizeY="25.900063" SizeZ="1.000000" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="73">
+        <Transform type="component" PosX="-8.599997" PosY="23.500053" PosZ="-3.899999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="1.000000" SizeY="21.500046" SizeZ="1.000000" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="1.000000" SizeY="21.500046" SizeZ="1.000000" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="74">
+        <Transform type="component" PosX="-8.399996" PosY="27.700069" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="1.000000" SizeY="8.799997" SizeZ="8.099998" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="1.000000" SizeY="8.799997" SizeZ="8.099998" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <triggerupdraft type="gameobject" objtype="triggerupdraft" ID="75">
+        <Sprite type="component" SizeX="13.800014" SizeY="7.199994" TextureName="mime" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+        <Particle type="component" MaxTime="60.000000" MinTime="20.000000" MaxVelocityX="5.000000" MaxVelocityY="10.000000" MaxVelocityZ="0.000000" MinVelocityX="0.000000" MinVelocityY="2.000000" MinVelocityZ="0.000000" CenterX="0.099987" CenterY="-5.699995" CenterZ="0.000000" BoundingValuesX="5.000000" BoundingValuesY="5.000000" BoundingValuesZ="4.000000" MinParticles="1" MaxParticles="5" script="windParticle" enabled="1"/>
+        <Transform type="component" PosX="0.099987" PosY="-5.699995" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Trigger type="component" Script="updraft" StartPosX="-6.800020" StartPosY="-9.299992" StartPosZ="0.000000" EndPosX="6.999994" EndPosY="-2.099998" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Audio type="component" jump="0" action1="Wind" action2="0"/>
+	</triggerupdraft>
+    <triggerup type="gameobject" objtype="triggerup" ID="76">
+        <Transform type="component" PosX="-1.299998" PosY="26.700064" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Trigger type="component" Script="pancameraup" StartPosX="-8.300006" StartPosY="10.600023" StartPosZ="0.000000" EndPosX="5.700009" EndPosY="42.800102" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Sprite type="component" SizeX="14.000015" SizeY="32.200081" TextureName="transparent_blue" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+    </triggerup>
+    <triggerdown type="gameobject" objtype="triggerdown" ID="77">
+        <Transform type="component" PosX="-16.200026" PosY="27.300068" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Trigger type="component" Script="pancameradown" StartPosX="-23.950035" StartPosY="11.550028" StartPosZ="0.000000" EndPosX="-8.450015" EndPosY="43.050110" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Sprite type="component" SizeX="15.500021" SizeY="31.500080" TextureName="transparent_red" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+    </triggerdown>
+    <triggerdown type="gameobject" objtype="triggerdown" ID="78">
+        <Transform type="component" PosX="-0.500000" PosY="4.999996" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Trigger type="component" Script="pancameradown" StartPosX="-7.050006" StartPosY="-1.250009" StartPosZ="0.000000" EndPosX="6.050006" EndPosY="11.250001" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Sprite type="component" SizeX="13.100012" SizeY="12.500010" TextureName="transparent_red" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+    </triggerdown>
+    <floor type="gameobject" objtype="floor" ID="79">
+        <Transform type="component" PosX="-68.399529" PosY="9.299999" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="30.400002" SizeY="1.000000" SizeZ="11.800013" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="30.400002" SizeY="1.000000" SizeZ="11.800013" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="80">
+        <Transform type="component" PosX="-84.599281" PosY="6.299996" PosZ="0.400000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="4.099920" SizeY="6.299996" SizeZ="12.000013" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="4.099920" SizeY="6.299996" SizeZ="12.000013" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <button1 type="gameobject" objtype="triggerbutton" ID="81">
+        <Transform type="component" PosX="-109.698906" PosY="-37.100010" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Trigger type="component" Script="button" StartPosX="-113.848900" StartPosY="-39.250008" StartPosZ="0.000000" EndPosX="-105.548912" EndPosY="-34.950012" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Sprite type="component" SizeX="8.299994" SizeY="4.299996" TextureName="mime" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="100000.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="4.099999" SizeY="4.000000" SizeZ="3.000000" NoGravity="0" counter="0"/>
+    </button1>
+    <button2 type="gameobject" objtype="triggerbutton" ID="82">
+        <Transform type="component" PosX="-147.099777" PosY="-37.400005" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Trigger type="component" Script="button" StartPosX="-151.249756" StartPosY="-39.650005" StartPosZ="0.000000" EndPosX="-142.549774" EndPosY="-35.150005" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Sprite type="component" SizeX="8.699995" SizeY="4.499997" TextureName="mime" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="100000.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="3.500000" SizeY="5.399999" SizeZ="3.000000" NoGravity="0" counter="0"/>
+    </button2>
+    <floor type="gameobject" objtype="buttonfloor" ID="83">
+        <Transform type="component" PosX="-109.898895" PosY="-38.499985" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="7.999917" SizeY="1.000000" SizeZ="8.800001" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="7.999917" SizeY="1.000000" SizeZ="8.800001" ModelName="BoxModel" VertexType="TexturedModel" TextureName="crate_mime"/>
+    </floor>
+    <floor type="gameobject" objtype="buttonfloor" ID="84">
+        <Transform type="component" PosX="-147.299789" PosY="-38.599983" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="8.199917" SizeY="1.000000" SizeZ="9.100002" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="8.199917" SizeY="1.000000" SizeZ="9.100002" ModelName="BoxModel" VertexType="TexturedModel" TextureName="crate_mime"/>
+    </floor>
+    <triggerup type="gameobject" objtype="triggerup" ID="85">
+        <Transform type="component" PosX="-37.300003" PosY="21.700047" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Trigger type="component" Script="pancameraup" StartPosX="-42.150002" StartPosY="8.150014" StartPosZ="0.000000" EndPosX="-32.450005" EndPosY="35.850082" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Sprite type="component" SizeX="9.699999" SizeY="27.700068" TextureName="transparent_blue" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+    </triggerup>
+    <triggerdown type="gameobject" objtype="triggerdown" ID="86">
+        <Transform type="component" PosX="-54.599739" PosY="2.900000" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Trigger type="component" Script="pancameradown" StartPosX="-77.099686" StartPosY="-2.449997" StartPosZ="0.000000" EndPosX="-32.899784" EndPosY="6.449998" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Sprite type="component" SizeX="44.199898" SizeY="8.899996" TextureName="transparent_red" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+    </triggerdown>
+    <triggerdown type="gameobject" objtype="triggerdown" ID="87">
+        <Transform type="component" PosX="31.500084" PosY="17.600029" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Trigger type="component" Script="pancameradown" StartPosX="21.200064" StartPosY="-4.199924" StartPosZ="0.000000" EndPosX="41.800102" EndPosY="39.399982" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Sprite type="component" SizeX="20.600040" SizeY="43.599907" TextureName="transparent_red" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+    </triggerdown>
+    <triggerup type="gameobject" objtype="triggerup" ID="88">
+        <Transform type="component" PosX="21.200045" PosY="48.699829" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Trigger type="component" Script="pancameraup" StartPosX="-4.699846" StartPosY="37.899807" StartPosZ="0.000000" EndPosX="47.099937" EndPosY="59.499851" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Sprite type="component" SizeX="51.799782" SizeY="21.600044" TextureName="transparent_blue" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+    </triggerup>
+    <floor type="gameobject" objtype="floor" ID="89">
+        <Transform type="component" PosX="262.806824" PosY="-9.500000" PosZ="-1.200000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="98.498993" SizeY="74.899429" SizeZ="12.800016" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="98.498993" SizeY="74.899429" SizeZ="12.800016" ModelName="BoxModel_Wrap6" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <triggerup type="gameobject" objtype="triggerup" ID="90">
+        <Transform type="component" PosX="-17.300030" PosY="3.499999" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Trigger type="component" Script="pancameraup" StartPosX="-25.500042" StartPosY="-5.750011" StartPosZ="0.000000" EndPosX="-9.100018" EndPosY="10.150011" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Sprite type="component" SizeX="16.400024" SizeY="15.900023" TextureName="transparent_blue" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+    </triggerup>
+    <floor type="gameobject" objtype="floor" ID="91">
+        <Transform type="component" PosX="3.899997" PosY="34.900040" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="6.999918" SizeY="1.000000" SizeZ="11.800013" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="6.999918" SizeY="1.000000" SizeZ="11.800013" ModelName="BoxModel" VertexType="TexturedModel" TextureName="platform"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="92">
+        <Transform type="component" PosX="3.299999" PosY="37.699997" PosZ="-4.699998" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="4.499920" SizeY="4.599998" SizeZ="2.300004" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="4.499920" SizeY="4.599998" SizeZ="2.300004" ModelName="BoxModel" VertexType="TexturedModel" TextureName="crate"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="93">
+        <Transform type="component" PosX="1.800000" PosY="39.299973" PosZ="5.199997" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="7.799917" SizeY="7.799995" SizeZ="3.500002" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="7.799917" SizeY="7.799995" SizeZ="3.500002" ModelName="BoxModel" VertexType="TexturedModel" TextureName="crate"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="94">
+        <Transform type="component" PosX="4.299998" PosY="47.699844" PosZ="-3.999999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="3.999920" SizeY="1.000000" SizeZ="4.100002" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="3.999920" SizeY="1.000000" SizeZ="4.100002" ModelName="BoxModel" VertexType="TexturedModel" TextureName="platform"/>
+    </floor>
+    <fire type="gameobject" objtype="fire" ID="95">
+        <Trigger type="component" Script="playAudioOne" StartPosX="-80.000000" StartPosY="-20.000000" StartPosZ="-4.000000" EndPosX="-30.000000" EndPosY="20.000000" EndPosZ="4.000000" StartFocusX="-60.000000" StartFocusY="0.000000" StartFocusZ="-4.000000" EndFocusX="-45.000000" EndFocusY="20.000000" EndFocusZ="4.000000" Triggered="0" Once="0" Button="0"/>
+        <Transform type="component" PosX="-51.599785" PosY="-1.400002" PosZ="-0.400000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="3.399921" SizeY="14.099997" SizeZ="9.000002" NoGravity="0" counter="100"/>
+        <Model type="component" SizeX="3.399921" SizeY="2.400000" SizeZ="9.000002" ModelName="RedBoxModel" VertexType="AlbedoModel" TextureName="Default"/>
+        <Particle type="component" MaxTime="60.000000" MinTime="20.000000" MaxVelocityX="5.000000" MaxVelocityY="10.000000" MaxVelocityZ="0.000000" MinVelocityX="0.000000" MinVelocityY="2.000000" MinVelocityZ="0.000000" CenterX="-51.599785" CenterY="-1.400002" CenterZ="0.000000" BoundingValuesX="3.000000" BoundingValuesY="2.000000" BoundingValuesZ="4.000000" MinParticles="1" MaxParticles="5" script="fireParticle" enabled="1"/>
+        <Audio type="component" jump="0" action1="Fire" action2="0"/>
+    </fire>
+    <steammachine type="gameobject" objtype="steammachine" ID="96">
+        <Transform type="component" PosX="-51.599785" PosY="2.399998" PosZ="-0.400000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="3.399921" SizeY="15.000000" SizeZ="9.000002" NoGravity="0" counter="100"/>
+        <Particle type="component" MaxTime="30.000000" MinTime="20.000000" MaxVelocityX="5.000000" MaxVelocityY="10.000000" MaxVelocityZ="0.000000" MinVelocityX="0.000000" MinVelocityY="2.000000" MinVelocityZ="0.000000" CenterX="303.000000" CenterY="5.000000" CenterZ="0.000000" BoundingValuesX="15.000000" BoundingValuesY="10.000000" BoundingValuesZ="4.000000" MinParticles="20" MaxParticles="20" script="" enabled="1"/>
+    </steammachine>
+    <triggerdown type="gameobject" objtype="triggerdown" ID="97">
+        <Transform type="component" PosX="-126.198647" PosY="-25.100060" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Trigger type="component" Script="pancameradown" StartPosX="-156.848465" StartPosY="-31.900066" StartPosZ="0.000000" EndPosX="-95.548828" EndPosY="-18.300053" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Sprite type="component" SizeX="61.299637" SizeY="13.600014" TextureName="transparent_red" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+    </triggerdown>
+    <floor type="gameobject" objtype="floor" ID="98">
+        <Transform type="component" PosX="-128.498642" PosY="-39.199974" PosZ="0.400000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="13.199936" SizeY="1.000000" SizeZ="8.299999" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="13.199936" SizeY="1.000000" SizeZ="8.299999" ModelName="BoxModel_4Faces" VertexType="TexturedModel" TextureName="grate"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="99">
+        <Transform type="component" PosX="-0.799998" PosY="-5.299998" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="13.099936" SizeY="1.000000" SizeZ="11.100010" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="13.099936" SizeY="1.000000" SizeZ="11.100010" ModelName="BoxModel_4Faces" VertexType="TexturedModel" TextureName="grate"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="100">
+        <Transform type="component" PosX="76.899406" PosY="-3.900001" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="2.999921" SizeY="3.000000" SizeZ="9.800005" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="2.999921" SizeY="3.000000" SizeZ="9.800005" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="101">
+        <Transform type="component" PosX="80.099358" PosY="-3.600001" PosZ="-0.200000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="3.599921" SizeY="4.999998" SizeZ="9.400003" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="3.599921" SizeY="4.999998" SizeZ="9.400003" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="102">
+        <Transform type="component" PosX="83.299309" PosY="-3.300001" PosZ="-0.500000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="3.599921" SizeY="7.799995" SizeZ="8.900002" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="3.599921" SizeY="7.799995" SizeZ="8.900002" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="103">
+        <Transform type="component" PosX="112.598862" PosY="-0.700002" PosZ="-0.100000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="57.499619" SizeY="8.799997" SizeZ="9.900005" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="57.499619" SizeY="8.799997" SizeZ="9.900005" ModelName="BoxModel_Wrap2Sides" VertexType="TexturedModel" TextureName="bricks2"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="104">
+        <Transform type="component" PosX="71.399490" PosY="3.099998" PosZ="3.799999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="30.000000" SizeY="1.600000" SizeZ="3.800003" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="30.000000" SizeY="1.600000" SizeZ="3.800003" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="105">
+        <Transform type="component" PosX="71.599487" PosY="3.399997" PosZ="-3.499999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="28.399994" SizeY="1.000000" SizeZ="2.700003" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="28.399994" SizeY="1.000000" SizeZ="2.700003" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <triggerdown type="gameobject" objtype="triggerdown" ID="106">
+        <Transform type="component" PosX="72.499466" PosY="1.000000" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Trigger type="component" Script="pancameradown" StartPosX="54.799450" StartPosY="-6.850011" StartPosZ="0.000000" EndPosX="90.199478" EndPosY="8.850011" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Sprite type="component" SizeX="35.400032" SizeY="15.700022" TextureName="transparent_red" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+    </triggerdown>
+    <triggerup type="gameobject" objtype="triggerup" ID="107">
+        <Transform type="component" PosX="96.899094" PosY="11.000006" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Trigger type="component" Script="pancameraup" StartPosX="84.099060" StartPosY="3.599997" StartPosZ="0.000000" EndPosX="109.699127" EndPosY="18.400015" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Sprite type="component" SizeX="25.600060" SizeY="14.800018" TextureName="transparent_blue" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+    </triggerup>
+    <floor type="gameobject" objtype="floor" ID="108">
+        <Transform type="component" PosX="116.698792" PosY="6.199998" PosZ="3.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="6.299918" SizeY="4.999997" SizeZ="4.700001" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="6.299918" SizeY="4.999997" SizeZ="4.700001" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks2"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="109">
+        <Transform type="component" PosX="126.098648" PosY="5.999999" PosZ="1.300000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="13.999939" SizeY="13.600016" SizeZ="8.499999" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="13.999939" SizeY="13.600016" SizeZ="8.499999" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks2"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="110">
+        <Transform type="component" PosX="134.499008" PosY="9.400002" PosZ="-0.500000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="7.399917" SizeY="13.400015" SizeZ="8.700001" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="7.399917" SizeY="13.400015" SizeZ="8.700001" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks2"/>
+    </floor>
+    <triggerup type="gameobject" objtype="triggerup" ID="111">
+        <Transform type="component" PosX="128.798660" PosY="15.300024" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Trigger type="component" Script="pancameraup" StartPosX="113.948624" StartPosY="9.850022" StartPosZ="0.000000" EndPosX="143.648697" EndPosY="20.750027" EndPosZ="0.000000" StartFocusX="0.000000" StartFocusY="0.000000" StartFocusZ="0.000000" EndFocusX="0.000000" EndFocusY="0.000000" EndFocusZ="0.000000" Triggered="0" Once="0" Button="0"/>
+        <Sprite type="component" SizeX="29.700075" SizeY="10.900003" TextureName="transparent_blue" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+    </triggerup>
+    <sky type="gameobject" objtype="" ID="112">
+        <Transform type="component" PosX="173.399597" PosY="63.499527" PosZ="35.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Sprite type="component" SizeX="795.176758" SizeY="150.599030" TextureName="sky" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1" BackgroundSprite="true"/>
+    </sky>
+    <hills type="gameobject" objtype="" ID="113">
+        <Transform type="component" PosX="180.000000" PosY="-2.600040" PosZ="15.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Sprite type="component" SizeX="734.291626" SizeY="123.798874" TextureName="hills" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1" BackgroundSprite="true"/>
+    </hills>
+    <city type="gameobject" objtype="" ID="114">
+        <Transform type="component" PosX="4.598209" PosY="-25.000092" PosZ="6.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Sprite type="component" SizeX="144.696747" SizeY="34.100883" TextureName="city" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1" BackgroundSprite="true"/>
+    </city>
+    <city type="gameobject" objtype="" ID="115">
+        <Transform type="component" PosX="144.897858" PosY="-25.000092" PosZ="6.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Sprite type="component" SizeX="144.696747" SizeY="34.100883" TextureName="city" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1" BackgroundSprite="true"/>
+    </city>
+    <city type="gameobject" objtype="" ID="116">
+        <Transform type="component" PosX="144.897858" PosY="-25.000092" PosZ="6.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <Sprite type="component" SizeX="144.696747" SizeY="34.100883" TextureName="city" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1" BackgroundSprite="true"/>
+    </city>
+    <femalehat type="gameobject" objtype="femalehat" ID="117">
+        <Transform type="component" PosX="40.800140" PosY="-3.899811" PosZ="-5.599998" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="6.000000" mass="1.000000" friction="0.500000" restitution="0.000000" BodyType="1" SizeX="3.099999" SizeY="1.700000" SizeZ="6.000000" NoGravity="0" counter="0"/>
+        <Particle type="component" MaxTime="25.000000" MinTime="15.000000" MaxVelocityX="30.000000" MaxVelocityY="5.000000" MaxVelocityZ="0.000000" MinVelocityX="15.000000" MinVelocityY="2.000000" MinVelocityZ="0.000000" CenterX="-9.199999" CenterY="-53.899750" CenterZ="0.000000" BoundingValuesX="5.000000" BoundingValuesY="5.000000" BoundingValuesZ="4.000000" MinParticles="1" MaxParticles="5" script="" enabled="1"/>
+        <Sprite type="component" SizeX="3.099999" SizeY="1.700000" TextureName="hatgirl" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000" Right="1"/>
+		<Audio type="component" jump="0" action1="Kiss" action2="0"/>
+    </femalehat>
+    <floor type="gameobject" objtype="floor" ID="118">
+        <Transform type="component" PosX="40.399960" PosY="-1.800002" PosZ="-4.099998" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="6.799918" SizeY="1.000000" SizeZ="4.000002" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="6.799918" SizeY="1.000000" SizeZ="4.000002" ModelName="BoxModel" VertexType="TexturedModel" TextureName="platform"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="119">
+        <Transform type="component" PosX="113.298843" PosY="-25.000059" PosZ="1.300000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="6.199918" SizeY="24.500057" SizeZ="6.000000" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="6.199918" SizeY="24.500057" SizeZ="6.000000" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="120">
+        <Transform type="component" PosX="123.198692" PosY="-22.400049" PosZ="3.299999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="4.699920" SizeY="19.600039" SizeZ="2.600003" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="4.699920" SizeY="19.600039" SizeZ="2.600003" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="121">
+        <Transform type="component" PosX="137.899216" PosY="-23.500053" PosZ="-3.799999" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="4.499920" SizeY="19.600039" SizeZ="2.100004" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="4.499920" SizeY="19.600039" SizeZ="2.100004" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="122">
+        <Transform type="component" PosX="149.299911" PosY="-12.200010" PosZ="-0.300000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="9.399921" SizeY="4.299998" SizeZ="9.900005" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="9.399921" SizeY="4.299998" SizeZ="9.900005" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="123">
+        <Transform type="component" PosX="155.300278" PosY="-15.100021" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="5.899919" SizeY="4.399998" SizeZ="9.700005" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="5.899919" SizeY="4.399998" SizeZ="9.700005" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="124">
+        <Transform type="component" PosX="159.500534" PosY="-18.900036" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="6.799918" SizeY="6.099997" SizeZ="9.200003" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="6.799918" SizeY="6.099997" SizeZ="9.200003" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="125">
+        <Transform type="component" PosX="-61.699631" PosY="11.400007" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="7.399917" SizeY="5.399997" SizeZ="10.500008" NoGravity="0" counter="0"/>
+        <Model type="component" SizeX="7.399917" SizeY="5.399997" SizeZ="10.500008" ModelName="BoxModel" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+</level>

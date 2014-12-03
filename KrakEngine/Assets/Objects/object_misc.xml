@@ -1,0 +1,24 @@
+<object_misc type="gameobject" objtype="mimebox">
+	<Transform type="component"
+			PosX="0"
+			PosY="10"
+			PosZ="0"
+	/>
+	<RigidBody type="component"
+			 velocityX="0.0f"
+			 velocityY="0.0f"
+			 speed="0.0f"
+			 mass="0.0f"
+			 friction="0.0f"
+		     BodyType="1"
+			 SizeX="3.0f"
+			 SizeY="3.0f"
+			 SizeZ="3.0f"
+			 NoGravity="1"
+	/>
+	<Model type="component"
+			  SizeX="3.0f"
+			  SizeY="3.0f"
+              SizeZ="1.0f"
+    />
+</object_misc>

@@ -1,0 +1,7 @@
+<FPS type="gameobject">
+	<Text type="component"
+		PosX="0.05"
+		PosY="0.05"
+		Content="FPS"
+		/>
+</FPS>

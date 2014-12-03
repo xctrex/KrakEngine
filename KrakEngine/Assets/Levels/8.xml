@@ -1,0 +1,96 @@
+<level id="8">
+<Script type="script" name="level8" />
+<FPS type="gameobject"/>
+<Player type="gameobject" objtype="player">
+	<Transform type="component"
+			PosX="0"
+			PosY="12"
+			PosZ="0"
+	/>
+	<Camera type="component"
+        CameraDepth="-20"
+        CameraHeight="15"
+        LookHeight="10"
+    />
+	<Audio type="component"
+        jump="SoundEffect"
+	/>
+</Player>
+<Cursor type="gameobject" />
+<Marker type="gameobject">
+	<Transform type="component"
+			PosX="20"
+			PosY="0"
+			PosZ="0"
+	/>
+	<RigidBody type="component"
+			 velocityX="0.0f"
+			 velocityY="0.0f"
+			 speed="0.0f"
+			 mass="0.0f"
+			 friction="0.5f"
+		     BodyType="1"
+			 SizeX="1.0f"
+			 SizeY="5.0f"
+			 SizeZ="1.0f"
+	/>
+	<Model type="component"
+			  SizeX="1.0f"
+			  SizeY="5.0f"
+              SizeZ="1.0f"
+    />
+</Marker>
+<Trigger type="gameobject">
+	<Trigger type="component"
+		StartPosX = "0"
+		StartPoY = "10"
+		StartPosZ = "-6"
+		EndPosX = "100"
+		EndPosY = "20"
+		EndPosZ = "6"
+		StartFocusX = "20"
+		StartFocusY = "10"
+		StartFocusZ = "-6"
+		EndFocusX = "40"
+		EndFocusY = "20"
+		EndFocusZ = "6"
+		Script = "playAudioOne"
+		Once = "false"
+	/>
+	<Audio type="component" jump="0" action1="Music" action2="0"/>
+</Trigger>
+<Marker type="gameobject">
+	<Transform type="component"
+			PosX="40"
+			PosY="0"
+			PosZ="0"
+	/>
+	<RigidBody type="component"
+			 velocityX="0.0f"
+			 velocityY="0.0f"
+			 speed="0.0f"
+			 mass="0.0f"
+			 friction="0.5f"
+		     BodyType="1"
+			 SizeX="1.0f"
+			 SizeY="5.0f"
+			 SizeZ="1.0f"
+	/>
+	<Model type="component"
+			  SizeX="1.0f"
+			  SizeY="5.0f"
+              SizeZ="1.0f"
+    />
+</Marker>
+
+    <fireman type="gameobject" objtype="fireman" ID="6">
+        <Transform type="component" PosX="-10.0" PosY="15.0" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="6.000000" mass="1.000000" friction="0.500000" restitution="0.000000" BodyType="1" SizeX="3.000000" SizeY="4.000000" SizeZ="1.000000" NoGravity="0"/>
+        <Sprite type="component" SizeX="3.000000" SizeY="4.000000" TextureName="fireman" IdleAnimationLength="1.000000" IdleAnimationNumFrames="1.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="1.000000" RunAnimationStartFrame="0.000000" JumpAnimationLength="1.000000" JumpAnimationNumFrames="1.000000" JumpAnimationStartFrame="0.000000" FrameWidth="1.000000" FrameHeight="1.000000"/>
+        <Controller type="component" player="0" immobile="0"/>
+        <AI type="component" state="1" leftDestinationX="-10.000000" leftDestinationY="0.000000" leftDestinationZ="0.000000" rightDestinationX="10.000000" rightDestinationY="0.000000" rightDestinationZ="0.000000"/>
+        <Action type="component" Action1="fireman" Action2="fireman2"/>
+        <Audio type="component" jump="0" action1="0" action2="0"/>
+		<Particle type="component" 	MaxTime="25" MinTime="15" MaxVelocityX="15" MaxVelocityY="5" MaxVelocityZ="0" MinVelocityX="5" MinVelocityY="0" MinVelocityZ="0" CenterX="0" CenterY="0" CenterZ="0" BoundingValuesX="2" BoundingValuesY="2" BoundingValuesZ="0" MinParticles="1" MaxParticles="5" script="" />
+    </fireman>
+</level>

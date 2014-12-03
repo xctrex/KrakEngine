@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<Model
+    Name="Cube"
+    Path="Assets\Models\Cube.bin"
+/>
+<Model
+    Name="Bomber"
+    Path="Assets\Models\Bomber.bin"
+/>

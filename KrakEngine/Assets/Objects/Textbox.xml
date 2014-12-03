@@ -1,0 +1,7 @@
+<Menu_Toggle type="gameobject">
+	<Text type="component"
+		PosX="0"
+		PosY="0"
+		Content=""
+	/>
+</Menu_Toggle>

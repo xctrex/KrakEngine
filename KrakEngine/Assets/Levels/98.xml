@@ -1,0 +1,26 @@
+<level>
+    <FPS type="gameobject" objtype="" ID="114">
+        <Text type="component" PosX="0.050000" PosY="0.050000" PosZ="10.000000" Content="FPS"/>
+    </FPS>
+    <Cursor type="gameobject" objtype="" ID="115">
+        <Image type="component"/>
+        <Transform type="component" PosX="-10.000000" PosY="-10.000000" PosZ="6.100000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+    </Cursor>
+    <player type="gameobject" objtype="player" ID="5">
+        <Transform type="component" PosX="60.899643" PosY="2.599998" PosZ="-4.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="6.000000" mass="1.000000" friction="0.500000" restitution="0.000000" BodyType="1" SizeX="2.000000" SizeY="2.000000" SizeZ="2.000000" NoGravity="0"/>
+        <Controller type="component" player="1" immobile="0"/>
+        <Sprite type="component" SizeX="2.000000" SizeY="2.000000" TextureName="AnimatedHat" IdleAnimationLength="1.000000" IdleAnimationNumFrames="4.000000" IdleAnimationStartFrame="0.000000" RunAnimationLength="1.000000" RunAnimationNumFrames="4.000000" RunAnimationStartFrame="4.000000" JumpAnimationLength="2.000000" JumpAnimationNumFrames="8.000000" JumpAnimationStartFrame="8.000000" FrameWidth="0.250000" FrameHeight="0.250000"/>
+        <Camera type="component" CameraDepth="-18.000000" CameraHeight="10.000000" LookHeight="10.000000" YOffset="5.000000" Free="0"/>
+    </player>
+    <floor type="gameobject" objtype="floor" ID="6">
+        <Transform type="component" PosX="38.299992" PosY="-9.600000" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="245.205688" SizeY="8.999998" SizeZ="11.600012" NoGravity="0"/>
+        <Model type="component" SizeX="245.205688" SizeY="8.999998" SizeZ="11.600012" ModelName="BoxModel_Wrap2xFront" VertexType="TexturedModel" TextureName="bricks"/>
+    </floor>
+    <floor type="gameobject" objtype="floor" ID="7">
+        <Transform type="component" PosX="49.499817" PosY="22.800051" PosZ="0.000000" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="15.400023" SizeY="56.699707" SizeZ="13.400019" NoGravity="0"/>
+        <Model type="component" SizeX="15.400023" SizeY="56.699707" SizeZ="13.400019" ModelName="BoxModel_4Faces" VertexType="TexturedModel" TextureName="building1"/>
+    </floor>
+</level>

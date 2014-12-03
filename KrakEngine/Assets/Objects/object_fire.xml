@@ -1,0 +1,33 @@
+<Fire type="gameobject" objtype="particle">
+	<Transform type="component"
+			PosX="0"
+			PosY="1"
+			PosZ="0"
+	/>
+	<RigidBody type="component"
+			 velocityX="0.0f"
+			 velocityY="0.0f"
+			 speed="0.0f"
+			 mass="-1.0f"
+		     BodyType="1"
+			 SizeX="1.0f"
+			 SizeY="1.0f"
+			 SizeZ="1.0f"
+	/>	
+	<Sprite type="component"
+			SizeX="15.000000" 
+			SizeY="15.000000" 
+			TextureName="Explosion" 
+			IdleAnimationLength="2.000000" 
+			IdleAnimationNumFrames="16.00000" 
+			IdleAnimationStartFrame="1.000000" 
+			RunAnimationLength="1.000000" 
+			RunAnimationNumFrames="1.000000" 
+			RunAnimationStartFrame="0.000000" 
+			JumpAnimationLength="1.000000" 
+			JumpAnimationNumFrames="1.000000" 
+			JumpAnimationStartFrame="0.000000" 
+			FrameWidth="0.250000" 
+			FrameHeight="0.250000"
+			/>
+</Fire>
