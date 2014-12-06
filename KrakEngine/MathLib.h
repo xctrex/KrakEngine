@@ -43,6 +43,16 @@ namespace KrakEngine{
 		return a.x * b.x + a.y * b.y;
 	}
 
+    inline float Mag(const Vector2& a)
+    {
+        return sqrt(a.x * a.x + a.y * a.y);
+    }
+
+    inline float AngleInDegrees(const Vector2& a, const Vector2& b)
+    {
+        return acos(Dot(a, b) / (Mag(a) * Mag(b)));
+    }
+
 	inline Vector3 operator+(const Vector3 &pVec0, const float &pfloat)
 	{
 		Vector3 result;

@@ -88,8 +88,8 @@ namespace KrakEngine{
         bool IsGBufferDrawingOn(){ return m_DrawDebug == 4; }
         bool IsSceneDrawingOn(){ return m_DrawDebug != 4; }
         bool IsMeshDrawingOn(){ return m_DrawDebug == 2 || m_DrawDebug == 3; }
-        bool IsSkeletonDrawingOn(){ return m_DrawDebug == 0 || m_DrawDebug == 1 || m_DrawDebug == 3; }
-        bool IsDrawBindPose(){ return m_DrawDebug == 1 || m_DrawDebug == 2 || m_DrawDebug == 3; }
+        bool IsSkeletonDrawingOn(){ return m_DrawDebug != 4;}
+        bool IsDrawBindPose(){ return m_DrawDebug == 3; }
 
         void LoadModels();
         void LoadAlbedoModel(tinyxml2::XMLElement* txmlElement, std::string ModelName);
@@ -335,13 +335,18 @@ namespace KrakEngine{
         void NormalizeArcLengthTable();
         std::list<ArcLengthTableElement> m_ArcLengthTable;
         double m_ArcLength;
-        double m_ArcLengthEpsilon = 0.1f;
+        double m_ArcLengthEpsilon = 0.01f;
         double m_SplineScale;
-        double InverseArcLength(double t);
-        std::list<ArcLengthTableElement>::iterator BinaryArcLengthLookup(double t, size_t begin, size_t end);
-        float m_AnimationLength = 5.f;
-        float m_AnimationTime;
+        double InverseArcLength(double len);
+        double ArcLength(double t);
+        std::list<ArcLengthTableElement>::iterator BinaryArcLookupByTime(double t, size_t begin, size_t end);
+        std::list<ArcLengthTableElement>::iterator BinaryArcLookupByLength(double len, size_t begin, size_t end);
+        float m_AnimationLength = 10.f;
+        float m_NormalizedDistanceAlongArc;
         void UpdateAnimation(float dt);
+
+        float m_coiDelta = 0.02f;
+        float m_StepSizeFactor = 0.15f;
 	};
 	extern GraphicsSystem* g_GRAPHICSSYSTEM;
 }

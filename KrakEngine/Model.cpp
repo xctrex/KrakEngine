@@ -180,7 +180,7 @@ namespace KrakEngine{
         if(GetOwner()){
             Transform* t = GetOwner()->has(Transform);
 
-            XMStoreFloat4x4(&m_World, XMMatrixScaling(m_Size.x, m_Size.y, m_Size.z) * XMMatrixRotationX( XMConvertToRadians(t->GetRotation().x)) /* * XMMatrixRotationY(t->GetRotation().y) * XMMatrixRotationZ(t->GetRotation().z)*/ * XMMatrixTranslation(t->GetPosition().x, t->GetPosition().y, t->GetPosition().z));
+            XMStoreFloat4x4(&m_World, XMMatrixScaling(m_Size.x, m_Size.y, m_Size.z) * XMMatrixRotationX( XMConvertToRadians(t->GetRotation().x)) * XMMatrixRotationY(t->GetRotation().y) /** XMMatrixRotationZ(t->GetRotation().z)*/ * XMMatrixTranslation(t->GetPosition().x, t->GetPosition().y, t->GetPosition().z));
         }
         
         if (m_Controller)

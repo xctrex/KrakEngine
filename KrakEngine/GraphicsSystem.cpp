@@ -42,7 +42,7 @@ namespace KrakEngine{
         m_IntermediateRTFormat(DXGI_FORMAT_R8G8B8A8_UNORM),
         m_bInitialized(false),
         m_bEditPath(false),
-        m_AnimationTime(0.f)
+        m_NormalizedDistanceAlongArc(0.f)
     {
         DXThrowIfFailed(CoInitialize(NULL));
 
@@ -520,13 +520,26 @@ namespace KrakEngine{
         DXThrowIfFailed(m_spD2DDeviceContext->EndDraw());
     }
 
+    float SmoothStep(float t)
+    {
+        return t * t * (3 - 2 * t);
+    }
+
     void GraphicsSystem::UpdateAnimation(float dt)
     {
-        m_AnimationTime += dt / m_AnimationLength;
-        if (m_AnimationTime > 1.f)
+        m_NormalizedDistanceAlongArc += dt / m_AnimationLength;
+        if (m_NormalizedDistanceAlongArc > 1.f)
         {
-            m_AnimationTime = 0;
+            m_NormalizedDistanceAlongArc = 0.f;
         }
+        
+        // Use smoothstep to have an acceleration and deceleration at the beginning and the end
+        float smoothDistanceAlongArc = SmoothStep(m_NormalizedDistanceAlongArc);
+        
+        // Get the time u along the parametric curve using the inverse arc length function
+        // and the normalized distance along the arc the model should have traveled at this point
+        float u = InverseArcLength(smoothDistanceAlongArc);
+
         if (m_ModelList.size() > 1)
         {
             std::list<Model*>::iterator it = m_ModelList.begin();
@@ -535,8 +548,37 @@ namespace KrakEngine{
             if ((*it)->GetOwner())
             {
                 Transform* t = (*it)->GetOwner()->has(Transform);
-                XMFLOAT2 pos = SplineInterpolate(m_AnimationTime);
-                t->SetPosition(XMFLOAT3(pos.x, 0.f, pos.y));
+                XMFLOAT3 oldPos = t->GetPosition();
+                XMFLOAT2 oldPos2D = XMFLOAT2(oldPos.x, oldPos.z);
+                XMFLOAT2 pos2D = SplineInterpolate(u);
+                t->SetPosition(XMFLOAT3(pos2D.x, 0.0f, pos2D.y));
+
+                // Set the speed of the model based on how far the model has moved
+                (*it)->m_Controller->m_AnimationSpeed = m_StepSizeFactor * Mag(oldPos2D - pos2D) / dt;
+
+                // Center of interest approach to orientation
+                float coiTime = u + m_coiDelta;
+                if (coiTime > 1.f)
+                {
+                    coiTime = 1.f;
+                }
+
+                // Position to look to
+                XMFLOAT2 coiPos = SplineInterpolate(coiTime);
+
+                // Get the direction between the current position and the center of interest
+                XMFLOAT2 lookDirection;
+                lookDirection.x = coiPos.x - pos2D.x;
+                lookDirection.y = coiPos.y - pos2D.y; // The XMFLOAT2 produced by SplineInterpolate is actually the x and z position
+
+                float lookAngle = AngleInDegrees(lookDirection, Vector2(0.f, -1.f));
+
+                if (lookDirection.x > 0){ lookAngle *= -1.f; }
+
+                // Set the rotation about the y axis
+                XMFLOAT3 rot = t->GetRotation();
+                rot.y = lookAngle;
+                t->SetRotation(rot);
             }
         }
     }
@@ -716,6 +758,7 @@ namespace KrakEngine{
         m_SplineScale = (double)(m_PathControlPoints.size() - 1);
 
         BuildArcLengthTable();
+        NormalizeArcLengthTable();
     }
 
     void GraphicsSystem::DrawPathSplineInterpolation(){
@@ -852,7 +895,7 @@ namespace KrakEngine{
         }
     }
 
-    std::list<ArcLengthTableElement>::iterator GraphicsSystem::BinaryArcLengthLookup(double t, size_t begin, size_t end){
+    std::list<ArcLengthTableElement>::iterator GraphicsSystem::BinaryArcLookupByLength(double len, size_t begin, size_t end){
         size_t midpoint = begin + (end - begin) / 2;
         std::list<ArcLengthTableElement>::iterator it = m_ArcLengthTable.begin();
         for (size_t i = 0; i < midpoint; ++i)
@@ -860,35 +903,75 @@ namespace KrakEngine{
             ++it;
         }
         // if we have reached the end of the search
-        if (begin == end)
+        if (end - begin <= 1)
+        {
+            return it;
+        }
+        // if len is in the first half of the list
+        else if (it->s > len)
+        {
+            return BinaryArcLookupByLength(len, begin, midpoint);
+        }
+        // if len is in the second half of the list
+        else if (it->s < len)
+        {
+            return BinaryArcLookupByLength(len, midpoint, end);
+        }
+        else
+        {
+            return it;
+        }
+    }
+
+    std::list<ArcLengthTableElement>::iterator GraphicsSystem::BinaryArcLookupByTime(double t, size_t begin, size_t end){
+        size_t midpoint = begin + (end - begin) / 2;
+        std::list<ArcLengthTableElement>::iterator it = m_ArcLengthTable.begin();
+        for (size_t i = 0; i < midpoint; ++i)
+        {
+            ++it;
+        }
+        // if we have reached the end of the search
+        if (end - begin <= 1)
         {
             return it;
         }
         // if t is in the first half of the list
         else if (it->u > t)
         {
-            return BinaryArcLengthLookup(t, begin, midpoint);
+            return BinaryArcLookupByTime(t, begin, midpoint);
         }
         // if t is in the second half of the list
         else if (it->u < t)
         {
-            return BinaryArcLengthLookup(t, midpoint, end);
+            return BinaryArcLookupByTime(t, midpoint, end);
+        }
+        else
+        {
+            return it;
         }
     }
 
-    double Interpolate(std::list<ArcLengthTableElement>::iterator it1, std::list<ArcLengthTableElement>::iterator it2, double t)
+    double InterpolateByTime(std::list<ArcLengthTableElement>::iterator it1, std::list<ArcLengthTableElement>::iterator it2, double t)
     {
         double k = (t - it1->u) / (it2->u - it1->u);
         return it1->s + k * (it2->s - it1->s);
     }
 
-    // Returns the length of the arc at t = [0:1]
-    double GraphicsSystem::InverseArcLength(double t)
+    double InterpolateByLength(std::list<ArcLengthTableElement>::iterator it1, std::list<ArcLengthTableElement>::iterator it2, double len)
     {
+        double k = (len - it1->s) / (it2->s - it1->s);
+        return it1->u + k * (it2->u - it1->u);
+    }
+
+    // Returns the time t at length len
+    double GraphicsSystem::ArcLength(double t)
+    {
+        ThrowErrorIf(t > 1.f + FLT_EPSILON, "Searching for a time larger than the (normalized) arc itself. Be sure to normalize len before passing it in.");
+
         // Perform a binary search on the arc length table
-        std::list<ArcLengthTableElement>::iterator it1 = BinaryArcLengthLookup(t, 0, m_ArcLengthTable.size() - 1);
+        std::list<ArcLengthTableElement>::iterator it1 = BinaryArcLookupByTime(t, 0, m_ArcLengthTable.size() - 1);
         std::list<ArcLengthTableElement>::iterator it2 = it1;
-        
+
         // If it is not an exact match
         if (it1->u < t - FLT_EPSILON)
         {
@@ -896,7 +979,7 @@ namespace KrakEngine{
             // Now get the element after t.
             ++it2;
             if (it2 == m_ArcLengthTable.end()){ return it1->s; }
-            return Interpolate(it1, it2, t);
+            return InterpolateByTime(it1, it2, t);
         }
         else if (it1->u > t + FLT_EPSILON)
         {
@@ -904,11 +987,44 @@ namespace KrakEngine{
             // Now get the element before t.
             if (it1 == m_ArcLengthTable.begin()){ return it1->s; }
             --it2;
-            return Interpolate(it2, it1, t);
+            return InterpolateByTime(it2, it1, t);
         }
         else
         {
-            // We already have an element at exactly t.
+            // We already have an element at exactly len.
+            return it1->u;
+        }
+    }
+
+    // Returns the time t at length len
+    double GraphicsSystem::InverseArcLength(double len)
+    {
+        ThrowErrorIf(len > 1.f + FLT_EPSILON, "Searching for a length larger than the (normalized) arc itself. Be sure to normalize len before passing it in.");
+
+        // Perform a binary search on the arc length table
+        std::list<ArcLengthTableElement>::iterator it1 = BinaryArcLookupByLength(len, 0, m_ArcLengthTable.size() - 1);
+        std::list<ArcLengthTableElement>::iterator it2 = it1;
+        
+        // If it is not an exact match
+        if (it1->s < len - FLT_EPSILON)
+        {
+            // The iterator we have is to the element before t.
+            // Now get the element after t.
+            ++it2;
+            if (it2 == m_ArcLengthTable.end()){ return it1->s; }
+            return InterpolateByLength(it1, it2, len);
+        }
+        else if (it1->s > len + FLT_EPSILON)
+        {
+            // The iterator we have is to the element after t.
+            // Now get the element before t.
+            if (it1 == m_ArcLengthTable.begin()){ return it1->s; }
+            --it2;
+            return InterpolateByLength(it2, it1, len);
+        }
+        else
+        {
+            // We already have an element at exactly len.
             return it1->s;
         }
     }
