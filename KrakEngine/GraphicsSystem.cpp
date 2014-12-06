@@ -886,6 +886,7 @@ namespace KrakEngine{
         }
         
         m_ArcLength = m_ArcLengthTable.back().s;
+        m_AnimationLength = m_ArcLength / 7.0f;
     }
 
     void GraphicsSystem::NormalizeArcLengthTable(){
