@@ -197,9 +197,54 @@ namespace KrakEngine{
         }
     }
 
+    void Model::Skin(const ComPtr<ID3D11Device1> &spD3DDevice1, const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1)
+    {
+        if (m_Controller)
+        {
+            std::vector< XMFLOAT4X4 > boneMatrices;
+            boneMatrices.resize(m_Controller->m_pSkeleton->m_Bones.size());
+            for (UINT i = 0; i < boneMatrices.size(); ++i)
+            {
+                //The matrices passed to the shader transform the vertex into bone space and then apply the bones animation
+                XMStoreFloat4x4(&boneMatrices[i], XMMatrixMultiply(XMLoadFloat4x4(&m_Controller->m_pSkeleton->GetModelToBoneSpaceTransform(i)), XMLoadFloat4x4(&m_Controller->m_BoneMatrixBuffer[i])));
+            }
+
+            //Software skinning used to debug problems in the pipeline
+            FBXBinSkinnedModelVertex *pDest = (FBXBinSkinnedModelVertex *)m_Mesh->m_pSkinnedVertexBufferData;
+            FBXBinSkinnedModelVertex *pSource = (FBXBinSkinnedModelVertex *)m_Mesh->m_pVertexBufferData;
+
+            for (UINT i = 0; i < m_Mesh->m_NumVertices; ++i)
+            {
+                XMFLOAT3 v = XMFLOAT3(0.f, 0.f, 0.f);
+                XMFLOAT3 n = XMFLOAT3(0.f, 0.f, 0.f);
+                for (int w = 0; w < 4; ++w)
+                {
+                    XMFLOAT3 tn, tp;
+                    UINT boneIndex = pSource[i].i[w];
+                    XMFLOAT4X4 boneMatrix = boneMatrices[boneIndex];
+                    ////(x,y,z,1) Homogeneous transform
+                    XMStoreFloat3(&tp, XMVector3TransformCoord(XMLoadFloat3(&pSource[i].Pos), XMLoadFloat4x4(&boneMatrix)));
+                    //(x,y,z,0) Normal transform remove translation(technically the matrix should be MatrixTranspose(MatrixInverse(tn)) but
+                    //since we are using only uniform scaling this is equivalent)
+                    XMStoreFloat3(&tn, XMVector3TransformNormal(XMLoadFloat3(&pSource[i].Norm), XMLoadFloat4x4(&boneMatrix)));
+
+                    XMStoreFloat3(&tn, XMVectorScale(XMLoadFloat3(&tn), pSource[i].w[w]));
+                    XMStoreFloat3(&tp, XMVectorScale(XMLoadFloat3(&tp), pSource[i].w[w]));
+                    XMStoreFloat3(&v, XMVectorAdd(XMLoadFloat3(&v), XMLoadFloat3(&tp)));
+                    XMStoreFloat3(&n, XMVectorAdd(XMLoadFloat3(&n), XMLoadFloat3(&tn)));
+                }
+                pDest[i].Pos = v;
+                pDest[i].Norm = n;
+                pDest[i].Tex = pSource[i].Tex;
+            }
+
+            spD3DDeviceContext1->UpdateSubresource(m_Mesh->m_spSkinnedVertexBuffer.Get(), 0, nullptr, m_Mesh->m_pSkinnedVertexBufferData, 0, 0);
+        }
+    }
+
     void Model::Draw(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1, const ComPtr<ID3D11Buffer> &spConstantBufferPerObjectVS, const ComPtr<ID3D11Buffer> &spConstantBufferPerObjectPS)const{        
         if (m_Mesh){
-            m_Mesh->Set(spD3DDeviceContext1);
+            m_Mesh->Set(spD3DDeviceContext1, g_GRAPHICSSYSTEM->IsSkinningOn());
         }
 
         // Set input layout
@@ -224,7 +269,7 @@ namespace KrakEngine{
         spD3DDeviceContext1->VSSetShader(m_spVertexShader.Get(), nullptr, 0);       
         spD3DDeviceContext1->PSSetShader(m_spPixelShader.Get(), nullptr, 0);
 
-        if (m_Mesh && g_GRAPHICSSYSTEM->IsMeshDrawingOn()){
+        if (m_Mesh){
             m_Mesh->Draw(spD3DDeviceContext1);
         }
     }

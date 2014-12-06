@@ -22,6 +22,7 @@ namespace KrakEngine
         ~Mesh();
 
         void * m_pVertexBufferData;
+        void * m_pSkinnedVertexBufferData;
         UINT m_VertexSize;
         UINT m_VertexOffset;
         UINT * m_pIndexBufferData;
@@ -31,13 +32,14 @@ namespace KrakEngine
         VertexType m_VertexType;
 
         void Initialize(const ComPtr<ID3D11Device1> &spD3DDevice1);
-        void Set(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1) const;
+        void Set(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1, bool isSkinningOn) const;
         void Draw(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1) const;
 
         //void Initialize(IDirect3DDevice9 * device);
         //void SetAndDraw(IDirect3DDevice9 * device);
 
         ComPtr<ID3D11Buffer> m_spVertexBuffer;
+        ComPtr<ID3D11Buffer> m_spSkinnedVertexBuffer;
         ComPtr<ID3D11Buffer> m_spIndexBuffer;
         ComPtr<ID3D11InputLayout> m_spVertexLayout;
 

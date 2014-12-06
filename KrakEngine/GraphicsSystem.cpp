@@ -35,7 +35,7 @@ namespace KrakEngine{
         m_Window(window),
         m_DPIX(96.0f),
         m_DPIY(96.0f),
-        m_DrawDebug(2),
+        m_DrawDebug(0),
         m_ChooseModel(1),
         m_Viewport(0.0f, 0.0f, 800.0f, 600.0f, D3D11_MIN_DEPTH, D3D11_MAX_DEPTH),
         m_pCurrentCamera(NULL),
@@ -496,7 +496,11 @@ namespace KrakEngine{
         UINT ModelNumber = 0;
         for(;it!=m_ModelList.end();++it)
         {
-            if (ModelNumber == m_ChooseModel || ModelNumber < 1 /*Always draw the floor*/){
+            if (IsSkinningOn() && (*it)->m_Controller != nullptr)
+            {
+                (*it)->Skin(m_spD3DDevice1, m_spD3DDeviceContext1);
+            }
+            if (ModelNumber < 1 /*Always draw the floor*/ || (ModelNumber == m_ChooseModel && IsMeshDrawingOn()) ){
                 (*it)->Draw(m_spD3DDeviceContext1, m_spConstantBufferPerObjectVS, m_spConstantBufferPerObjectPS);
             }
 
@@ -548,12 +552,16 @@ namespace KrakEngine{
             if ((*it)->GetOwner())
             {
                 Transform* t = (*it)->GetOwner()->has(Transform);
+
+                // Store the old position for later use determining speed
                 XMFLOAT3 oldPos = t->GetPosition();
-                XMFLOAT2 oldPos2D = XMFLOAT2(oldPos.x, oldPos.z);
+                XMFLOAT2 oldPos2D = XMFLOAT2(oldPos.x, oldPos.z); // The floor is along the x and z planes
+
+                // Set the new position along the path
                 XMFLOAT2 pos2D = SplineInterpolate(u);
                 t->SetPosition(XMFLOAT3(pos2D.x, 0.0f, pos2D.y));
 
-                // Set the speed of the model based on how far the model has moved
+                // Set the speed of the model animation based on how far the model has moved
                 (*it)->m_Controller->m_AnimationSpeed = m_StepSizeFactor * Mag(oldPos2D - pos2D) / dt;
 
                 // Center of interest approach to orientation

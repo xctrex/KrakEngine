@@ -38,6 +38,7 @@ namespace KrakEngine{
 		virtual void SerializeViaXML(Serializer& stream);
 		virtual void SerializeToXML(tinyxml2::XMLElement * element);
 
+        void Skin(const ComPtr<ID3D11Device1> &spD3DDevice1, const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1);
         void Draw(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1, const ComPtr<ID3D11Buffer> &spConstantBufferPerObject, const ComPtr<ID3D11Buffer> &spConstantBufferPerObjectPS) const;
 
         void DrawBones(const ComPtr<ID2D1DeviceContext> &spD2DDeviceContext, const ComPtr<ID2D1Factory> &spD2DFactory, const ComPtr<ID3D11Buffer> &spConstantBufferPerObject, const ComPtr<ID3D11Buffer> &spConstantBufferPerObjectPS) const;

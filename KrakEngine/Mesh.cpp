@@ -9,12 +9,14 @@
 #include "Mesh.h"
 #include "File\ChunkReader.hpp"
 #include "File\FileElements.hpp"
+#include "Vertex.h"
 
 namespace KrakEngine
 {
     Mesh::Mesh()
     {
         m_pVertexBufferData = NULL;
+        m_pSkinnedVertexBufferData = NULL;
         m_pIndexBufferData = NULL;
         m_spVertexBuffer = nullptr;
         m_spIndexBuffer = nullptr;
@@ -64,6 +66,7 @@ namespace KrakEngine
         file.Read(m_NumVertices);
         m_pVertexBufferData = new byte[m_NumVertices * m_VertexSize];
         file.ReadArraySize(m_pVertexBufferData, m_NumVertices * m_VertexSize);
+        m_pSkinnedVertexBufferData = new byte[m_NumVertices * m_VertexSize];
 
         m_NumPrimitives = m_NumIndices / 3;
     }
@@ -85,12 +88,15 @@ namespace KrakEngine
 
         DXThrowIfFailed(
             spD3DDevice1->CreateBuffer(&bd, &InitData, m_spVertexBuffer.GetAddressOf()));
+
+        DXThrowIfFailed(
+            spD3DDevice1->CreateBuffer(&bd, &InitData, m_spSkinnedVertexBuffer.GetAddressOf()));
         // TODO: Write only?
         //device->CreateVertexBuffer(NumVertices*VertexSize, D3DUSAGE_WRITEONLY, 0, D3DPOOL_MANAGED, &d3dVertexBuffer, NULL);
 
         // Create index buffer
         bd.Usage = D3D11_USAGE_DEFAULT;
-        bd.ByteWidth = sizeof(UINT)* m_NumIndices;        // 36 vertices needed for 12 triangles in a triangle list
+        bd.ByteWidth = sizeof(UINT)* m_NumIndices;
         bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
         bd.CPUAccessFlags = 0;
 
@@ -99,11 +105,18 @@ namespace KrakEngine
         DXThrowIfFailed(
             spD3DDevice1->CreateBuffer(&bd, &InitData, m_spIndexBuffer.ReleaseAndGetAddressOf()));
     }
-
-    void Mesh::Set(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1) const
+        
+    void Mesh::Set(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1, bool isSkinningOn) const
     {
         // Set vertex buffer
-        spD3DDeviceContext1->IASetVertexBuffers(0, 1, m_spVertexBuffer.GetAddressOf(), &m_VertexSize, &m_VertexOffset);
+        if (isSkinningOn)
+        {
+            spD3DDeviceContext1->IASetVertexBuffers(0, 1, m_spSkinnedVertexBuffer.GetAddressOf(), &m_VertexSize, &m_VertexOffset);
+        }
+        else
+        {
+            spD3DDeviceContext1->IASetVertexBuffers(0, 1, m_spVertexBuffer.GetAddressOf(), &m_VertexSize, &m_VertexOffset);
+        }
 
         // Set index buffer
         spD3DDeviceContext1->IASetIndexBuffer(m_spIndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
