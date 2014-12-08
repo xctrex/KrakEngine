@@ -31,3 +31,4 @@ Known Issues
  however there is an issue with the conversion if the point being converted is actually
  located behind the camera. If you keep the entire path in view of the camera, this will not be an issue.
  I want to point out that it's not an issue with the path calculation, but rather the 2D projection.
+ - The skinning is done in software, so the animation runs at 30 fps with skinning on, but 60+ fps without it
