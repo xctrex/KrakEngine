@@ -1,6 +1,0 @@
-Make speed adjustable
-Speed up and slow down at beginning and end of path
-adjust animation speed to keep at same pace as velocity
-adjust orientation
-Normalize arclength table
-get grid texture for floor

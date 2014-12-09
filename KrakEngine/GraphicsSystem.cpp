@@ -275,11 +275,11 @@ namespace KrakEngine{
         str.append(avgbuffer);
         //str.append("\rMin Framerate: ");
         //str.append(minbuffer);
-        str.append("\rPress G to toggle render mode");
-        str.append("\rPress F to toggle model");
+        str.append("\rPress g to toggle render mode");
         str.append("\rWASD to move along x and z axis");
-        str.append("\rZ to move down along y axis, X to move up");
         str.append("\rMove mouse to look around");
+        str.append("\rPress e to edit the path. Click and drag to move control points.");
+        str.append("\rPress e again to go back to moving the camera.");
         str.append("\rHit Esc to bring up the menu and quit the application.");
 		std::list<Text*>::iterator textit = m_TextList.begin();
         for(;textit!=m_TextList.end();++textit)
