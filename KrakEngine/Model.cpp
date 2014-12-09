@@ -33,7 +33,9 @@ namespace KrakEngine{
 		m_IsSelected(false),
         m_TextureName("Default"),
         m_Mesh(NULL),
-        m_Controller(NULL)
+        m_Controller(NULL),
+        m_OffsetPosition(0.f, 0.f, 0.f),
+        m_OffsetRotation(0.f, 0.f, 0.f)
     {
         g_GRAPHICSSYSTEM->AddModelToList(this);
     };
@@ -45,9 +47,20 @@ namespace KrakEngine{
         InitializeDataMember(stream, m_ModelName, "ModelName");
         InitializeDataMember(stream, m_VertexType, "VertexType");
         InitializeDataMember(stream, m_TextureName, "TextureName");
+        InitializeDataMember(stream, m_OffsetPosition.x, "OffsetPosX");
+        InitializeDataMember(stream, m_OffsetPosition.y, "OffsetPosY");
+        InitializeDataMember(stream, m_OffsetPosition.z, "OffsetPosZ");
+        InitializeDataMember(stream, m_OffsetRotation.x, "OffsetRotX");
+        InitializeDataMember(stream, m_OffsetRotation.y, "OffsetRotY");
+        InitializeDataMember(stream, m_OffsetRotation.z, "OffsetRotZ");
+
+        m_OffsetRotation.x = XMConvertToRadians(m_OffsetRotation.x);
+        m_OffsetRotation.y = XMConvertToRadians(m_OffsetRotation.y);
+        m_OffsetRotation.z = XMConvertToRadians(m_OffsetRotation.z);
         
         LoadBinaryModel("Assets\\Models\\" + m_ModelName + ".bin", g_GRAPHICSSYSTEM->GetD3DDevice1());
         g_GRAPHICSSYSTEM->LoadTexture(m_TextureName, "Assets\\Models\\" + m_TextureName + ".DDS");
+
 
         // Set the vertex layout and shaders
         m_spVertexLayout = g_GRAPHICSSYSTEM->GetVertexLayout(m_VertexType);
@@ -180,7 +193,12 @@ namespace KrakEngine{
         if(GetOwner()){
             Transform* t = GetOwner()->has(Transform);
 
-            XMStoreFloat4x4(&m_World, XMMatrixScaling(m_Size.x, m_Size.y, m_Size.z) * XMMatrixRotationX( XMConvertToRadians(t->GetRotation().x)) * XMMatrixRotationY(t->GetRotation().y) /** XMMatrixRotationZ(t->GetRotation().z)*/ * XMMatrixTranslation(t->GetPosition().x, t->GetPosition().y, t->GetPosition().z));
+            XMStoreFloat4x4(&m_World, 
+                XMMatrixScaling(m_Size.x, m_Size.y, m_Size.z) *
+                XMMatrixRotationX(XMConvertToRadians(t->GetRotation().x) + m_OffsetRotation.x) * 
+                XMMatrixRotationY(XMConvertToRadians(t->GetRotation().y) + m_OffsetRotation.y) * 
+                XMMatrixRotationZ(XMConvertToRadians(t->GetRotation().z) + m_OffsetRotation.z) *
+                XMMatrixTranslation(t->GetPosition().x + m_OffsetPosition.x, t->GetPosition().y + m_OffsetPosition.y, t->GetPosition().z + m_OffsetPosition.z));
         }
         
         if (m_Controller)

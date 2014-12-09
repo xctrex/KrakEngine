@@ -22,6 +22,12 @@
               ModelName="Tube"
               VertexType="FBXBinModel"
               TextureName="Tube"
+              OffsetPosX="0.0f"
+              OffsetPosY="25.0f"
+              OffsetPosZ="0.0f"
+              OffsetRotX="0.0f"
+              OffsetRotY="-90.0f"
+              OffsetRotZ="0.0f"
     />
     <Camera type="component"
         CameraDepth="-16"

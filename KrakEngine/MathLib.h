@@ -50,7 +50,7 @@ namespace KrakEngine{
 
     inline float AngleInDegrees(const Vector2& a, const Vector2& b)
     {
-        return acos(Dot(a, b) / (Mag(a) * Mag(b)));
+        return acos(Dot(a, b) / (Mag(a) * Mag(b))) * 180.f / 3.14159265;
     }
 
 	inline Vector3 operator+(const Vector3 &pVec0, const float &pfloat)

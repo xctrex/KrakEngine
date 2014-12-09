@@ -102,6 +102,8 @@ namespace KrakEngine{
 		bool m_IsSelected;
         VertexType m_VertexType;
         std::string m_TextureName;
+        XMFLOAT3 m_OffsetRotation;
+        XMFLOAT3 m_OffsetPosition;
 	};
 
 }

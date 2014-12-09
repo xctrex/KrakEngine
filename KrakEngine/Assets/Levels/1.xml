@@ -11,6 +11,10 @@
         <Transform type="component" PosX="0" PosY="0" PosZ="0" RotX="0.000000" RotY="0.000000" RotZ="0.000000"/>
         <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="1.000000" SizeY="1.000000" SizeZ="1.00000" NoGravity="0" counter="0"/>      
     </floor>
+    <tube type="gameobject" objtype="" ID="2">
+        <Transform type="component" PosX="0" PosY="25.f" PosZ="0" RotX="-90.000000" RotY="-90.000000" RotZ="0.000000"/>
+        <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="1.000000" SizeY="1.000000" SizeZ="1.00000" NoGravity="0" counter="0"/>
+    </tube>
     <salamander type="gameobject" objtype="" ID="2">
         <Transform type="component" PosX="0" PosY="0" PosZ="0" RotX="-90.000000" RotY="0.000000" RotZ="0.000000"/>
         <RigidBody type="component" velocityX="0.000000" velocityY="0.000000" speed="0.000000" mass="0.000000" friction="0.000000" restitution="0.000000" BodyType="1" SizeX="1.000000" SizeY="1.000000" SizeZ="1.00000" NoGravity="0" counter="0"/>
