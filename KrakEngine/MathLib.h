@@ -1,5 +1,6 @@
 #pragma once
 #include "Precompiled.h"
+#define PI 3.14159265
 
 namespace KrakEngine{
 	typedef XMFLOAT2   Vector2;
@@ -29,15 +30,7 @@ namespace KrakEngine{
 		result.y = pVec0.y * c;
 		return result;
 	}
-
-	inline Vector2 operator+(const Vector2 &pVec0, const Vector3 &pVec1)
-	{
-		Vector2 result;
-		result.x = pVec0.x + pVec1.x;
-		result.y = pVec0.y + pVec1.y;
-		return result;
-	}
-
+    
 	inline float Dot(const Vector2& a, const Vector2& b)
 	{
 		return a.x * b.x + a.y * b.y;
@@ -48,9 +41,14 @@ namespace KrakEngine{
         return sqrt(a.x * a.x + a.y * a.y);
     }
 
+    inline float AngleInRadians(const Vector2& a, const Vector2& b)
+    {
+        return acosf(Dot(a, b) / (Mag(a) * Mag(b)));
+    }
+
     inline float AngleInDegrees(const Vector2& a, const Vector2& b)
     {
-        return acos(Dot(a, b) / (Mag(a) * Mag(b))) * 180.f / 3.14159265;
+        return AngleInRadians(a,b) * 180.f / PI;
     }
 
 	inline Vector3 operator+(const Vector3 &pVec0, const float &pfloat)
@@ -58,16 +56,7 @@ namespace KrakEngine{
 		Vector3 result;
 		result.x = pVec0.x + pfloat;
 		result.y = pVec0.y + pfloat;
-		result.z = pVec0.z/* + pfloat*/;
-		return result;
-	}
-
-	inline Vector3 operator+(const Vector3 &pVec0, const Vector2 &pVec1)
-	{
-		Vector3 result;
-		result.x = pVec0.x + pVec1.x;
-		result.y = pVec0.y + pVec1.y;
-		result.z = pVec0.z;
+		result.z = pVec0.z + pfloat;
 		return result;
 	}
 
@@ -127,9 +116,25 @@ namespace KrakEngine{
         return result;
     }
 
+
+    inline float Mag(const Vector3& a)
+    {
+        return sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
+    }
+
+    inline float AngleInRadians(const Vector3& a, const Vector3& b)
+    {
+        return acosf(Dot(a, b) / (Mag(a) * Mag(b)));
+    }
+
+    inline float AngleInDegrees(const Vector3& a, const Vector3& b)
+    {
+        return AngleInRadians(a, b) * 180.f / PI;
+    }
+
 	inline float Length(const Vector3& a)
 	{
-		return sqrt((a.x * a.x) + (a.y * a.y));
+		return sqrt((a.x * a.x) + (a.y * a.y) + (a.z * a.z));
 	}
 
 	inline Vector3 Normalize(const Vector3& a)
@@ -141,7 +146,7 @@ namespace KrakEngine{
 		
 		unit.x = a.x / length;
 		unit.y = a.y / length;
-		unit.z = a.z;
+		unit.z = a.z / length;
 		return unit;
 	}
 

@@ -44,7 +44,7 @@ namespace KrakEngine{
         m_bEditPath(false),
         m_bDoIK(false),
         m_NormalizedDistanceAlongArc(0.f),
-        m_IKTargetPosition(0.f, 0.f, 0.f)
+        m_IKTargetPosition(10.f, 0.f, 0.f)
     {
         DXThrowIfFailed(CoInitialize(NULL));
 
@@ -61,7 +61,7 @@ namespace KrakEngine{
         // Hard coded path for model to follow for now
         for (int i = 0; i < 2; ++i)
         {
-            m_PathControlPoints.push_back(Vector3(0.0f, m_GroundLevel, (float)(i - 4) * -10.0f));
+            m_PathControlPoints.push_back(Vector3(0.0f, m_GroundLevel, (float)(i - 2) * -10.0f));
         }
         GenerateSplineInterpolationSystem();
         UpdateLinearSystem();
@@ -541,7 +541,7 @@ namespace KrakEngine{
             m_NormalizedDistanceAlongArc = 1.f;
             m_bDoIK = true;
         }
-        else
+        //else
         {
         
             // Use smoothstep to have an acceleration and deceleration at the beginning and the end
@@ -566,10 +566,17 @@ namespace KrakEngine{
 
                     // Set the new position along the path
                     XMFLOAT2 pos2D = SplineInterpolate(u);
-                    t->SetPosition(XMFLOAT3(pos2D.x, 0.0f, pos2D.y));
+                    XMFLOAT3 pos3D = XMFLOAT3(pos2D.x, 0.0f, pos2D.y);
+                    t->SetPosition(pos3D);
+
+                    if (m_NormalizedDistanceAlongArc >= 1.f)
+                    {
+                        (*it)->m_Controller->ProcessIK(pos3D, m_IKTargetPosition);
+                    }
 
                     // Set the speed of the model animation based on how far the model has moved
                     (*it)->m_Controller->m_AnimationSpeed = m_StepSizeFactor * Mag(oldPos2D - pos2D) / dt;
+                    (*it)->m_Controller->SetRootPos(pos3D);
 
                     // Center of interest approach to orientation
                     float coiTime = u + m_coiDelta;

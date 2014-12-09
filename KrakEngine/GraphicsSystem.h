@@ -65,6 +65,7 @@ namespace KrakEngine{
         virtual void Update(float dt);
         virtual void HandleMessages(Message* e);
 
+        const ComPtr<ID2D1DeviceContext>& GetD2DDeviceContext(){ return m_spD2DDeviceContext; }
         const ComPtr<ID3D11Device1>& GetD3DDevice1(){ return m_spD3DDevice1; }
         const ComPtr<ID3D11DeviceContext1>& GetD3DDeviceContext1(){ return m_spD3DDeviceContext1; }
         const ComPtr<ID3D11InputLayout>& GetVertexLayout(VertexType vt);

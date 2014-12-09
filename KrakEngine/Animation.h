@@ -87,6 +87,12 @@ namespace KrakEngine
         void ReadFrom(ChunkReader& file);
     };
 
+    struct Rotation
+    {
+        Vector3 axis;
+        float angle;
+    };
+
     //The skeleton contains the bones which have the graph (parent/child) relationships and what animation tracks
     //correspond to what bones.
     class Skeleton
@@ -97,9 +103,21 @@ namespace KrakEngine
         void ProcessAnimationGraph(float time, MatrixBuffer& matrixBuffer, Animation& anim, TrackBuffer& trackData);
         void RecursiveProcess(float time, Bone& bone, Animation& anim, MatrixBuffer& matrixBuffer, TrackBuffer& trackData, XMFLOAT4X4 matrix);
         void ProcessBindPose(MatrixBuffer& buffer);
+        void ProcessIK(MatrixBuffer& buffer, XMFLOAT3 rootPos, XMFLOAT3 destPos);
+        void RenderSkeleton(const ComPtr<ID2D1DeviceContext> &spD2DDeviceContext) const;
         XMFLOAT4X4& GetModelToBoneSpaceTransform(int boneIndex);
         std::vector<Bone> m_Bones;
         std::vector<Bone*> m_RootBones;
+        std::vector<XMFLOAT3> m_JointPositions;
+        std::vector<Rotation> m_JointRotations;
+        std::vector<VQS> m_JointVQS;
+        std::vector<float> m_Links;
+        XMFLOAT3 m_RootPosition;
+        XMFLOAT3 CalculateCurrentPosition();
+    private:
+        float m_IKEpsilon = 0.1f;
+        float m_IKLinkLength = 1.f;
+        UINT m_IKNumLinks = 20;
     };
 
     //Controls the animation for a animated model by tracking time and
@@ -122,6 +140,9 @@ namespace KrakEngine
         void ClearTrackData();
         void Process();
         void ProcessBindPose();
+        void ProcessIK(XMFLOAT3 rootPos, XMFLOAT3 destPos);
+        void SetRootPos(XMFLOAT3 rootPos){ m_pSkeleton->m_RootPosition = rootPos; m_pSkeleton->CalculateCurrentPosition(); }
+        void RenderSkeleton(const ComPtr<ID2D1DeviceContext> &spD2DDeviceContext) const;
         void SetSkeleton(Skeleton * pSkeleton);
         void AddAnimation(Animation * pAnimation);
     };

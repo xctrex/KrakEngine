@@ -312,6 +312,10 @@ namespace KrakEngine{
                         g_GRAPHICSSYSTEM->GetD2DBrush(ColorOrange).Get());
                 }
             }
+            if (m_Controller && g_GRAPHICSSYSTEM->IsSkeletonDrawingOn())
+            {
+                m_Controller->RenderSkeleton(spD2DDeviceContext);
+            }
         }
     }
 
