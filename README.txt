@@ -13,6 +13,7 @@ Running the project
 
 Controls
  - WASD to move the camera position
+ - x and z to move up and down the y axis
  - Move the mouse to look around
  - Hit e to edit the path. Click and drag to move control points.
  - Hit e again to go back to moving the camera.

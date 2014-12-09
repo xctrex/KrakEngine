@@ -205,12 +205,12 @@ namespace KrakEngine{
         {
             m_Controller->Update(dt);
 
-            if (g_GRAPHICSSYSTEM->IsDrawBindPose()){
+            //if (g_GRAPHICSSYSTEM->IsDrawBindPose()){
                 m_Controller->ProcessBindPose();
-            }
-            else{
-                m_Controller->Process();
-            }
+            //}
+            //else{
+            //    m_Controller->Process();
+            //}
 
         }
     }

@@ -42,7 +42,9 @@ namespace KrakEngine{
         m_IntermediateRTFormat(DXGI_FORMAT_R8G8B8A8_UNORM),
         m_bInitialized(false),
         m_bEditPath(false),
-        m_NormalizedDistanceAlongArc(0.f)
+        m_bDoIK(false),
+        m_NormalizedDistanceAlongArc(0.f),
+        m_IKTargetPosition(0.f, 0.f, 0.f)
     {
         DXThrowIfFailed(CoInitialize(NULL));
 
@@ -57,7 +59,7 @@ namespace KrakEngine{
     
     bool GraphicsSystem::Initialize(){
         // Hard coded path for model to follow for now
-        for (int i = 0; i < 8; ++i)
+        for (int i = 0; i < 2; ++i)
         {
             m_PathControlPoints.push_back(Vector3(0.0f, m_GroundLevel, (float)(i - 4) * -10.0f));
         }
@@ -277,6 +279,7 @@ namespace KrakEngine{
         //str.append(minbuffer);
         str.append("\rPress g to toggle render mode");
         str.append("\rWASD to move along x and z axis");
+        str.append("\rx and z to move up and down the y axis");
         str.append("\rMove mouse to look around");
         str.append("\rPress e to edit the path. Click and drag to move control points.");
         str.append("\rPress e again to go back to moving the camera.");
@@ -322,6 +325,7 @@ namespace KrakEngine{
         }
         //DrawPathMidpoint();
         DrawPathSplineInterpolation();
+        DrawIKTarget();
         if (m_bEditPath)
         {
             DrawMouse();
@@ -534,59 +538,63 @@ namespace KrakEngine{
         m_NormalizedDistanceAlongArc += dt / m_AnimationLength;
         if (m_NormalizedDistanceAlongArc > 1.f)
         {
-            m_NormalizedDistanceAlongArc = 0.f;
+            m_NormalizedDistanceAlongArc = 1.f;
+            m_bDoIK = true;
         }
-        
-        // Use smoothstep to have an acceleration and deceleration at the beginning and the end
-        float smoothDistanceAlongArc = SmoothStep(m_NormalizedDistanceAlongArc);
-        
-        // Get the time u along the parametric curve using the inverse arc length function
-        // and the normalized distance along the arc the model should have traveled at this point
-        float u = InverseArcLength(smoothDistanceAlongArc);
-
-        if (m_ModelList.size() > 1)
+        else
         {
-            std::list<Model*>::iterator it = m_ModelList.begin();
-            ++it;
-            // For now, hard code the 2nd model to be the one walking
-            if ((*it)->GetOwner())
+        
+            // Use smoothstep to have an acceleration and deceleration at the beginning and the end
+            float smoothDistanceAlongArc = SmoothStep(m_NormalizedDistanceAlongArc);
+        
+            // Get the time u along the parametric curve using the inverse arc length function
+            // and the normalized distance along the arc the model should have traveled at this point
+            float u = InverseArcLength(smoothDistanceAlongArc);
+
+            if (m_ModelList.size() > 1)
             {
-                Transform* t = (*it)->GetOwner()->has(Transform);
-
-                // Store the old position for later use determining speed
-                XMFLOAT3 oldPos = t->GetPosition();
-                XMFLOAT2 oldPos2D = XMFLOAT2(oldPos.x, oldPos.z); // The floor is along the x and z planes
-
-                // Set the new position along the path
-                XMFLOAT2 pos2D = SplineInterpolate(u);
-                t->SetPosition(XMFLOAT3(pos2D.x, 0.0f, pos2D.y));
-
-                // Set the speed of the model animation based on how far the model has moved
-                (*it)->m_Controller->m_AnimationSpeed = m_StepSizeFactor * Mag(oldPos2D - pos2D) / dt;
-
-                // Center of interest approach to orientation
-                float coiTime = u + m_coiDelta;
-                if (coiTime > 1.f)
+                std::list<Model*>::iterator it = m_ModelList.begin();
+                ++it;
+                // For now, hard code the 2nd model to be the one walking
+                if ((*it)->GetOwner())
                 {
-                    coiTime = 1.f;
+                    Transform* t = (*it)->GetOwner()->has(Transform);
+
+                    // Store the old position for later use determining speed
+                    XMFLOAT3 oldPos = t->GetPosition();
+                    XMFLOAT2 oldPos2D = XMFLOAT2(oldPos.x, oldPos.z); // The floor is along the x and z planes
+
+                    // Set the new position along the path
+                    XMFLOAT2 pos2D = SplineInterpolate(u);
+                    t->SetPosition(XMFLOAT3(pos2D.x, 0.0f, pos2D.y));
+
+                    // Set the speed of the model animation based on how far the model has moved
+                    (*it)->m_Controller->m_AnimationSpeed = m_StepSizeFactor * Mag(oldPos2D - pos2D) / dt;
+
+                    // Center of interest approach to orientation
+                    float coiTime = u + m_coiDelta;
+                    if (coiTime > 1.f)
+                    {
+                        coiTime = 1.f;
+                    }
+
+                    // Position to look to
+                    XMFLOAT2 coiPos = SplineInterpolate(coiTime);
+
+                    // Get the direction between the current position and the center of interest
+                    XMFLOAT2 lookDirection;
+                    lookDirection.x = coiPos.x - pos2D.x;
+                    lookDirection.y = coiPos.y - pos2D.y; // The XMFLOAT2 produced by SplineInterpolate is actually the x and z position
+
+                    float lookAngle = AngleInDegrees(lookDirection, Vector2(0.f, -1.f));
+
+                    if (lookDirection.x > 0){ lookAngle *= -1.f; }
+
+                    // Set the rotation about the y axis
+                    XMFLOAT3 rot = t->GetRotation();
+                    rot.y = lookAngle;
+                    t->SetRotation(rot);
                 }
-
-                // Position to look to
-                XMFLOAT2 coiPos = SplineInterpolate(coiTime);
-
-                // Get the direction between the current position and the center of interest
-                XMFLOAT2 lookDirection;
-                lookDirection.x = coiPos.x - pos2D.x;
-                lookDirection.y = coiPos.y - pos2D.y; // The XMFLOAT2 produced by SplineInterpolate is actually the x and z position
-
-                float lookAngle = AngleInDegrees(lookDirection, Vector2(0.f, -1.f));
-
-                if (lookDirection.x > 0){ lookAngle *= -1.f; }
-
-                // Set the rotation about the y axis
-                XMFLOAT3 rot = t->GetRotation();
-                rot.y = lookAngle;
-                t->SetRotation(rot);
             }
         }
     }
@@ -758,6 +766,15 @@ namespace KrakEngine{
         return XMFLOAT2(Spline(m_XConst, t * m_SplineScale), Spline(m_ZConst, t * m_SplineScale));
     }
 
+    void GraphicsSystem::UpdateIKSystem()
+    {
+        // Do IK
+
+        // If target out of reach
+
+        // New path to target
+    }
+
     void GraphicsSystem::UpdateLinearSystem()
     {
         m_XConst = BuildAndSolveLinearSystem(XCoordinateList(m_PathControlPoints));
@@ -788,7 +805,7 @@ namespace KrakEngine{
                 D2D1::Ellipse(
                 D2D1::Point2F(points[0].x, points[0].y),
                 m_PathPointRadius, m_PathPointRadius),
-                GetD2DBrush(ColorRed).Get());
+                GetD2DBrush(ColorBlue).Get());
 
             // Draw line from current point to next point
             std::vector<Vector3>::iterator it2 = it1;
@@ -801,7 +818,7 @@ namespace KrakEngine{
                 m_spD2DDeviceContext->DrawLine(
                     D2D1::Point2F(points[0].x, points[0].y),
                     D2D1::Point2F(points[1].x, points[1].y),
-                    GetD2DBrush(ColorRed).Get());
+                    GetD2DBrush(ColorBlue).Get());
             }
         }
 
@@ -823,6 +840,23 @@ namespace KrakEngine{
                 D2D1::Point2F(points[1].x, points[1].y),
                 GetD2DBrush(ColorOrange).Get());
         }
+
+        DXThrowIfFailed(m_spD2DDeviceContext->EndDraw());
+    }
+
+    void GraphicsSystem::DrawIKTarget(){
+        m_spD2DDeviceContext->BeginDraw();
+
+        // Draw current target point
+        // Convert from world to screen coordinates
+        XMFLOAT2 point;
+        point = g_GRAPHICSSYSTEM->ConvertToScreenCoordinates(m_IKTargetPosition, m_World);
+
+        m_spD2DDeviceContext->DrawEllipse(
+            D2D1::Ellipse(
+            D2D1::Point2F(point.x, point.y),
+            m_PathPointRadius, m_PathPointRadius),
+            GetD2DBrush(ColorRed).Get());
 
         DXThrowIfFailed(m_spD2DDeviceContext->EndDraw());
     }

@@ -583,30 +583,16 @@ namespace KrakEngine{
             g_GRAPHICSSYSTEM->SetMousePos(mousePos);
 
             // If the left mouse button is held down
-            // and the mouse moves, move the path point
-            if (g_INPUTSYSTEM->IsMouseButtonDown(Left) && g_INPUTSYSTEM->HasMouseMoved())
-            {                
-                // If the mouse is over a path point
-                std::vector<XMFLOAT3>::iterator it = g_GRAPHICSSYSTEM->m_PathControlPoints.begin();
-                for (; it != g_GRAPHICSSYSTEM->m_PathControlPoints.end(); ++it)
-                {
-                    // Convert from world to screen coordinates
-                    XMFLOAT2 pathPoint = g_GRAPHICSSYSTEM->ConvertToScreenCoordinates(*it, g_GRAPHICSSYSTEM->GetWorldTransform());
-
-                    // If distance squared between pathPoint and mouse < 4
-                    // Move the path point to the position of the mouse
-                    if (pow(mousePos.x - pathPoint.x, 2.0f) + pow(mousePos.y - pathPoint.y, 2.0f) < 200.0f)
-                    {
-                        // Get the intersection of the mouse ray and the ground plan
-                        XMFLOAT3 p0(0.0f, 0.0f, 0.0f);
-                        XMFLOAT3 p1(0.0f, 0.0f, 1.0f);
-                        XMFLOAT3 p2(1.0f, 0.0f, 1.0f);
-                        mousePos.x /= (float)screensize.x;
-                        mousePos.y /= (float)screensize.y;
-                        *it = g_GRAPHICSSYSTEM->ConvertToWorldCoordinates(mousePos, p0, p1, p2);
-                        g_GRAPHICSSYSTEM->UpdateLinearSystem();
-                    }
-                }
+            // move the target point
+            if (g_INPUTSYSTEM->IsMouseButtonDown(Left))
+            {
+                // Get the intersection of the mouse ray and the ground plan
+                XMFLOAT3 p0(0.0f, 0.0f, 0.0f);
+                XMFLOAT3 p1(0.0f, 0.0f, 1.0f);
+                XMFLOAT3 p2(1.0f, 0.0f, 1.0f);
+                mousePos.x /= (float)screensize.x;
+                mousePos.y /= (float)screensize.y;
+                g_GRAPHICSSYSTEM->m_IKTargetPosition = g_GRAPHICSSYSTEM->ConvertToWorldCoordinates(mousePos, p0, p1, p2);
             }
                 
 

@@ -129,7 +129,9 @@ namespace KrakEngine{
         std::vector<XMFLOAT3> m_PathControlPoints;
         XMFLOAT4X4 GetWorldTransform(){ return m_World; }
         void SetMousePos(XMFLOAT2 pos){ m_MousePos = pos; }
+        void UpdateIKSystem();
         void UpdateLinearSystem();
+        XMFLOAT3 m_IKTargetPosition;
     private:
         // Draw Functions
         void DrawFullScreenQuad(ComPtr<ID3D11VertexShader> spVertexShader, ComPtr<ID3D11PixelShader> spPixelShader);
@@ -317,6 +319,7 @@ namespace KrakEngine{
         // CS 560 specific stuff
         void DrawPathMidpoint();
         void DrawPathSplineInterpolation();
+        void DrawIKTarget();
         float m_PathPointRadius = 5.0f;
         bool m_bEditPath;
         XMFLOAT2 m_MousePos;
@@ -347,6 +350,7 @@ namespace KrakEngine{
 
         float m_coiDelta = 0.02f;
         float m_StepSizeFactor = 0.15f;
+        bool m_bDoIK;
 	};
 	extern GraphicsSystem* g_GRAPHICSSYSTEM;
 }
