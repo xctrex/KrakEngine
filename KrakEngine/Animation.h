@@ -104,20 +104,27 @@ namespace KrakEngine
         void RecursiveProcess(float time, Bone& bone, Animation& anim, MatrixBuffer& matrixBuffer, TrackBuffer& trackData, XMFLOAT4X4 matrix);
         void ProcessBindPose(MatrixBuffer& buffer);
         void ProcessIK(MatrixBuffer& buffer, XMFLOAT3 rootPos, XMFLOAT3 destPos);
+        bool ProcessIK2D(MatrixBuffer& buffer, XMFLOAT2 rootPos, XMFLOAT2 destPos);
         void RenderSkeleton(const ComPtr<ID2D1DeviceContext> &spD2DDeviceContext) const;
+        void RenderSkeleton2D(const ComPtr<ID2D1DeviceContext> &spD2DDeviceContext) const;
         XMFLOAT4X4& GetModelToBoneSpaceTransform(int boneIndex);
         std::vector<Bone> m_Bones;
         std::vector<Bone*> m_RootBones;
         std::vector<XMFLOAT3> m_JointPositions;
+        std::vector<XMFLOAT2> m_JointPositions2D;
         std::vector<Rotation> m_JointRotations;
+        std::vector<float> m_JointRotations2D;
         std::vector<VQS> m_JointVQS;
         std::vector<float> m_Links;
         XMFLOAT3 m_RootPosition;
+        XMFLOAT2 m_RootPosition2D;
+        XMFLOAT2 m_CurrentPosition2D;
         XMFLOAT3 CalculateCurrentPosition();
+        XMFLOAT2 CalculateCurrentPosition2D();
+        float m_IKEpsilon = 2.0f;
     private:
-        float m_IKEpsilon = 0.1f;
-        float m_IKLinkLength = 1.f;
-        UINT m_IKNumLinks = 20;
+        float m_IKLinkLength = 6.f;
+        UINT m_IKNumLinks = 6;
     };
 
     //Controls the animation for a animated model by tracking time and
@@ -141,8 +148,11 @@ namespace KrakEngine
         void Process();
         void ProcessBindPose();
         void ProcessIK(XMFLOAT3 rootPos, XMFLOAT3 destPos);
+        bool ProcessIK2D(XMFLOAT2 rootPos, XMFLOAT2 destPos);
         void SetRootPos(XMFLOAT3 rootPos){ m_pSkeleton->m_RootPosition = rootPos; m_pSkeleton->CalculateCurrentPosition(); }
+        void SetRootPos2D(XMFLOAT2 rootPos){ m_pSkeleton->m_RootPosition2D = rootPos; m_pSkeleton->CalculateCurrentPosition(); }
         void RenderSkeleton(const ComPtr<ID2D1DeviceContext> &spD2DDeviceContext) const;
+        void RenderSkeleton2D(const ComPtr<ID2D1DeviceContext> &spD2DDeviceContext) const;
         void SetSkeleton(Skeleton * pSkeleton);
         void AddAnimation(Animation * pAnimation);
     };

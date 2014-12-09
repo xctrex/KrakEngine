@@ -43,7 +43,12 @@ namespace KrakEngine{
 
     inline float AngleInRadians(const Vector2& a, const Vector2& b)
     {
-        return acosf(Dot(a, b) / (Mag(a) * Mag(b)));
+        //return acosf(Dot(a, b) / (Mag(a) * Mag(b)));
+        float result;
+        float dot = Dot(a, b);
+        float det = a.x * b.y - a.y * b.x;
+        result = atan2(det, dot);
+        return result;
     }
 
     inline float AngleInDegrees(const Vector2& a, const Vector2& b)

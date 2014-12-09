@@ -191,9 +191,26 @@ namespace KrakEngine
         m_pSkeleton->ProcessIK(m_BoneMatrixBuffer, rootPos, destPos);
     }
 
+    bool AnimationController::ProcessIK2D(XMFLOAT2 rootPos, XMFLOAT2 destPos)
+    {
+        bool result = m_pSkeleton->ProcessIK2D(m_BoneMatrixBuffer, rootPos, destPos);
+        ComPtr<ID2D1DeviceContext> spD2DDeviceContext = g_GRAPHICSSYSTEM->GetD2DDeviceContext();
+        spD2DDeviceContext->BeginDraw();
+        m_pSkeleton->RenderSkeleton2D(spD2DDeviceContext);
+        DXThrowIfFailed(spD2DDeviceContext->EndDraw());
+        //Sleep(30);
+        return result;
+    }
+
     void AnimationController::RenderSkeleton(const ComPtr<ID2D1DeviceContext> &spD2DDeviceContext) const
     {
         m_pSkeleton->RenderSkeleton(spD2DDeviceContext);
+    }
+
+    void AnimationController::RenderSkeleton2D(const ComPtr<ID2D1DeviceContext> &spD2DDeviceContext) const
+    {
+        m_pSkeleton->CalculateCurrentPosition2D();
+        m_pSkeleton->RenderSkeleton2D(spD2DDeviceContext);
     }
 
     void AnimationController::SetSkeleton(Skeleton * pSkeleton)
@@ -227,12 +244,17 @@ namespace KrakEngine
         m_Bones.resize(NumberOfBones);
         m_JointPositions.resize(m_IKNumLinks);
         m_JointRotations.resize(m_IKNumLinks);
+        m_JointPositions2D.resize(m_IKNumLinks);
+        m_JointRotations2D.resize(m_IKNumLinks);
         m_JointVQS.resize(m_IKNumLinks);
         m_Links.resize(m_IKNumLinks);
+        // Initialize rotations
         for (size_t i = 0; i < m_JointVQS.size(); ++i)
         {
             m_JointVQS[i] = VQS(XMFLOAT3(0.f, m_IKLinkLength, 0.f), XMFLOAT4(0.f, 0.f, 0.f, 1.f), 1.f);
+            m_JointRotations2D[i] = 0.f;
         }
+        m_JointRotations2D[0] = PI / 2.f;
 
         for (UINT i = 0; i < NumberOfBones; ++i)
         {
@@ -315,7 +337,7 @@ namespace KrakEngine
             Vector3 Vdi;
             if (i > 0)
             {
-                Vci = currentPos - m_JointPositions[i - 1]; // The way the code is currently constructed, joint positions really represents the point at the end of the link, not the end of the joint
+                Vci = currentPos - m_JointPositions[i - 1]; // The way the code is currently constructed, joint positions really represents the point at the end of the link, not the the joint itself
                 Vdi = destPos - m_JointPositions[i - 1];
             }
             else
@@ -328,6 +350,9 @@ namespace KrakEngine
             if (m_JointRotations[i].angle > PI / 6.f) m_JointRotations[i].angle = PI / 6.f;
             if (m_JointRotations[i].angle < -PI / 6.f) m_JointRotations[i].angle = -PI / 6.f;
             
+            // Axis
+            m_JointRotations[i].axis = Normalize(Cross(Vci, Vdi));
+
             float s = sin(m_JointRotations[i].angle / 2.f);
             // Convert from angle-axis notation to quaternions
             m_JointVQS[i] = VQS(
@@ -359,6 +384,100 @@ namespace KrakEngine
             RenderSkeleton(spD2DDeviceContext);
             DXThrowIfFailed(spD2DDeviceContext->EndDraw());
         }
+    }
+
+    void Clamp(float &val, float min, float max)
+    {
+        val = max(val, min);
+        val = min(val, max);
+    }
+
+    bool Skeleton::ProcessIK2D(MatrixBuffer& buffer, XMFLOAT2 rootPos, XMFLOAT2 destPos)
+    {
+        m_JointPositions2D[0] = rootPos;
+
+        XMFLOAT4X4 identity;
+        XMStoreFloat4x4(&identity, XMMatrixIdentity());
+
+        XMFLOAT2 currentPos;
+        XMFLOAT2 newPos;
+        for (int i = m_JointPositions2D.size() - 1; i >= 0; --i)
+        {
+            currentPos = CalculateCurrentPosition2D();
+
+            // If the distance between the current and destination points < epsilon, exit
+            if (Mag(destPos - currentPos) < m_IKEpsilon)
+            {
+                return true;
+            }
+            Vector2 Vci = currentPos - m_JointPositions2D[i];;
+            Vector2 Vdi = destPos - m_JointPositions2D[i];
+
+            if (Mag(Vci) <= 0.f || Mag(Vdi) <= 0.f)
+            {
+                return false;
+            }
+            m_JointRotations2D[i] = AngleInRadians(Vci, Vdi);
+            // Constrain rotation
+            if (i == 0) { m_JointRotations2D[i] = PI / 2.f; }
+            else
+            {
+                // Closer to the root => less rotation allowed
+                float upperBound = PI * (float)i / (float)(m_JointRotations2D.size() - 1);
+                float lowerBound = -upperBound;
+
+                Clamp(m_JointRotations2D[i], lowerBound, upperBound);
+            }
+            /*if (m_JointRotations2D[i] > 3.0f * PI / 2.f)
+            { 
+                m_JointRotations2D[i] = (2.0f * PI - m_JointRotations2D[i]) * -1.f; 
+            }
+            else if (m_JointRotations2D[i] > PI / 4.f)
+            { 
+                m_JointRotations2D[i] = PI / 4.f; 
+            }*/
+
+            // Axis
+            /*m_JointRotations[i].axis = Normalize(Cross(Vci, Vdi));
+
+            float s = sin(m_JointRotations[i].angle / 2.f);
+            // Convert from angle-axis notation to quaternions
+            m_JointVQS[i] = VQS(
+                XMFLOAT3(0.f, m_IKLinkLength, 0.f),
+                XMFLOAT4(m_JointRotations[i].axis.x * s, m_JointRotations[i].axis.y * s, m_JointRotations[i].axis.z * s, cos(m_JointRotations[i].angle / 2.f)),
+                1.f);
+            */
+
+
+
+            // Update modelTransform
+
+            /*Bone& bone = m_Bones[boneIndex];
+            VQS vqs;
+            anim.CalculateTransform(time, boneIndex, vqs, trackData[boneIndex]);
+            XMFLOAT4X4 parentTransform = bone.ParentBoneIndex != -1 ? buffer[bone.ParentBoneIndex] : identity;
+            XMFLOAT4X4 localTransform = vqs.GetMatrix();
+            XMFLOAT4X4 modelTransform; // = localTransform  * parentTransform;
+            XMStoreFloat4x4(&modelTransform, XMMatrixMultiply(XMLoadFloat4x4(&localTransform), XMLoadFloat4x4(&parentTransform)));
+            buffer[boneIndex] = modelTransform;*/
+
+            newPos = CalculateCurrentPosition2D();
+
+            
+
+            ComPtr<ID2D1DeviceContext> spD2DDeviceContext = g_GRAPHICSSYSTEM->GetD2DDeviceContext();
+            spD2DDeviceContext->BeginDraw();
+            RenderSkeleton2D(spD2DDeviceContext);
+            DXThrowIfFailed(spD2DDeviceContext->EndDraw());
+            //Sleep(30);
+        }
+
+        if (Mag(newPos - currentPos) < m_IKEpsilon)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     void Skeleton::RenderSkeleton(const ComPtr<ID2D1DeviceContext> &spD2DDeviceContext) const{
@@ -411,6 +530,58 @@ namespace KrakEngine
             spD2DDeviceContext->EndDraw());*/
     }
 
+    void Skeleton::RenderSkeleton2D(const ComPtr<ID2D1DeviceContext> &spD2DDeviceContext) const{
+        if (m_JointPositions2D.size() < 2) { return; }
+
+        /*spD2DDeviceContext->BeginDraw();*/
+
+        // Get the screen coords
+        XMFLOAT2 points[2];        
+
+        for (UINT i = 0; i < m_JointPositions2D.size() - 1; ++i)
+        {
+            // Get the screen coords
+            points[0] = g_GRAPHICSSYSTEM->ConvertToScreenCoordinates(XMFLOAT3(m_JointPositions2D[i].x, m_JointPositions2D[i].y, 0.f), g_GRAPHICSSYSTEM->GetWorldTransform());
+            points[1] = g_GRAPHICSSYSTEM->ConvertToScreenCoordinates(XMFLOAT3(m_JointPositions2D[i + 1].x, m_JointPositions2D[i + 1].y, 0.f), g_GRAPHICSSYSTEM->GetWorldTransform());
+
+
+            // Draw the current point
+            spD2DDeviceContext->DrawEllipse(
+                D2D1::Ellipse(D2D1::Point2F(points[0].x, points[0].y), 10.f, 10.f),
+                g_GRAPHICSSYSTEM->GetD2DBrush(ColorRed).Get());
+
+            // Draw a line from the current point to the previous point
+            spD2DDeviceContext->DrawLine(
+                D2D1::Point2F(points[0].x, points[0].y),
+                D2D1::Point2F(points[1].x, points[1].y),
+                g_GRAPHICSSYSTEM->GetD2DBrush(ColorRed).Get()
+                );
+        }
+
+        points[0] = g_GRAPHICSSYSTEM->ConvertToScreenCoordinates(XMFLOAT3(m_JointPositions2D.back().x, m_JointPositions2D.back().y, 0.f), g_GRAPHICSSYSTEM->GetWorldTransform());
+        points[1] = g_GRAPHICSSYSTEM->ConvertToScreenCoordinates(XMFLOAT3(m_CurrentPosition2D.x, m_CurrentPosition2D.y, 0.f), g_GRAPHICSSYSTEM->GetWorldTransform());
+        
+        // Draw the current point
+        spD2DDeviceContext->DrawEllipse(
+            D2D1::Ellipse(D2D1::Point2F(points[0].x, points[0].y), 10.f, 10.f),
+            g_GRAPHICSSYSTEM->GetD2DBrush(ColorRed).Get());
+
+        // Draw a line from the root to the end of the root link
+        spD2DDeviceContext->DrawLine(
+            D2D1::Point2F(points[0].x, points[0].y),
+            D2D1::Point2F(points[1].x, points[1].y),
+            g_GRAPHICSSYSTEM->GetD2DBrush(ColorRed).Get()
+            );
+
+        // Draw the end point
+        spD2DDeviceContext->DrawEllipse(
+            D2D1::Ellipse(D2D1::Point2F(points[1].x, points[1].y), 10.f, 10.f),
+            g_GRAPHICSSYSTEM->GetD2DBrush(ColorRed).Get());
+
+        /*DXThrowIfFailed(
+        spD2DDeviceContext->EndDraw());*/
+    }
+
     XMFLOAT3 Skeleton::CalculateCurrentPosition()
     {
         if (m_JointPositions.size() < 2) return XMFLOAT3(0.f, 0.f, 0.f);
@@ -422,6 +593,38 @@ namespace KrakEngine
             XMStoreFloat3(&m_JointPositions[i], XMVector3TransformCoord(XMLoadFloat3(&m_JointPositions[i - 1]), XMLoadFloat4x4(&m_JointVQS[i].GetMatrix())));
         }
         return m_JointPositions.back();
+    }
+
+    XMFLOAT2 Skeleton::CalculateCurrentPosition2D()
+    {
+        if (m_JointPositions2D.size() < 2) return XMFLOAT2(0.f, 0.f);
+
+        // Walk through each link and apply the transform
+        for (size_t i = 0; i < m_JointPositions.size() - 1; ++i)
+        {
+            float sumRotations = 0.f;
+            for (size_t j = 0; j <= i; ++j)
+            {
+                sumRotations += m_JointRotations2D[j];
+            }
+            XMFLOAT2 direction;
+            direction.x = cos(sumRotations);
+            direction.y = sin(sumRotations);
+            XMStoreFloat2(&m_JointPositions2D[i + 1], XMVectorAdd(XMLoadFloat2(&m_JointPositions2D[i]), XMVectorScale(XMLoadFloat2(&direction), m_IKLinkLength)));
+        }
+
+        float sumRotations = 0.f;
+        for (size_t j = 0; j < m_JointRotations2D.size(); ++j)
+        {
+            sumRotations += m_JointRotations2D[j];
+        }
+        XMFLOAT2 direction;
+        direction.x = cos(sumRotations);
+        direction.y = sin(sumRotations);                
+
+        XMStoreFloat2(&m_CurrentPosition2D, XMVectorAdd(XMLoadFloat2(&m_JointPositions2D.back()), XMVectorScale(XMLoadFloat2(&direction), m_IKLinkLength)));
+
+        return m_CurrentPosition2D;
     }
 
     void Skeleton::ProcessBindPose(MatrixBuffer& buffer)

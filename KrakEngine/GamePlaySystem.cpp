@@ -588,8 +588,8 @@ namespace KrakEngine{
             {
                 // Get the intersection of the mouse ray and the ground plan
                 XMFLOAT3 p0(0.0f, 0.0f, 0.0f);
-                XMFLOAT3 p1(0.0f, 0.0f, 1.0f);
-                XMFLOAT3 p2(1.0f, 0.0f, 1.0f);
+                XMFLOAT3 p1(0.0f, 1.0f, 0.0f);
+                XMFLOAT3 p2(1.0f, 1.0f, 0.0f);
                 mousePos.x /= (float)screensize.x;
                 mousePos.y /= (float)screensize.y;
                 g_GRAPHICSSYSTEM->m_IKTargetPosition = g_GRAPHICSSYSTEM->ConvertToWorldCoordinates(mousePos, p0, p1, p2);

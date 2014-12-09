@@ -44,7 +44,7 @@ namespace KrakEngine{
         m_bEditPath(false),
         m_bDoIK(false),
         m_NormalizedDistanceAlongArc(0.f),
-        m_IKTargetPosition(10.f, 0.f, 0.f)
+        m_IKTargetPosition(-40.f, 0.f, 0.f)
     {
         DXThrowIfFailed(CoInitialize(NULL));
 
@@ -61,7 +61,7 @@ namespace KrakEngine{
         // Hard coded path for model to follow for now
         for (int i = 0; i < 2; ++i)
         {
-            m_PathControlPoints.push_back(Vector3(0.0f, m_GroundLevel, (float)(i - 2) * -10.0f));
+            m_PathControlPoints.push_back(Vector3((float)(i - 2) * -10.0f, m_GroundLevel, 0.f));
         }
         GenerateSplineInterpolationSystem();
         UpdateLinearSystem();
@@ -568,10 +568,40 @@ namespace KrakEngine{
                     XMFLOAT2 pos2D = SplineInterpolate(u);
                     XMFLOAT3 pos3D = XMFLOAT3(pos2D.x, 0.0f, pos2D.y);
                     t->SetPosition(pos3D);
-
+                    (*it)->m_Controller->m_pSkeleton->m_JointPositions2D[0] = XMFLOAT2(pos3D.x, pos3D.y);
                     if (m_NormalizedDistanceAlongArc >= 1.f)
                     {
-                        (*it)->m_Controller->ProcessIK(pos3D, m_IKTargetPosition);
+                        //(*it)->m_Controller->ProcessIK(pos3D, m_IKTargetPosition);
+                        XMFLOAT2 ikTargetPosition2D = XMFLOAT2(m_IKTargetPosition.x, m_IKTargetPosition.y);
+                        bool complete = (*it)->m_Controller->ProcessIK2D(pos2D, ikTargetPosition2D);
+                        // If the IK finished, but the end effector did not reach the destination
+                        if (complete && Mag((*it)->m_Controller->m_pSkeleton->m_CurrentPosition2D - ikTargetPosition2D) > (*it)->m_Controller->m_pSkeleton->m_IKEpsilon)
+                        {
+                            // Set a new path
+                            // Start at current position
+                            m_PathControlPoints.clear();
+                            m_PathControlPoints.push_back(pos3D);
+                            
+                            // Get direction towards target
+                            float xDir = m_IKTargetPosition.x - pos3D.x;
+                            float zDir = m_IKTargetPosition.z - pos3D.z;
+                            if (xDir != 0)
+                            {
+                                xDir = xDir / abs(xDir);
+                            }
+                            if (zDir != 0)
+                            {
+                                zDir = zDir / abs(zDir);
+                            }
+
+                            // Pick a point a little far away from the target so it can be reached.
+                            XMFLOAT3 dest = XMFLOAT3(m_IKTargetPosition.x - xDir * 10.f, m_GroundLevel, m_IKTargetPosition.z - zDir * 10.f);
+                            m_PathControlPoints.push_back(dest);
+
+                            // Start the path over
+                            m_NormalizedDistanceAlongArc = 0.f;
+                            UpdateLinearSystem();
+                        }
                     }
 
                     // Set the speed of the model animation based on how far the model has moved

@@ -295,7 +295,7 @@ namespace KrakEngine{
     void Model::DrawBones(const ComPtr<ID2D1DeviceContext> &spD2DDeviceContext, const ComPtr<ID2D1Factory> &spD2DFactory, const ComPtr<ID3D11Buffer> &spConstantBufferPerObjectVS, const ComPtr<ID3D11Buffer> &spConstantBufferPerObjectPS) const{
         if (m_Controller)
         {
-            for (UINT b = 0; b < m_Controller->m_pSkeleton->m_Bones.size(); ++b)
+            /*for (UINT b = 0; b < m_Controller->m_pSkeleton->m_Bones.size(); ++b)
             {
                 Bone& bone = m_Controller->m_pSkeleton->m_Bones[b];
                 for (UINT c = 0; c < bone.Children.size(); ++c)
@@ -311,10 +311,11 @@ namespace KrakEngine{
                         D2D1::Point2F(points[1].x, points[1].y),
                         g_GRAPHICSSYSTEM->GetD2DBrush(ColorOrange).Get());
                 }
-            }
+            }*/
             if (m_Controller && g_GRAPHICSSYSTEM->IsSkeletonDrawingOn())
             {
-                m_Controller->RenderSkeleton(spD2DDeviceContext);
+                //m_Controller->RenderSkeleton(spD2DDeviceContext);
+                m_Controller->RenderSkeleton2D(spD2DDeviceContext);
             }
         }
     }
