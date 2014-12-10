@@ -169,4 +169,22 @@ namespace KrakEngine{
         }
         else return true;
     }
+
+    inline float Interpolate(float a, float b, float t)
+    {
+        return (1.f - t) * a + t * b;
+    }
+
+    inline XMFLOAT2 Interpolate(const XMFLOAT2 &a, const XMFLOAT2 &b, float t)
+    {
+        XMFLOAT2 result;
+        result.x = (1.f - t * a.x) + t * b.x;
+        result.y = (1.f - t * a.y) + t * b.y;
+        return result;
+    }
+
+    inline XMFLOAT3 Interpolate(const XMFLOAT3 &a, const XMFLOAT3 &b, float t)
+    {
+        return (1.f - t) * a + t * b;
+    }
 }

@@ -111,16 +111,25 @@ namespace KrakEngine
         std::vector<Bone> m_Bones;
         std::vector<Bone*> m_RootBones;
         std::vector<XMFLOAT3> m_JointPositions;
-        std::vector<XMFLOAT2> m_JointPositions2D;
+        std::vector<XMFLOAT2> m_OldJointPositions2D;
+        std::vector<XMFLOAT2> m_CurrentJointPositions2D;
+        std::vector<XMFLOAT2> m_TargetJointPositions2D;
         std::vector<Rotation> m_JointRotations;
-        std::vector<float> m_JointRotations2D;
+        std::vector<float> m_OldJointRotations2D;
+        std::vector<float> m_CurrentJointRotations2D;
+        std::vector<float> m_TargetJointRotations2D;
         std::vector<VQS> m_JointVQS;
         std::vector<float> m_Links;
         XMFLOAT3 m_RootPosition;
         XMFLOAT2 m_RootPosition2D;
-        XMFLOAT2 m_CurrentPosition2D;
+        XMFLOAT2 m_OldEndEffectorPosition2D;
+        XMFLOAT2 m_CurrentEndEffectorPosition2D;
+        XMFLOAT2 m_TargetEndEffectorPosition2D;
         XMFLOAT3 CalculateCurrentPosition();
+        XMFLOAT2 CalculateOldPosition2D();
         XMFLOAT2 CalculateCurrentPosition2D();
+        XMFLOAT2 CalculateTargetPosition2D();
+        XMFLOAT2 CalculatePosition2D(std::vector<XMFLOAT2> &jointPositions2D, std::vector<float> &jointRotations2D, XMFLOAT2 &targetPosition);
         float m_IKEpsilon = 2.0f;
     private:
         float m_IKLinkLength = 6.f;

@@ -22,6 +22,7 @@ Creation date: 1/20/2014
 #include "Factory.h"
 #include "RigidBody.h"
 #include "Conversions.h"
+#include "Animation.h"
 #include <winnt.h>
 
 #include <iostream>
@@ -44,7 +45,9 @@ namespace KrakEngine{
         m_bEditPath(false),
         m_bDoIK(false),
         m_NormalizedDistanceAlongArc(0.f),
-        m_IKTargetPosition(-40.f, 0.f, 0.f)
+        m_IKTargetPosition(-20.f, 10.f, 0.f),
+        m_bInterpolateIK(false),
+        m_IKAnimationTime(0.f)
     {
         DXThrowIfFailed(CoInitialize(NULL));
 
@@ -61,7 +64,7 @@ namespace KrakEngine{
         // Hard coded path for model to follow for now
         for (int i = 0; i < 2; ++i)
         {
-            m_PathControlPoints.push_back(Vector3((float)(i - 2) * -10.0f, m_GroundLevel, 0.f));
+            m_PathControlPoints.push_back(Vector3((float)(i - 2) * -20.0f, m_GroundLevel, 0.f));
         }
         GenerateSplineInterpolationSystem();
         UpdateLinearSystem();
@@ -533,6 +536,43 @@ namespace KrakEngine{
         return t * t * (3 - 2 * t);
     }
 
+    void GraphicsSystem::InterpolateIK(float dt, AnimationController* pController)
+    {
+        m_IKAnimationTime += dt / m_IKAnimationLength;
+        if (m_IKAnimationTime > 1.f)
+        {
+            m_IKAnimationTime = 1.f;
+            m_bInterpolateIK = false;           
+        }
+
+        /*for (size_t i = 0; i < pController->m_pSkeleton->m_CurrentJointPositions2D.size(); ++i)
+        {
+            pController->m_pSkeleton->m_CurrentJointPositions2D[i] = Interpolate(
+                                                                        pController->m_pSkeleton->m_OldJointPositions2D[i], 
+                                                                        pController->m_pSkeleton->m_TargetJointPositions2D[i], 
+                                                                        m_IKAnimationTime);
+        }*/
+
+        // Interpolate the rotations
+        for (size_t i = 0; i < pController->m_pSkeleton->m_CurrentJointRotations2D.size(); ++i)
+        {
+            pController->m_pSkeleton->m_CurrentJointRotations2D[i] = Interpolate(
+                pController->m_pSkeleton->m_OldJointRotations2D[i],
+                pController->m_pSkeleton->m_TargetJointRotations2D[i],
+                m_IKAnimationTime);
+        }
+
+        // Recalculate the current positions
+        //pController->m_pSkeleton->CalculateCurrentPosition2D();
+        //pController->m_pSkeleton->CalculateCurrentPosition2D();   this will be done before rendering   
+        if (m_IKAnimationTime >= 1.f)
+        {
+            m_bInterpolateIK = false;
+            pController->m_pSkeleton->m_OldJointPositions2D = pController->m_pSkeleton->m_CurrentJointPositions2D;
+            pController->m_pSkeleton->m_OldJointRotations2D = pController->m_pSkeleton->m_CurrentJointRotations2D;
+        }
+    }
+
     void GraphicsSystem::UpdateAnimation(float dt)
     {
         m_NormalizedDistanceAlongArc += dt / m_AnimationLength;
@@ -568,39 +608,62 @@ namespace KrakEngine{
                     XMFLOAT2 pos2D = SplineInterpolate(u);
                     XMFLOAT3 pos3D = XMFLOAT3(pos2D.x, 0.0f, pos2D.y);
                     t->SetPosition(pos3D);
-                    (*it)->m_Controller->m_pSkeleton->m_JointPositions2D[0] = XMFLOAT2(pos3D.x, pos3D.y);
+                    (*it)->m_Controller->m_pSkeleton->m_OldJointPositions2D[0] = XMFLOAT2(pos3D.x, pos3D.y);
+                    (*it)->m_Controller->m_pSkeleton->m_CurrentJointPositions2D[0] = XMFLOAT2(pos3D.x, pos3D.y);
+                    (*it)->m_Controller->m_pSkeleton->m_TargetJointPositions2D[0] = XMFLOAT2(pos3D.x, pos3D.y);
                     if (m_NormalizedDistanceAlongArc >= 1.f)
                     {
-                        //(*it)->m_Controller->ProcessIK(pos3D, m_IKTargetPosition);
-                        XMFLOAT2 ikTargetPosition2D = XMFLOAT2(m_IKTargetPosition.x, m_IKTargetPosition.y);
-                        bool complete = (*it)->m_Controller->ProcessIK2D(pos2D, ikTargetPosition2D);
-                        // If the IK finished, but the end effector did not reach the destination
-                        if (complete && Mag((*it)->m_Controller->m_pSkeleton->m_CurrentPosition2D - ikTargetPosition2D) > (*it)->m_Controller->m_pSkeleton->m_IKEpsilon)
+                        if (m_bInterpolateIK)
                         {
-                            // Set a new path
-                            // Start at current position
-                            m_PathControlPoints.clear();
-                            m_PathControlPoints.push_back(pos3D);
-                            
-                            // Get direction towards target
-                            float xDir = m_IKTargetPosition.x - pos3D.x;
-                            float zDir = m_IKTargetPosition.z - pos3D.z;
-                            if (xDir != 0)
+                            InterpolateIK(dt, (*it)->m_Controller);
+                        }
+                        else
+                        {
+                            //(*it)->m_Controller->ProcessIK(pos3D, m_IKTargetPosition);
+                            XMFLOAT2 ikTargetPosition2D = XMFLOAT2(m_IKTargetPosition.x, m_IKTargetPosition.y);
+                            //if (Mag((*it)->m_Controller->m_pSkeleton->m_CurrentTargetPosition2D - ikTargetPosition2D) > (*it)->m_Controller->m_pSkeleton->m_IKEpsilon)
+                            //{
+                                bool complete = (*it)->m_Controller->ProcessIK2D(pos2D, ikTargetPosition2D);
+                            //}
+                            if (complete)
                             {
-                                xDir = xDir / abs(xDir);
-                            }
-                            if (zDir != 0)
-                            {
-                                zDir = zDir / abs(zDir);
-                            }
+                                // If the IK finished, but the end effector did not reach the destination
+                                if (Mag((*it)->m_Controller->m_pSkeleton->m_TargetEndEffectorPosition2D - ikTargetPosition2D) > (*it)->m_Controller->m_pSkeleton->m_IKEpsilon)
+                                {
+                                    // Set a new path
+                                    // Start at current position
+                                    m_PathControlPoints.clear();
+                                    m_PathControlPoints.push_back(pos3D);
 
-                            // Pick a point a little far away from the target so it can be reached.
-                            XMFLOAT3 dest = XMFLOAT3(m_IKTargetPosition.x - xDir * 10.f, m_GroundLevel, m_IKTargetPosition.z - zDir * 10.f);
-                            m_PathControlPoints.push_back(dest);
+                                    // Get direction towards target
+                                    float xDir = m_IKTargetPosition.x - pos3D.x;
+                                    float zDir = m_IKTargetPosition.z - pos3D.z;
+                                    if (xDir != 0)
+                                    {
+                                        xDir = xDir / abs(xDir);
+                                    }
+                                    if (zDir != 0)
+                                    {
+                                        zDir = zDir / abs(zDir);
+                                    }
 
-                            // Start the path over
-                            m_NormalizedDistanceAlongArc = 0.f;
-                            UpdateLinearSystem();
+                                    // Pick a point a little far away from the target so it can be reached.
+                                    XMFLOAT3 dest = XMFLOAT3(m_IKTargetPosition.x - xDir * 20.f, m_GroundLevel, m_IKTargetPosition.z /*- zDir * 10.f*/);
+                                    m_PathControlPoints.push_back(dest);
+
+                                    if (Mag(dest - pos3D) > 1.f)
+                                    {
+                                        // Start the path over
+                                        m_NormalizedDistanceAlongArc = 0.f;
+                                        UpdateLinearSystem();
+                                    }
+                                }
+                                else
+                                {
+                                    m_bInterpolateIK = true;
+                                    m_IKAnimationTime = 0.f;
+                                }
+                            }
                         }
                     }
 

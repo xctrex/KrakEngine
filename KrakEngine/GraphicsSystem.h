@@ -45,6 +45,7 @@ namespace KrakEngine{
     class Text;
     class RigidBody;
     class Image;
+    class AnimationController;
 
     struct ArcLengthTableElement{
         double u;
@@ -133,6 +134,10 @@ namespace KrakEngine{
         void UpdateIKSystem();
         void UpdateLinearSystem();
         XMFLOAT3 m_IKTargetPosition;
+        bool m_bInterpolateIK;
+        float m_IKAnimationTime;
+        void InterpolateIK(float dt, AnimationController *pController);
+        float m_IKAnimationLength = 1.f;
     private:
         // Draw Functions
         void DrawFullScreenQuad(ComPtr<ID3D11VertexShader> spVertexShader, ComPtr<ID3D11PixelShader> spPixelShader);
