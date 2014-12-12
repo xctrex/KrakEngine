@@ -61,10 +61,10 @@ namespace KrakEngine{
     }
     
     bool GraphicsSystem::Initialize(){
-        // Hard coded path for model to follow for now
+        // Hard coded path for model to follow initially
         for (int i = 0; i < 2; ++i)
         {
-            m_PathControlPoints.push_back(Vector3((float)(i - 2) * -20.0f, m_GroundLevel, 0.f));
+            m_PathControlPoints.push_back(Vector3((float)(i - 1) * -20.0f, m_GroundLevel, 0.f));
         }
         GenerateSplineInterpolationSystem();
         UpdateLinearSystem();
@@ -545,14 +545,6 @@ namespace KrakEngine{
             m_bInterpolateIK = false;           
         }
 
-        /*for (size_t i = 0; i < pController->m_pSkeleton->m_CurrentJointPositions2D.size(); ++i)
-        {
-            pController->m_pSkeleton->m_CurrentJointPositions2D[i] = Interpolate(
-                                                                        pController->m_pSkeleton->m_OldJointPositions2D[i], 
-                                                                        pController->m_pSkeleton->m_TargetJointPositions2D[i], 
-                                                                        m_IKAnimationTime);
-        }*/
-
         // Interpolate the rotations
         for (size_t i = 0; i < pController->m_pSkeleton->m_CurrentJointRotations2D.size(); ++i)
         {
@@ -562,12 +554,10 @@ namespace KrakEngine{
                 m_IKAnimationTime);
         }
 
-        // Recalculate the current positions
-        //pController->m_pSkeleton->CalculateCurrentPosition2D();
-        //pController->m_pSkeleton->CalculateCurrentPosition2D();   this will be done before rendering   
+        // Set the Old positions to the current positions once the animation is complete
         if (m_IKAnimationTime >= 1.f)
         {
-            m_bInterpolateIK = false;
+            m_bInterpolateIK = false; // Mark the interpolation as complete
             pController->m_pSkeleton->m_OldJointPositions2D = pController->m_pSkeleton->m_CurrentJointPositions2D;
             pController->m_pSkeleton->m_OldJointRotations2D = pController->m_pSkeleton->m_CurrentJointRotations2D;
         }
@@ -619,12 +609,9 @@ namespace KrakEngine{
                         }
                         else
                         {
-                            //(*it)->m_Controller->ProcessIK(pos3D, m_IKTargetPosition);
                             XMFLOAT2 ikTargetPosition2D = XMFLOAT2(m_IKTargetPosition.x, m_IKTargetPosition.y);
-                            //if (Mag((*it)->m_Controller->m_pSkeleton->m_CurrentTargetPosition2D - ikTargetPosition2D) > (*it)->m_Controller->m_pSkeleton->m_IKEpsilon)
-                            //{
-                                bool complete = (*it)->m_Controller->ProcessIK2D(pos2D, ikTargetPosition2D);
-                            //}
+                            bool complete = (*it)->m_Controller->ProcessIK2D(pos2D, ikTargetPosition2D);
+
                             if (complete)
                             {
                                 // If the IK finished, but the end effector did not reach the destination
