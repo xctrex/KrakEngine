@@ -636,16 +636,14 @@ namespace KrakEngine{
 
                                     // Pick a point a little far away from the target so it can be reached.
                                     XMFLOAT3 dest = XMFLOAT3(m_IKTargetPosition.x - xDir * 20.f, m_GroundLevel, m_IKTargetPosition.z /*- zDir * 10.f*/);
-
-                                    // If the new path destiation is our current position, adjust it a little
-                                    if (Mag(dest - pos3D) <= 1.f)
-                                    {
-                                        dest.x -= xDir * ((float)(rand() % 1000) / 100.f);// xDir * random number from 0 to 10
-                                    }
-                                    // Start the path over
                                     m_PathControlPoints.push_back(dest);
-                                    m_NormalizedDistanceAlongArc = 0.f;
-                                    UpdateLinearSystem();
+
+                                    if (Mag(dest - pos3D) > 1.f)
+                                    {
+                                        // Start the path over
+                                        m_NormalizedDistanceAlongArc = 0.f;
+                                        UpdateLinearSystem();
+                                    }
                                 }
                                 else
                                 {
