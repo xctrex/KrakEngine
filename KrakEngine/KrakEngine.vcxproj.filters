@@ -488,6 +488,9 @@
     <ClInclude Include="alglib\src\statistics.h">
       <Filter>Alglib</Filter>
     </ClInclude>
+    <ClInclude Include="RBody.h">
+      <Filter>Systems\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\SpriteShader.fx">

@@ -270,6 +270,7 @@
     <ClInclude Include="ObjectLinkedList.h" />
     <ClInclude Include="Particle.h" />
     <ClInclude Include="PhysicsSystem.h" />
+    <ClInclude Include="RBody.h" />
     <ClInclude Include="Resolution.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="Serializer.h" />

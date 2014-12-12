@@ -21,6 +21,7 @@ Creation date: 1/20/2014
 #include "Transform.h"
 #include "Factory.h"
 #include "RigidBody.h"
+#include "RBody.h"
 #include "Conversions.h"
 #include "Animation.h"
 #include <winnt.h>
@@ -160,10 +161,7 @@ namespace KrakEngine{
         }
 	};
 
-    void GraphicsSystem::Update(float dt){
-
-        UpdateAnimation(dt);
-
+    void GraphicsSystem::Update(float dt){        
         m_spD3DDeviceContext1->ClearRenderTargetView(m_spD3DRenderTargetView.Get(), Colors::Transparent);
         m_spD3DDeviceContext1->ClearRenderTargetView(m_spIntermediateRTV.Get(), Colors::Transparent);
         m_spD3DDeviceContext1->ClearRenderTargetView(m_spIntermediateRTVDebug.Get(), Colors::Transparent);        
@@ -178,14 +176,7 @@ namespace KrakEngine{
         UINT sampleMask   = 0xffffffff;
 
         m_spD3DDeviceContext1->OMSetBlendState(m_spBlendStateDisable.Get(), blendFactor, sampleMask);
-
-        // Update the Camera
-        // For now, we're only using one camera, so use the camera in the front of the list
-        ThrowErrorIf(m_CameraList.size() == 0, "You must have a camera somewhere in your level file. Ideally as a component in the player object.");
-        m_pCurrentCamera = m_CameraList.front();
-
-        m_pCurrentCamera->Update(dt);
-
+        
         // Update the once per-frame constant buffer
         ConstantBufferPerFrame cbPerFrame;
         XMStoreFloat4x4(&(cbPerFrame.View), XMMatrixTranspose(XMLoadFloat4x4(m_CameraList.front()->GetView())));
@@ -202,7 +193,18 @@ namespace KrakEngine{
         
         m_spD3DDeviceContext1->PSSetConstantBuffers(0, 1, m_spConstantBufferPerFrame.GetAddressOf());
         
-        UpdateModels(dt);
+
+        // Update the Camera
+        // For now, we're only using one camera, so use the camera in the front of the list
+        ThrowErrorIf(m_CameraList.size() == 0, "You must have a camera somewhere in your level file. Ideally as a component in the player object.");
+        m_pCurrentCamera = m_CameraList.front();
+
+        m_pCurrentCamera->Update(dt);
+
+        //UpdateAnimation(dt);
+        DrawFloor();
+        DrawBodies(g_PHYSICSSYSTEM->m_rigidBodies, NBODIES);
+        //UpdateModels(dt);
         if(true){//IsGBufferCreationOn()){            
             // Draw the models to the GBuffer
 //            m_GBuffer.TargetGBuffer(m_spD3DDeviceContext1);
@@ -324,11 +326,11 @@ namespace KrakEngine{
         }*/
         if (IsSkeletonDrawingOn())
         {
-            DrawBones();
+        //    DrawBones();
         }
         //DrawPathMidpoint();
-        DrawPathSplineInterpolation();
-        DrawIKTarget();
+        //DrawPathSplineInterpolation();
+        //DrawIKTarget();
         if (m_bEditPath)
         {
             DrawMouse();
@@ -507,7 +509,7 @@ namespace KrakEngine{
             {
                 (*it)->Skin(m_spD3DDevice1, m_spD3DDeviceContext1);
             }
-            if (ModelNumber < 1 /*Always draw the floor*/ || (ModelNumber == m_ChooseModel && IsMeshDrawingOn()) ){
+            if (ModelNumber < 1 || (ModelNumber == m_ChooseModel && IsMeshDrawingOn()) ){
                 (*it)->Draw(m_spD3DDeviceContext1, m_spConstantBufferPerObjectVS, m_spConstantBufferPerObjectPS);
             }
 
@@ -2291,6 +2293,16 @@ namespace KrakEngine{
             );
 
         m_spD2DDeviceContext->CreateSolidColorBrush(
+            D2D1::ColorF(D2D1::ColorF::Green),
+            m_spGreenBrush.GetAddressOf()
+            );
+
+        m_spD2DDeviceContext->CreateSolidColorBrush(
+            D2D1::ColorF(D2D1::ColorF::Blue),
+            m_spBlueBrush.GetAddressOf()
+            );
+
+        m_spD2DDeviceContext->CreateSolidColorBrush(
             D2D1::ColorF(D2D1::ColorF::Orange),
             m_spOrangeBrush.GetAddressOf()
             );
@@ -2298,11 +2310,6 @@ namespace KrakEngine{
         m_spD2DDeviceContext->CreateSolidColorBrush(
             D2D1::ColorF(D2D1::ColorF::Yellow),
             m_spYellowBrush.GetAddressOf()
-            );
-
-        m_spD2DDeviceContext->CreateSolidColorBrush(
-            D2D1::ColorF(D2D1::ColorF::Blue),
-            m_spBlueBrush.GetAddressOf()
             );
     }
 
@@ -2313,12 +2320,14 @@ namespace KrakEngine{
             return m_spWhiteBrush;
         case ColorRed:
             return m_spRedBrush;
+        case ColorGreen:
+            return m_spGreenBrush;
+        case ColorBlue:
+            return m_spBlueBrush;
         case ColorOrange:
             return m_spOrangeBrush;
         case ColorYellow:
             return m_spYellowBrush;
-        case ColorBlue:
-            return m_spBlueBrush;
         default:
             ThrowErrorIf(true, "Brush of that color not found");
             return nullptr;
@@ -2770,6 +2779,56 @@ namespace KrakEngine{
             );
 
         return worldCoordinate;
+    }
+
+    void GraphicsSystem::DrawBodies(rBody *rBodies, UINT length)
+    {
+        m_spD2DDeviceContext->BeginDraw();
+
+        for (UINT i = 0; i < length; ++i)
+        {
+            XMFLOAT2 point = ConvertToScreenCoordinates(rBodies[i].x, m_World);
+
+            m_spD2DDeviceContext->DrawEllipse(
+                D2D1::Ellipse(
+                    D2D1::Point2F(point.x, point.y),
+                    1.f, // Hard coded radius of 2 for now
+                    1.f),
+                GetD2DBrush(ColorGreen).Get());
+        }
+
+        DXThrowIfFailed(m_spD2DDeviceContext->EndDraw());
+    }
+
+    void GraphicsSystem::DrawFloor()
+    {
+        m_spD2DDeviceContext->BeginDraw();
+
+        int min = -10;
+        int max = 11;
+        float scale = 1.f;
+        for (int i = min; i < max; ++i)
+        {
+            XMFLOAT2 points[4];
+            points[0] = ConvertToScreenCoordinates(XMFLOAT3((float)i * scale, 0.0f, (float)min * scale), m_World);
+            points[1] = ConvertToScreenCoordinates(XMFLOAT3((float)i * scale, 0.0f, (float)max * scale), m_World);
+
+            points[2] = ConvertToScreenCoordinates(XMFLOAT3((float)min * scale, 0.0f, (float)i * scale), m_World);
+            points[3] = ConvertToScreenCoordinates(XMFLOAT3((float)max * scale, 0.0f, (float)i * scale), m_World);
+
+            m_spD2DDeviceContext->DrawLine(
+                D2D1::Point2F(points[0].x, points[0].y),
+                D2D1::Point2F(points[1].x, points[1].y),
+                GetD2DBrush(ColorYellow).Get());
+
+
+            m_spD2DDeviceContext->DrawLine(
+                D2D1::Point2F(points[2].x, points[2].y),
+                D2D1::Point2F(points[3].x, points[3].y),
+                GetD2DBrush(ColorYellow).Get());
+        }
+
+        DXThrowIfFailed(m_spD2DDeviceContext->EndDraw());
     }
 }
 

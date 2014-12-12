@@ -34,9 +34,10 @@ namespace KrakEngine{
     enum Color{
         ColorWhite,
         ColorRed,
+        ColorGreen,
+        ColorBlue,
         ColorOrange,
-        ColorYellow,
-        ColorBlue
+        ColorYellow
     };
 
 	class Camera;
@@ -46,6 +47,7 @@ namespace KrakEngine{
     class RigidBody;
     class Image;
     class AnimationController;
+    struct rBody;
 
     struct ArcLengthTableElement{
         double u;
@@ -83,7 +85,7 @@ namespace KrakEngine{
         XMFLOAT3 ConvertToWorldCoordinates(XMFLOAT2 screenCoordinate, float zPlane = 0.0f);
         XMFLOAT3 ConvertToWorldCoordinates(XMFLOAT2 screenCoordinate, XMFLOAT3 p0, XMFLOAT3 p1, XMFLOAT3 p2);
 
-        void ToggleDebug(){ m_DrawDebug = (m_DrawDebug + 1) % 1; }
+        void ToggleDebug(){ m_DrawDebug = (m_DrawDebug + 1) % 3; }
         void ToggleModel(){ m_ChooseModel = 1 + (m_ChooseModel + 1) % 5; }
         bool IsGBufferCreationOn(){ return m_DrawDebug != 4; }
         bool IsDebugDrawingOn(){ return m_DrawDebug == 1 || m_DrawDebug == 2; }
@@ -138,6 +140,11 @@ namespace KrakEngine{
         float m_IKAnimationTime;
         void InterpolateIK(float dt, AnimationController *pController);
         float m_IKAnimationLength = 1.f;
+
+        // CS 560 project 4
+        void DrawBodies(rBody *rBodies, UINT length);
+        void DrawFloor();
+
     private:
         // Draw Functions
         void DrawFullScreenQuad(ComPtr<ID3D11VertexShader> spVertexShader, ComPtr<ID3D11PixelShader> spPixelShader);
@@ -289,9 +296,10 @@ namespace KrakEngine{
         ComPtr<ID2D1Bitmap1> m_spD2DTargetBitmap;
         ComPtr<ID2D1SolidColorBrush> m_spWhiteBrush;
         ComPtr<ID2D1SolidColorBrush> m_spRedBrush;
+        ComPtr<ID2D1SolidColorBrush> m_spGreenBrush;
+        ComPtr<ID2D1SolidColorBrush> m_spBlueBrush;
         ComPtr<ID2D1SolidColorBrush> m_spOrangeBrush;
         ComPtr<ID2D1SolidColorBrush> m_spYellowBrush;
-        ComPtr<ID2D1SolidColorBrush> m_spBlueBrush;
         std::hash_map<std::string, ComPtr<ID3D11ShaderResourceView> > m_TextureMap;
         std::hash_map<std::string, ComPtr<ID2D1Bitmap1> > m_BitmapMap;
 
