@@ -283,8 +283,8 @@ namespace KrakEngine{
         str.append("\rPress g to toggle render mode");
         str.append("\rWASD to move along x and z axis");
         str.append("\rx and z to move up and down the y axis");
-        str.append("\rMove mouse to look around");
-        str.append("\rPress e to edit the path. Click and drag to move control points.");
+        str.append("\rMove mouse to look around.");
+        str.append("\rHit e to edit the target (the small red circle). Click anywhere to move the target to that point on the z = 0 plane.");
         str.append("\rPress e again to go back to moving the camera.");
         str.append("\rHit Esc to bring up the menu and quit the application.");
 		std::list<Text*>::iterator textit = m_TextList.begin();
@@ -636,14 +636,16 @@ namespace KrakEngine{
 
                                     // Pick a point a little far away from the target so it can be reached.
                                     XMFLOAT3 dest = XMFLOAT3(m_IKTargetPosition.x - xDir * 20.f, m_GroundLevel, m_IKTargetPosition.z /*- zDir * 10.f*/);
-                                    m_PathControlPoints.push_back(dest);
 
-                                    if (Mag(dest - pos3D) > 1.f)
+                                    // If the new path destiation is our current position, adjust it a little
+                                    if (Mag(dest - pos3D) <= 1.f)
                                     {
-                                        // Start the path over
-                                        m_NormalizedDistanceAlongArc = 0.f;
-                                        UpdateLinearSystem();
+                                        dest.x -= xDir * ((float)(rand() % 1000) / 100.f);// xDir * random number from 0 to 10
                                     }
+                                    // Start the path over
+                                    m_PathControlPoints.push_back(dest);
+                                    m_NormalizedDistanceAlongArc = 0.f;
+                                    UpdateLinearSystem();
                                 }
                                 else
                                 {

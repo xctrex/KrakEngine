@@ -456,7 +456,7 @@ namespace KrakEngine
         float sumRotations = 0.f;
         for (size_t j = 0; j < jointRotations2D.size(); ++j)
         {
-            sumRotations += m_TargetJointRotations2D[j];
+            sumRotations += jointRotations2D[j];
         }
         XMFLOAT2 direction;
         direction.x = cos(sumRotations);

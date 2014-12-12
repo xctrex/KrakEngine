@@ -35,6 +35,6 @@ RenderSkeleton2D() actually renders the manipulator.
 Known Issues
  - Currently, if there is no solution to the IK that enables the end effector to reach the target, the manipulator paths towards the target
  to try and move within reach. This works, however if after the first path the end effector still cannot reach the target due to its constraints,
- it will not path to a new position, so it will just flail where it is until a new position is selected for the target.
+ it will not path to a new position, so it will just remain where it is until a new position is selected for the target rather than choosing a new path.
  - Sometimes the project wigs out and either throws an unhandled exception or render's the world upside down or scrambled
  the first time it is run. I believed this is a cache issue, because it usually goes away as soon as I re-run the project a second time.

@@ -83,16 +83,16 @@ namespace KrakEngine{
         XMFLOAT3 ConvertToWorldCoordinates(XMFLOAT2 screenCoordinate, float zPlane = 0.0f);
         XMFLOAT3 ConvertToWorldCoordinates(XMFLOAT2 screenCoordinate, XMFLOAT3 p0, XMFLOAT3 p1, XMFLOAT3 p2);
 
-        void ToggleDebug(){ m_DrawDebug = (m_DrawDebug + 1) % 3; }
+        void ToggleDebug(){ m_DrawDebug = (m_DrawDebug + 1) % 1; }
         void ToggleModel(){ m_ChooseModel = 1 + (m_ChooseModel + 1) % 5; }
         bool IsGBufferCreationOn(){ return m_DrawDebug != 4; }
         bool IsDebugDrawingOn(){ return m_DrawDebug == 1 || m_DrawDebug == 2; }
         bool IsGBufferDrawingOn(){ return m_DrawDebug == 5; }
         bool IsSceneDrawingOn(){ return m_DrawDebug != 5; }
-        bool IsMeshDrawingOn(){ return m_DrawDebug == 0 || m_DrawDebug == 2; }
+        bool IsMeshDrawingOn(){ return m_DrawDebug == 1 || m_DrawDebug == 2; }
         bool IsSkeletonDrawingOn(){ return m_DrawDebug != 5;}
         bool IsDrawBindPose(){ return m_DrawDebug == 2; }
-        bool IsSkinningOn(){ return m_DrawDebug == 0; }
+        bool IsSkinningOn(){ return m_DrawDebug == 1; }
         void LoadModels();
         void LoadAlbedoModel(tinyxml2::XMLElement* txmlElement, std::string ModelName);
         void LoadTexturedModel(tinyxml2::XMLElement* txmlElement, std::string ModelName);
