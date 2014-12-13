@@ -543,87 +543,17 @@ namespace KrakEngine{
     {
         std::vector<double> xdot(x0.size());
         dxdt(t1 - t0, x0, xdot);
-        //std::vector<double> a0(v0.size());
-        //dxdt(t1 - t0, v0, a0);
-
-        std::vector<double> x1(x0.size());
-        std::vector<double> v1(x0.size());
 
         for (size_t i = 0; i < x0.size(); ++i)
         {
             if (!IsAnchor(i / RIGID_BODY_STATE_SIZE))
             {
-                //RK2 Step 1
-                x1[i] = x0[i] + xdot[i] * (t1 - t0);
-                //v1[i] = v0[i] + a0[i] * (t1 - t0);
+                // Euller
+                xEnd[i] = x0[i] + m_Dampen * xdot[i] * (t1 - t0);
+
+                //RK4 - TODO
             }
         }
-        std::vector<double> x1dot(x0.size());
-        dxdt(t1 - t0, x1, x1dot);
-
-        std::vector<double> x2(x0.size());
-        for (size_t i = 0; i < x0.size(); ++i)
-        {
-            if (!IsAnchor(i / RIGID_BODY_STATE_SIZE))
-            {
-                //RK2 Step 2
-                x2[i] = x0[i] + x1dot[i] * (t1 - t0);
-                //v1[i] = v0[i] + a0[i] * (t1 - t0);
-                xEnd[i] = x0[i] + m_Dampen * ((xdot[i] + x1dot[i]) / 2.f) * (t1 - t0);
-            }
-        }
-
-
-        /*std::vector<double> x2(x0.size());
-        std::vector<double> v2(x0.size());
-        std::vector<double> a1(x0.size());
-        dxdt(t1 - t0, v1, a1);
-
-        for (size_t i = 0; i < x0.size(); ++i)
-        {
-            if (!IsAnchor(i / RIGID_BODY_STATE_SIZE))
-            {
-                //RK4 Step 2
-                x2[i] = x0[i] + v1[i] * (t1 - t0) / 2.f;
-                v2[i] = v0[i] + a1[i] * (t1 - t0);
-            }
-        }
-
-        std::vector<double> x3(x0.size());
-        std::vector<double> v3(x0.size());
-        std::vector<double> a2(x0.size());
-        dxdt(t1 - t0, v2, a2); 
-        for (size_t i = 0; i < x0.size(); ++i)
-        {
-            if (!IsAnchor(i / RIGID_BODY_STATE_SIZE))
-            {
-                //RK4 Step 3
-                x3[i] = x0[i] + v2[i] * (t1 - t0) / 2.f;
-                v3[i] = v0[i] + a2[i] * (t1 - t0);
-            }
-        }
-
-        std::vector<double> x4(x0.size());
-        std::vector<double> v4(x0.size());
-        std::vector<double> a3(x0.size());
-        dxdt(t1 - t0, v3, a3);
-        for (size_t i = 0; i < x0.size(); ++i)
-        {
-            if (!IsAnchor(i / RIGID_BODY_STATE_SIZE))
-            {
-                //RK4 Step 4
-                x4[i] = x0[i] + v3[i] * (t1 - t0);
-                v4[i] = v0[i] + a3[i] * (t1 - t0);
-            }
-        }
-
-        for (size_t i = 0; i < x0.size(); ++i)
-        {
-            if (!IsAnchor(i / RIGID_BODY_STATE_SIZE))
-            {
-                xEnd[i] = x0[i] + (1.f / 6.f) * (v1[i] + 2.f * v2[i] + 2.f * v3[i] + v4[i]) * (t1 - t0);
-            }
-        }*/
     }
 
     void PhysicsSystem::dxdt(double t, const std::vector<double> &x, std::vector<double> &xdot)
