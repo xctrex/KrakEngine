@@ -144,6 +144,8 @@ namespace KrakEngine{
         // CS 560 project 4
         void DrawBodies(rBody *rBodies, UINT length);
         void DrawFloor();
+        void ToggleClosestAnchor(XMFLOAT2 mousePos);
+        void ToggleClosestPoint(XMFLOAT2 mousePos);
 
     private:
         // Draw Functions
@@ -365,6 +367,7 @@ namespace KrakEngine{
         float m_coiDelta = 0.02f;
         float m_StepSizeFactor = 0.15f;
         bool m_bDoIK;
+
 	};
 	extern GraphicsSystem* g_GRAPHICSSYSTEM;
 }

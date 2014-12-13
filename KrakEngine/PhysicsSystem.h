@@ -16,24 +16,19 @@ Author: Cristina Pohlenz, p.cristina
 #include "ObjectLinkedList.h"
 #include "RBody.h"
 
-#define NBODIES 16
-#define CLOTH_WIDTH 4
-#define CLOTH_LENGTH 4
+#define NBODIES 27
+#define CUBE_WIDTH 3
+#define CUBE_HEIGHT 3
+#define CUBE_DEPTH 3
+#define CLOTH_WIDTH 2
+#define CLOTH_HEIGHT 2
 #define RIGID_BODY_STATE_SIZE 18
 
 namespace KrakEngine{
 
 	class RigidBody;
-
-    typedef void(*DerivativeFunction)(double t, const std::vector<double> &x, std::vector<double> &xDot);
-
-    void ComputeForceAndTorque(double t, rBody *rb);
     
-    void ode(const std::vector<double> &x0, std::vector<double> &xEnd, int length, double t0, double t1, DerivativeFunction dxdt);
-
-    void dxdt(double t, const std::vector<double> &x, std::vector<double> &xdot);
-
-
+    
     class PhysicsSystem : public ISystem{
 	
 		public:
@@ -67,16 +62,7 @@ namespace KrakEngine{
 		double time;
 		double accumulator;
 		double deltaTime;
-
-        // CS 560 Cloth
-        void ClothForce(size_t i, size_t j, float t);
-        void ClothForceSpring(size_t i, size_t j, float t);
-        void ClothForceGravity(size_t i, size_t j, float t);
-        void ClothForceDampeners(size_t i, size_t j, float t);
-        void ClothForceStretch(size_t i, size_t j, float t);
-        void ClothForceShear(size_t i, size_t j, float t);
-        void ClothForceBend(size_t i, size_t j, float t);
-
+        
         float SphereMomentOfInertia(float radius, float mass);
 
         void InitializeBodies();
@@ -90,12 +76,53 @@ namespace KrakEngine{
         std::vector<double> m_xFinal;
         double m_CurrentPhysicsSimulatonTime;
 
+        // CS 560 Cube
+        XMFLOAT3 CubeForce(UINT i, UINT j, UINT k, double t);
+        XMFLOAT3 HookesLaw(UINT aIndex, UINT bIndex, float springLength, float springStiffness);
+        XMFLOAT3 CubeForceSpring(UINT i, UINT j, UINT k, double t);
+        XMFLOAT3 CubeForceAdjacent(UINT i, UINT j, UINT k, double t);
+        XMFLOAT3 CubeForceDiagonal(UINT i, UINT j, UINT k, double t);
+        XMFLOAT3 CubeForceBend(UINT i, UINT j, UINT k, double t);
+        XMFLOAT3 CubeForceGravity(UINT i, UINT j, UINT k, double t);
+        XMFLOAT3 CubeForceDampeners(UINT i, UINT j, UINT k, double t);
+
+        void ComputeForceAndTorque(double t, rBody *rb, UINT index);
+
+        typedef void(*DerivativeFunction)(double t, const std::vector<double> &x, std::vector<double> &xDot);
+
+        void ode(const std::vector<double> &x0, std::vector<double> &xEnd, int length, double t0, double t1);
+
+        void dxdt(double t, const std::vector<double> &x, std::vector<double> &xdot);
+
+        // Returns the index i of the cloth given the 2D i,j coordiantes
+        UINT Get1DClothIndex(UINT i, UINT j);
+
+        // Returns the i,j coordinates of the cloth given the 1D index
+        XMUINT2 Get2DClothIndex(UINT index1D);
+
+        UINT Get1DCubeIndex(UINT i, UINT j, UINT k);
+        XMUINT3 Get3DCubeIndex(UINT index1D);
+
+        
+
     public:
         void UpdateSimulation(float dt);
         void ArrayToBodies(const std::vector<double> &x);
         void ddtStateToArray(rBody *rb, double *xdot);
 
         rBody m_rigidBodies[NBODIES];
+
+        float m_ClothSpringStiffness = 1.f;
+        float m_CubeSpringStiffness = 100.f;
+        float m_CubeSpringLength = 1.f;
+        float m_CubeDiagonalSpringLength;
+        float m_Dampen = 0.0999f;
+
+        void DrawSpringsAtPoint(UINT i, UINT j, UINT k, const ComPtr<ID2D1DeviceContext> &spD2DDeviceContext);
+
+        bool IsAnchor(UINT index);
+        std::list<UINT> m_AnchorPoints;
+        UINT m_MaxAnchorPoints = 12;
 	};
 
 	extern PhysicsSystem* g_PHYSICSSYSTEM;

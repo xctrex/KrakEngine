@@ -190,8 +190,11 @@ namespace KrakEngine{
     
     void PhysicsSystem::InitializeBodies()
     {
+        m_CubeDiagonalSpringLength = sqrt(pow(m_CubeSpringLength, 2) + pow(m_CubeSpringLength,2) + pow(m_CubeSpringLength,2));
+        
         for (UINT i = 0; i < NBODIES; ++i)
         {
+            if (Get3DCubeIndex(i).y == CUBE_HEIGHT - 1) m_AnchorPoints.push_back(i);
             m_rigidBodies[i].mass = 1.;
 
             // Moment of inertia is hard coded to a solid sphere of radius 1.
@@ -207,7 +210,7 @@ namespace KrakEngine{
             // Initial State
 
             // Position
-            m_rigidBodies[i].x = XMFLOAT3((float)i, 10.f, (float)i);
+            m_rigidBodies[i].x = XMFLOAT3((float)Get3DCubeIndex(i).x * m_CubeSpringLength, (float)Get3DCubeIndex(i).y * m_CubeSpringLength + 10.f, (float)Get3DCubeIndex(i).z * m_CubeSpringLength);
             // Velocity
             m_rigidBodies[i].R = XMFLOAT3X3(0.f, 0.f, 0.f,
                                             0.f, 0.f, 0.f,
@@ -227,12 +230,10 @@ namespace KrakEngine{
             m_x0[i] = m_xFinal[i];
         }
 
-        ode(m_x0, m_xFinal, RIGID_BODY_STATE_SIZE * NBODIES, m_CurrentPhysicsSimulatonTime, m_CurrentPhysicsSimulatonTime + dt, dxdt);
+        ode(m_x0, m_xFinal, RIGID_BODY_STATE_SIZE * NBODIES, m_CurrentPhysicsSimulatonTime, m_CurrentPhysicsSimulatonTime + dt);
 
-        // Copy d/dt X(t + 1/24) into state variables
+        // Copy d/dt X(t) into state variables
         ArrayToBodies(m_xFinal);
-
-        //g_GRAPHICSSYSTEM->DrawBodies(m_rigidBodies, NBODIES);
     }
 
     void PhysicsSystem::StateToArray(rBody *rb, double *y)
@@ -353,35 +354,276 @@ namespace KrakEngine{
                           a.z, 0.f, -a.x,
                           -a.y, a.x, 0.f);
     }
+
+    XMFLOAT3 PhysicsSystem::CubeForce(UINT i, UINT j, UINT k, double t)
+    {
+        return CubeForceSpring(i, j, k, t) + CubeForceGravity(i, j, k, t);
+    }
+
+    XMFLOAT3 PhysicsSystem::CubeForceSpring(UINT i, UINT j, UINT k, double t)
+    {
+        return CubeForceAdjacent(i, j, k, t) + CubeForceDiagonal(i, j, k, t);
+    }
+
+    XMFLOAT3 PhysicsSystem::HookesLaw(UINT aIndex, UINT bIndex, float springLength, float springStiffness)
+    {
+        // Get distance between x and a
+        XMFLOAT3 direction = m_rigidBodies[bIndex].x - m_rigidBodies[aIndex].x;
+        float dist = Mag(direction);
+
+        // Normalize direction
+        direction = direction / dist;
+
+        // Calculate the spring force
+        float x = dist - springLength;
+
+        // Hooke's law: F = -kx
+        float force = springStiffness * x;
+
+        return force * direction;
+    }
+
+    XMFLOAT3 PhysicsSystem::CubeForceAdjacent(UINT i, UINT j, UINT k, double t)
+    {
+        XMFLOAT3 sumOfForces(0.f, 0.f, 0.f);
+        UINT xIndex = Get1DCubeIndex(i, j, k);
+        //       a    
+        //  
+        //     e
+        //b      x     c
+        //         f
+        //
+        //       d
+
+        UINT index;
+        // a
+        if ((index = Get1DCubeIndex(i - 1, j, k)) != UINT_MAX)
+        {
+            sumOfForces = sumOfForces + HookesLaw(xIndex, index, m_CubeSpringLength, m_CubeSpringStiffness);
+        }
+        // b
+        if ((index = Get1DCubeIndex(i, j - 1, k)) != UINT_MAX)
+        {
+            sumOfForces = sumOfForces + HookesLaw(xIndex, index, m_CubeSpringLength, m_CubeSpringStiffness);
+        }
+        // c
+        if ((index = Get1DCubeIndex(i, j + 1, k)) != UINT_MAX)
+        {
+            sumOfForces = sumOfForces + HookesLaw(xIndex, index, m_CubeSpringLength, m_CubeSpringStiffness);
+        }
+        // d
+        if ((index = Get1DCubeIndex(i + 1, j, k)) != UINT_MAX)
+        {
+            sumOfForces = sumOfForces + HookesLaw(xIndex, index, m_CubeSpringLength, m_CubeSpringStiffness);
+        }
+        // e
+        if ((index = Get1DCubeIndex(i, j, k + 1)) != UINT_MAX)
+        {
+            sumOfForces = sumOfForces + HookesLaw(xIndex, index, m_CubeSpringLength, m_CubeSpringStiffness);
+        }
+        // f
+        if ((index = Get1DCubeIndex(i, j, k - 1)) != UINT_MAX)
+        {
+            sumOfForces = sumOfForces + HookesLaw(xIndex, index, m_CubeSpringLength, m_CubeSpringStiffness);
+        }
+        return sumOfForces;
+    }
+
+    XMFLOAT3 PhysicsSystem::CubeForceDiagonal(UINT i, UINT j, UINT k, double t)
+    {
+        XMFLOAT3 sumOfForces(0.f, 0.f, 0.f);
+        UINT xIndex = Get1DCubeIndex(i, j, k);
+        // b--------D
+        // | \      | \
+        // |  a-----|--c
+        // |  |     |  |
+        // |  |  x  |  |
+        // f--|-----h  |
+        //  \ |      \ |
+        //    e -------g
+        
+
+        UINT index;
+        // a
+        if ((index = Get1DCubeIndex(i - 1, j - 1, k - 1)) != UINT_MAX)
+        {
+            sumOfForces = sumOfForces + HookesLaw(xIndex, index, m_CubeDiagonalSpringLength, m_CubeSpringStiffness);
+        }
+        // b
+        if ((index = Get1DCubeIndex(i - 1, j - 1, k + 1)) != UINT_MAX)
+        {
+            sumOfForces = sumOfForces + HookesLaw(xIndex, index, m_CubeDiagonalSpringLength, m_CubeSpringStiffness);
+        }
+        // c
+        if ((index = Get1DCubeIndex(i - 1, j + 1, k - 1)) != UINT_MAX)
+        {
+            sumOfForces = sumOfForces + HookesLaw(xIndex, index, m_CubeDiagonalSpringLength, m_CubeSpringStiffness);
+        }
+        // d
+        if ((index = Get1DCubeIndex(i - 1, j + 1, k + 1)) != UINT_MAX)
+        {
+            sumOfForces = sumOfForces + HookesLaw(xIndex, index, m_CubeDiagonalSpringLength, m_CubeSpringStiffness);
+        }
+        // e
+        if ((index = Get1DCubeIndex(i + 1, j - 1, k - 1)) != UINT_MAX)
+        {
+            sumOfForces = sumOfForces + HookesLaw(xIndex, index, m_CubeDiagonalSpringLength, m_CubeSpringStiffness);
+        }
+        // f
+        if ((index = Get1DCubeIndex(i + 1, j - 1, k + 1)) != UINT_MAX)
+        {
+            sumOfForces = sumOfForces + HookesLaw(xIndex, index, m_CubeDiagonalSpringLength, m_CubeSpringStiffness);
+        }
+        // g
+        if ((index = Get1DCubeIndex(i + 1, j + 1, k - 1)) != UINT_MAX)
+        {
+            sumOfForces = sumOfForces + HookesLaw(xIndex, index, m_CubeDiagonalSpringLength, m_CubeSpringStiffness);
+        }
+        // h
+        if ((index = Get1DCubeIndex(i + 1, j + 1, k + 1)) != UINT_MAX)
+        {
+            sumOfForces = sumOfForces + HookesLaw(xIndex, index, m_CubeDiagonalSpringLength, m_CubeSpringStiffness);
+        }
+
+        return sumOfForces;
+    }
+
+    void PhysicsSystem::DrawSpringsAtPoint(UINT i, UINT j, UINT k, const ComPtr<ID2D1DeviceContext> &spD2DDeviceContext)
+    {
+        // Get the position of the mass at i, k, j
+        UINT curIndex = Get1DCubeIndex(i, j, k);
+        XMFLOAT3 pos = m_rigidBodies[curIndex].x;
+
+        for (int a = -1; a < 2; a += 1)
+        {
+            for (int b = -1; b < 2; b += 1)
+            {
+                for (int c = -1; c < 2; c += 1)
+                {
+                    UINT index = Get1DCubeIndex(i + a, j + b, k + c);
+                    if (index != UINT_MAX && index != curIndex)
+                    {
+                        XMFLOAT3 pos2 = m_rigidBodies[index].x;
+
+                        // Conver to screen coordinates for drawing
+                        XMFLOAT2 points[2];
+                        points[0] = g_GRAPHICSSYSTEM->ConvertToScreenCoordinates(pos, g_GRAPHICSSYSTEM->GetWorldTransform());
+                        points[1] = g_GRAPHICSSYSTEM->ConvertToScreenCoordinates(pos2, g_GRAPHICSSYSTEM->GetWorldTransform());
+
+                        // Draw an orange line for the spring
+                        spD2DDeviceContext->DrawLine(
+                            D2D1::Point2F(points[0].x, points[0].y),
+                            D2D1::Point2F(points[1].x, points[1].y),
+                            g_GRAPHICSSYSTEM->GetD2DBrush(ColorOrange).Get());
+                    }
+                }
+            }
+        }
+    }
+
+    XMFLOAT3 PhysicsSystem::CubeForceGravity(UINT i, UINT j, UINT k, double t)
+    {
+        return XMFLOAT3(0.f, -9.8f, 0.f);
+    }
+
+    void PhysicsSystem::ComputeForceAndTorque(double t, rBody *rb, UINT index)
+    {
+        rb->force = CubeForce(Get3DCubeIndex(index).x, Get3DCubeIndex(index).y, Get3DCubeIndex(index).z, t);
+        if (IsAnchor(index))
+        {
+            rb->force = XMFLOAT3(0.f, 0.f, 0.f);
+            rb->R = XMFLOAT3X3(0.f, 0.f, 0.f,
+                0.f, 0.f, 0.f,
+                0.f, 0.f, 0.f);
+        }
+        rb->torque = XMFLOAT3(0.f, 0.f, 0.f);
+    }
     
-    void ode(const std::vector<double> &x0, std::vector<double> &xEnd, int length, double t0, double t1, DerivativeFunction der)
+    void PhysicsSystem::ode(const std::vector<double> &x0, std::vector<double> &xEnd, int length, double t0, double t1)
     {
         std::vector<double> xdot(x0.size());
         dxdt(t1 - t0, x0, xdot);
 
         for (size_t i = 0; i < x0.size(); ++i)
         {
-            // Euller
-            xEnd[i] = x0[i] + xdot[i] * (t1 - t0);
+            if (!IsAnchor(i / RIGID_BODY_STATE_SIZE))
+            {
+                // Euller
+                xEnd[i] = x0[i] + m_Dampen * xdot[i] * (t1 - t0);
+
+                //RK4
+                /*double x1 = x0[i] + m_Dampen * xdot[i] * (t1 - t0);
+                double x2 = x0[i] + xdot[i] + */
+            }
         }
     }
-    
-    void ComputeForceAndTorque(double t, rBody *rb)
-    {
-        // TODO
-        rb->force = XMFLOAT3(0.f, -9.8f, 0.f);
-        rb->torque = XMFLOAT3(0.f, 0.f, 0.f);
-    }
 
-    void dxdt(double t, const std::vector<double> &x, std::vector<double> &xdot)
+    void PhysicsSystem::dxdt(double t, const std::vector<double> &x, std::vector<double> &xdot)
     {
         // Put data from x into m_rigidBodies
         g_PHYSICSSYSTEM->ArrayToBodies(x);
 
         for (UINT i = 0; i < NBODIES; ++i)
         {
-            ComputeForceAndTorque(t, &g_PHYSICSSYSTEM->m_rigidBodies[i]);
+            ComputeForceAndTorque(t, &g_PHYSICSSYSTEM->m_rigidBodies[i], i);
             g_PHYSICSSYSTEM->ddtStateToArray(&g_PHYSICSSYSTEM->m_rigidBodies[i], &xdot[i * RIGID_BODY_STATE_SIZE]);
         }
+    }
+
+
+    UINT PhysicsSystem::Get1DClothIndex(UINT i, UINT j)
+    {
+        if (i < 0 || j < 0 || i > CLOTH_WIDTH - 1 || j > CLOTH_HEIGHT - 1)
+        {
+            return UINT_MAX;
+        }
+
+        return i * CLOTH_WIDTH + j;
+    }
+
+    XMUINT2 PhysicsSystem::Get2DClothIndex(UINT index1D)
+    {
+        XMUINT2 index2D;
+        index2D.x = index1D / CLOTH_WIDTH;//i
+        index2D.y = index1D % CLOTH_WIDTH;//j
+        return index2D;
+    }
+
+    UINT PhysicsSystem::Get1DCubeIndex(UINT i, UINT j, UINT k)
+    {
+        if (i < 0 || j < 0 || k < 0 || i > CUBE_WIDTH - 1 || j > CUBE_HEIGHT - 1 || k > CUBE_DEPTH - 1)
+        {
+            return UINT_MAX;
+        }
+
+        return i * CUBE_WIDTH * CUBE_HEIGHT + j * CUBE_WIDTH + k;
+    }
+
+    XMUINT3 PhysicsSystem::Get3DCubeIndex(UINT index1D)
+    {
+        XMUINT3 index3D;
+        index3D.x = index1D / (CUBE_WIDTH * CUBE_HEIGHT);
+        index1D -= index3D.x * (CUBE_WIDTH * CUBE_HEIGHT);
+
+        index3D.y = index1D / CUBE_WIDTH;
+        index1D -= index3D.y * CUBE_WIDTH;
+
+        index3D.z = index1D;
+
+        return index3D;
+    }
+
+    bool PhysicsSystem::IsAnchor(UINT index)
+    {
+        std::list<UINT>::iterator it = m_AnchorPoints.begin();
+        for (; it != m_AnchorPoints.end(); ++it)
+        {
+            if (index == *it)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -177,6 +177,14 @@ namespace KrakEngine{
 
         m_spD3DDeviceContext1->OMSetBlendState(m_spBlendStateDisable.Get(), blendFactor, sampleMask);
         
+
+        // Update the Camera
+        // For now, we're only using one camera, so use the camera in the front of the list
+        ThrowErrorIf(m_CameraList.size() == 0, "You must have a camera somewhere in your level file. Ideally as a component in the player object.");
+        m_pCurrentCamera = m_CameraList.front();
+
+        m_pCurrentCamera->Update(dt);
+
         // Update the once per-frame constant buffer
         ConstantBufferPerFrame cbPerFrame;
         XMStoreFloat4x4(&(cbPerFrame.View), XMMatrixTranspose(XMLoadFloat4x4(m_CameraList.front()->GetView())));
@@ -192,17 +200,9 @@ namespace KrakEngine{
         m_spD3DDeviceContext1->VSSetConstantBuffers(1, 1, m_spConstantBufferPerObjectVS.GetAddressOf());
         
         m_spD3DDeviceContext1->PSSetConstantBuffers(0, 1, m_spConstantBufferPerFrame.GetAddressOf());
-        
-
-        // Update the Camera
-        // For now, we're only using one camera, so use the camera in the front of the list
-        ThrowErrorIf(m_CameraList.size() == 0, "You must have a camera somewhere in your level file. Ideally as a component in the player object.");
-        m_pCurrentCamera = m_CameraList.front();
-
-        m_pCurrentCamera->Update(dt);
 
         //UpdateAnimation(dt);
-        DrawFloor();
+        //DrawFloor();
         DrawBodies(g_PHYSICSSYSTEM->m_rigidBodies, NBODIES);
         //UpdateModels(dt);
         if(true){//IsGBufferCreationOn()){            
@@ -286,7 +286,8 @@ namespace KrakEngine{
         str.append("\rWASD to move along x and z axis");
         str.append("\rx and z to move up and down the y axis");
         str.append("\rMove mouse to look around.");
-        str.append("\rHit e to edit the target (the small red circle). Click anywhere to move the target to that point on the z = 0 plane.");
+        str.append("\rHit e to edit the anchor points. Left click to make the nearest point an anchor point.");
+        str.append("\rRight click to make the nearest anchor point no longer an anchor point.");
         str.append("\rPress e again to go back to moving the camera.");
         str.append("\rHit Esc to bring up the menu and quit the application.");
 		std::list<Text*>::iterator textit = m_TextList.begin();
@@ -509,7 +510,7 @@ namespace KrakEngine{
             {
                 (*it)->Skin(m_spD3DDevice1, m_spD3DDeviceContext1);
             }
-            if (ModelNumber < 1 || (ModelNumber == m_ChooseModel && IsMeshDrawingOn()) ){
+            if (/*ModelNumber < 1 ||*/ (ModelNumber == m_ChooseModel && IsMeshDrawingOn()) ){
                 (*it)->Draw(m_spD3DDeviceContext1, m_spConstantBufferPerObjectVS, m_spConstantBufferPerObjectPS);
             }
 
@@ -2781,20 +2782,106 @@ namespace KrakEngine{
         return worldCoordinate;
     }
 
+    void GraphicsSystem::ToggleClosestAnchor(XMFLOAT2 mousePos)
+    {
+        // Bail early if anchor points is empty
+        if (g_PHYSICSSYSTEM->m_AnchorPoints.size() == 0)
+        {
+            return;
+        }
+        
+        // Loop through all the points, storing the index of the closest point
+        std::list<UINT>::iterator it = g_PHYSICSSYSTEM->m_AnchorPoints.begin();
+        std::list<UINT>::iterator closestIt = it;
+        float closestDist = FLT_MAX;
+
+        for (; it != g_PHYSICSSYSTEM->m_AnchorPoints.end(); ++it)
+        {
+            // Get the distance between the cursor and the point
+            XMFLOAT2 anchorPos = ConvertToScreenCoordinates(g_PHYSICSSYSTEM->m_rigidBodies[*it].x, m_World);
+            float dist = Mag(mousePos - anchorPos);
+            if (dist < closestDist)
+            {
+                closestIt = it;
+                closestDist = dist;
+            }
+        }
+
+        g_PHYSICSSYSTEM->m_AnchorPoints.erase(closestIt);
+    }
+
+    void GraphicsSystem::ToggleClosestPoint(XMFLOAT2 mousePos)
+    {
+        // If the max number of anchor points have already been reached, bail early
+        if (g_PHYSICSSYSTEM->m_AnchorPoints.size() > g_PHYSICSSYSTEM->m_MaxAnchorPoints)
+        {
+            return;
+        }
+
+        UINT closestPoint = 0;
+        float closestDist = FLT_MAX;
+        // Loop through all the anchor points, storing the index of the closest point
+        for (UINT i = 0; i < NBODIES; ++i)
+        {
+            // Get the distance between the cursor and the point
+            XMFLOAT2 pointPos = ConvertToScreenCoordinates(g_PHYSICSSYSTEM->m_rigidBodies[i].x, m_World);
+            float dist = Mag(mousePos - pointPos);
+            if (dist < closestDist)
+            {
+                closestPoint = i;
+                closestDist = dist;
+            }
+        }
+
+        // Add the closest point
+        g_PHYSICSSYSTEM->m_AnchorPoints.push_back(closestPoint);
+        // Make sure it's not a duplicate
+        g_PHYSICSSYSTEM->m_AnchorPoints.unique();
+        g_PHYSICSSYSTEM->m_rigidBodies[closestPoint].force = XMFLOAT3(0.f, 0.f, 0.f);
+        g_PHYSICSSYSTEM->m_rigidBodies[closestPoint].R = XMFLOAT3X3(0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
+        g_PHYSICSSYSTEM->m_rigidBodies[closestPoint].L = XMFLOAT3(0.f, 0.f, 0.f);
+        g_PHYSICSSYSTEM->m_rigidBodies[closestPoint].P = XMFLOAT3(0.f, 0.f, 0.f);
+    }
+
     void GraphicsSystem::DrawBodies(rBody *rBodies, UINT length)
     {
         m_spD2DDeviceContext->BeginDraw();
 
+        // Draw the mass points
         for (UINT i = 0; i < length; ++i)
         {
             XMFLOAT2 point = ConvertToScreenCoordinates(rBodies[i].x, m_World);
 
-            m_spD2DDeviceContext->DrawEllipse(
-                D2D1::Ellipse(
+            if (!g_PHYSICSSYSTEM->IsAnchor(i))
+            {
+                m_spD2DDeviceContext->DrawEllipse(
+                    D2D1::Ellipse(
                     D2D1::Point2F(point.x, point.y),
-                    1.f, // Hard coded radius of 2 for now
-                    1.f),
-                GetD2DBrush(ColorGreen).Get());
+                    1.5f, // Hard coded radius of 2 for now
+                    2.f),
+                    GetD2DBrush(ColorGreen).Get());
+            }
+            else
+            {
+                m_spD2DDeviceContext->DrawEllipse(
+                    D2D1::Ellipse(
+                    D2D1::Point2F(point.x, point.y),
+                    3.f, // Hard coded radius of 2 for now
+                    3.f),
+                    GetD2DBrush(ColorRed).Get());
+            }
+        }
+
+        // Draw the springs
+        for (UINT i = 0; i < CUBE_WIDTH; ++i)
+        {
+            for (UINT j = 0; j < CUBE_HEIGHT; ++j)
+            {
+                for (UINT k = 0; k < CUBE_DEPTH; ++k)
+                {
+                    g_PHYSICSSYSTEM->DrawSpringsAtPoint(i, k, j, m_spD2DDeviceContext);
+                }
+            }
         }
 
         DXThrowIfFailed(m_spD2DDeviceContext->EndDraw());
