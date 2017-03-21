@@ -18,6 +18,7 @@ Creation date: 1/20/2014
 
 #include "File\ChunkReader.hpp"
 #include "File\FileElements.hpp"
+#include "DrawingState.h"
 
 namespace KrakEngine{
     Model::Model() : 
@@ -262,7 +263,7 @@ namespace KrakEngine{
 
     void Model::Draw(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1, const ComPtr<ID3D11Buffer> &spConstantBufferPerObjectVS, const ComPtr<ID3D11Buffer> &spConstantBufferPerObjectPS)const{        
         if (m_Mesh){
-            m_Mesh->Set(spD3DDeviceContext1, g_GRAPHICSSYSTEM->IsSkinningOn());
+            m_Mesh->Set(spD3DDeviceContext1, g_DRAWSTATE->m_isSkinningOn);
         }
 
         // Set input layout
@@ -312,7 +313,7 @@ namespace KrakEngine{
                         g_GRAPHICSSYSTEM->GetD2DBrush(ColorOrange).Get());
                 }
             }*/
-            if (m_Controller && g_GRAPHICSSYSTEM->IsSkeletonDrawingOn())
+            if (m_Controller && g_DRAWSTATE->m_drawingMode == DebugDrawingMode::Skeleton)
             {
                 //m_Controller->RenderSkeleton(spD2DDeviceContext);
                 m_Controller->RenderSkeleton2D(spD2DDeviceContext);

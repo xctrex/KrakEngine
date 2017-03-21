@@ -12,6 +12,7 @@ Creation date: 12/15/2013
 #include "Precompiled.h"
 #include "GamePlaySystem.h"
 #include "InputSystem.h"
+#include "DrawingState.h"
 #include "Transform.h"
 #include "Sprite.h"
 #include "RigidBody.h"
@@ -703,7 +704,7 @@ namespace KrakEngine{
 		if(g_INPUTSYSTEM->IsKeyTriggered(DIK_G) ||
 			g_INPUTSYSTEM->IsButtonTriggered(XINPUT_GAMEPAD_RIGHT_SHOULDER))
 		{            
-			g_GRAPHICSSYSTEM->ToggleDebug();
+            g_DRAWSTATE->m_drawingMode = static_cast<DebugDrawingMode>(((int)g_DRAWSTATE->m_drawingMode + 1) % (int)DebugDrawingMode::Depth);
 		}
         if (g_INPUTSYSTEM->IsKeyTriggered(DIK_M))
         {            
@@ -711,11 +712,11 @@ namespace KrakEngine{
         }
         if (g_INPUTSYSTEM->IsKeyTriggered(DIK_L))
         {
-            g_GRAPHICSSYSTEM->ToggleIsLightDynamic();
+            g_DRAWSTATE->m_isLightDynamic = !g_DRAWSTATE->m_isLightDynamic;;
         }
         if (g_INPUTSYSTEM->IsKeyTriggered(DIK_O))
         {
-            g_GRAPHICSSYSTEM->ToggleIsRotationDynamic();
+            g_DRAWSTATE->m_isStrokeDirectionDynamic = !g_DRAWSTATE->m_isStrokeDirectionDynamic;;
         }
 
 #if defined(_DEBUG)
@@ -834,10 +835,11 @@ namespace KrakEngine{
 		if (g_INPUTSYSTEM->IsKeyTriggered(DIK_ESCAPE) ||
 			g_INPUTSYSTEM->IsButtonTriggered(XINPUT_GAMEPAD_START))
 		{
-			if (m_MenuManager->GetCurrentMenuType() == MenuType::Pause){
+            CORE->SetNextState(GameStates::Quit);
+			/*if (m_MenuManager->GetCurrentMenuType() == MenuType::Pause){
 				m_MenuManager->DeleteCurrentMenu();
 				CORE->SetNextState(GameStates::InGame);
-			}
+			}*/
 		}
 
 

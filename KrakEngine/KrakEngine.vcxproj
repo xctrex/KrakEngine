@@ -255,6 +255,7 @@
     <ClInclude Include="ComponentFactory.h" />
     <ClInclude Include="ControllerSystem.h" />
     <ClInclude Include="Conversions.h" />
+    <ClInclude Include="DrawingState.h" />
     <ClInclude Include="File\ChunkReader.hpp" />
     <ClInclude Include="File\FileElements.hpp" />
     <ClInclude Include="File\FilePath.h" />

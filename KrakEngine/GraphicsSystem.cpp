@@ -29,12 +29,16 @@ Creation date: 1/20/2014
 #include <iostream>
 
 #include "TAM.h"
+#include "DrawingState.h"
 
 #define TRACK_DEPTH 4.0f
 
 namespace KrakEngine{
     
-	GraphicsSystem* g_GRAPHICSSYSTEM = NULL;
+	GraphicsSystem* g_GRAPHICSSYSTEM = nullptr;
+
+    DrawingState* g_DRAWSTATE = nullptr;
+
     GraphicsSystem::GraphicsSystem(WindowSystem* window) :
         m_Window(window),
         m_DPIX(96.0f),
@@ -57,10 +61,15 @@ namespace KrakEngine{
         //Set up the global pointer
         ThrowErrorIf(g_GRAPHICSSYSTEM != NULL, "Graphics already initialized");
 		g_GRAPHICSSYSTEM = this;
+        g_DRAWSTATE = new DrawingState();
 	}
 
     GraphicsSystem::~GraphicsSystem(){
         CoUninitialize();
+        if (g_DRAWSTATE)
+        {
+            delete g_DRAWSTATE;
+        }
     }
     
     bool GraphicsSystem::Initialize(){
@@ -163,23 +172,10 @@ namespace KrakEngine{
         }
 	};
 
-
-    bool GraphicsSystem::IsGBufferCreationOn() { return true; }
-    bool GraphicsSystem::IsDebugDrawingOn() { return m_DrawDebug == 1; }
-    bool GraphicsSystem::IsGrayscaleDrawingOn() { return m_DrawDebug == 0; }
-    bool GraphicsSystem::IsGBufferDrawingOn() { return m_DrawDebug == 2; }
-    bool GraphicsSystem::IsSceneDrawingOn() { return m_DrawDebug == 1 || m_DrawDebug == 5; }
-    bool GraphicsSystem::IsMeshDrawingOn() { return true; }
-    bool GraphicsSystem::IsSkeletonDrawingOn() { return m_DrawDebug == 4; }
-    bool GraphicsSystem::IsDrawBindPose() { return m_DrawDebug == 3; }
-    bool GraphicsSystem::IsSkinningOn() { return m_DrawDebug == 5; }
-    bool GraphicsSystem::IsLuminanceVisualizerOn() { return m_DrawDebug == 0; }
-    void GraphicsSystem::ToggleIsLightDynamic() { m_isLightDynamic = !m_isLightDynamic; }
-    void GraphicsSystem::ToggleIsRotationDynamic() { m_isRotationDynamic = !m_isRotationDynamic; }
     void GraphicsSystem::Update(float dt){        
-        m_spD3DDeviceContext1->ClearRenderTargetView(m_spD3DRenderTargetView.Get(), Colors::Transparent);
-        m_spD3DDeviceContext1->ClearRenderTargetView(m_spIntermediateRTV.Get(), Colors::Transparent);
-        m_spD3DDeviceContext1->ClearRenderTargetView(m_spIntermediateRTVDebug.Get(), Colors::Transparent);        
+        m_spD3DDeviceContext1->ClearRenderTargetView(m_spD3DRenderTargetView.Get(), Colors::White);
+        m_spD3DDeviceContext1->ClearRenderTargetView(m_spIntermediateRTV.Get(), Colors::White);
+        m_spD3DDeviceContext1->ClearRenderTargetView(m_spIntermediateRTVDebug.Get(), Colors::White);
         m_spD3DDeviceContext1->ClearDepthStencilView(m_GBuffer.GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
         m_spD3DDeviceContext1->OMSetDepthStencilState(m_GBuffer.GetDepthStencilState(), 1);
 
@@ -200,22 +196,7 @@ namespace KrakEngine{
 
         m_pCurrentCamera->Update(dt);
 
-        // Update the lighting
-        // TODO: control this with the input system
-        if (m_isLightDynamic)
-        {
-            float multiplier = 50.f;
-            m_lightTime += dt;
-            m_lightPosition[0] = sin(m_lightTime) * multiplier;
-            m_lightPosition[1] = 10.f;
-            m_lightPosition[2] = cos(m_lightTime) * multiplier;
-            m_lightPosition[3] = .5f;
-        }
-
-        if (m_isRotationDynamic)
-        {
-            m_rotationTime += dt;
-        }
+        g_DRAWSTATE->Update(dt);
 
         // Update the once per-frame constant buffer
         ConstantBufferPerFrame cbPerFrame;
@@ -223,11 +204,11 @@ namespace KrakEngine{
         XMStoreFloat4x4(&(cbPerFrame.Projection), XMMatrixTranspose(XMLoadFloat4x4(&m_Projection)));
         cbPerFrame.ScreenSize.x = (float)m_WindowSize.x; //g_GRAPHICSSYSTEM->GetWindowSize().x;//m_WindowSize.x;
         cbPerFrame.ScreenSize.y = (float)m_WindowSize.y; //g_GRAPHICSSYSTEM->GetWindowSize().y;//m_WindowSize.y;
-        cbPerFrame.LightPosition.x = m_lightPosition[0];
-        cbPerFrame.LightPosition.y = m_lightPosition[1];
-        cbPerFrame.LightPosition.z = m_lightPosition[2];
-        cbPerFrame.LightPosition.w = m_lightPosition[3];
-        cbPerFrame.StrokeRotation = m_rotationTime;
+        cbPerFrame.LightPosition.x = g_DRAWSTATE->m_lightPosition[0];
+        cbPerFrame.LightPosition.y = g_DRAWSTATE->m_lightPosition[1];
+        cbPerFrame.LightPosition.z = g_DRAWSTATE->m_lightPosition[2];
+        cbPerFrame.LightPosition.w = g_DRAWSTATE->m_lightPosition[3];
+        cbPerFrame.StrokeRotation = g_DRAWSTATE->m_strokeDirectionTime;
         m_spD3DDeviceContext1->UpdateSubresource(m_spConstantBufferPerFrame.Get(), 0, nullptr, &cbPerFrame, 0, 0);
 
         // Setup the graphics pipeline. For now we use the same InputLayout and set of
@@ -248,7 +229,7 @@ namespace KrakEngine{
             DrawModels();
             m_GBuffer.UnbindTargets(m_spD3DDeviceContext1);
 
-            if(IsGBufferDrawingOn()){
+            if(g_DRAWSTATE->m_drawingMode == DebugDrawingMode::GBufferNormal){
                 // Target the back buffer
                 m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spD3DRenderTargetView.GetAddressOf(), NULL);            
             
@@ -262,18 +243,18 @@ namespace KrakEngine{
                 // Cleanup
                 m_GBuffer.UnbindInput(m_spD3DDeviceContext1);
             }
-            if (IsLuminanceVisualizerOn())
+            if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::Default)
             {
                 DoLighting();
             }
-            if(IsSceneDrawingOn()){//true){//IsSceneDrawingOn()){
+            if(g_DRAWSTATE->m_drawingMode == DebugDrawingMode::EdgeDetection){//true){//IsSceneDrawingOn()){
                 DoPostProcessing();
             }
         }
 
         UpdateSprites(dt);
 
-        if(IsSceneDrawingOn()){ 
+        if(true){ 
             // Set the render target to the back buffer and draw the sprites
             m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spD3DRenderTargetView.GetAddressOf(), m_GBuffer.GetReadOnlyDSV());
 
@@ -342,32 +323,8 @@ namespace KrakEngine{
         //str.append("\rMin Framerate: ");
         //str.append(minbuffer);
         str.append("\rPress g to toggle render mode");
-        std::string debugModeString;
-        switch (m_DrawDebug)
-        {
-        case 0:
-            str.append("\rRender Mode " + std::to_string(m_DrawDebug) + ": Standard");
-            break;
-        case 1:
-            str.append("\rRender Mode " + std::to_string(m_DrawDebug) + ": Grayscale");
-            break;
-        case 2:
-            str.append("\rRender Mode " + std::to_string(m_DrawDebug) + ": GBuffer");
-            break;
-        case 3:
-            str.append("\rRender Mode " + std::to_string(m_DrawDebug) + ": Bind Pose");
-            break;
-        case 4:
-            str.append("\rRender Mode " + std::to_string(m_DrawDebug) + ": Skeleton");
-            break;
-
-        default:
-            break;
-        }
-        str.append("\rWASD to move along x and z axis");
-        str.append("\rx and z to move up and down the y axis");
-        str.append("\rMove mouse to look around.");
-        str.append("\rHit Esc to bring up the menu and quit the application.");
+        std::string debugModeString = g_DRAWSTATE->GetDebugModeString();
+        str.append(debugModeString);
 		std::list<Text*>::iterator textit = m_TextList.begin();
         for(;textit!=m_TextList.end();++textit)
         {
@@ -405,10 +362,8 @@ namespace KrakEngine{
         {
             DrawDebugInfo();
         }*/
-        if (IsSkeletonDrawingOn())
-        {
-            DrawBones();
-        }
+        // DrawBones();
+
         //DrawPathMidpoint();
         //DrawPathSplineInterpolation();
         //DrawIKTarget();
@@ -586,11 +541,11 @@ namespace KrakEngine{
         UINT ModelNumber = 0;
         for(;it!=m_ModelList.end();++it)
         {
-            if (IsSkinningOn() && (*it)->m_Controller != nullptr)
+            if (g_DRAWSTATE->m_isSkinningOn && (*it)->m_Controller != nullptr)
             {
                 (*it)->Skin(m_spD3DDevice1, m_spD3DDeviceContext1);
             }
-            if (/*ModelNumber < 1 ||*/ (ModelNumber == m_ChooseModel && IsMeshDrawingOn()) ){
+            if (/*ModelNumber < 1 ||*/ (ModelNumber == (UINT)m_ChooseModel) ){
                 (*it)->Draw(m_spD3DDeviceContext1, m_spConstantBufferPerObjectVS, m_spConstantBufferPerObjectPS);
             }
 
@@ -605,7 +560,7 @@ namespace KrakEngine{
         UINT ModelNumber = 0;
         for (; it != m_ModelList.end(); ++it)
         {
-            if (ModelNumber == m_ChooseModel){
+            if (ModelNumber == (UINT)m_ChooseModel){
                 (*it)->DrawBones(m_spD2DDeviceContext, m_spD2DFactory, m_spConstantBufferPerObjectVS, m_spConstantBufferPerObjectPS);
             }
 
@@ -662,7 +617,7 @@ namespace KrakEngine{
         
             // Get the time u along the parametric curve using the inverse arc length function
             // and the normalized distance along the arc the model should have traveled at this point
-            float u = InverseArcLength(smoothDistanceAlongArc);
+            float u = (float)InverseArcLength(smoothDistanceAlongArc);
 
             if (m_ModelList.size() > 1)
             {
@@ -933,7 +888,7 @@ namespace KrakEngine{
 
     XMFLOAT2 GraphicsSystem::SplineInterpolate(double t)
     {
-        return XMFLOAT2(Spline(m_XConst, t * m_SplineScale), Spline(m_ZConst, t * m_SplineScale));
+        return XMFLOAT2((float)Spline(m_XConst, t * m_SplineScale), (float)Spline(m_ZConst, t * m_SplineScale));
     }
 
     void GraphicsSystem::UpdateIKSystem()
@@ -1098,7 +1053,7 @@ namespace KrakEngine{
         }
         
         m_ArcLength = m_ArcLengthTable.back().s;
-        m_AnimationLength = m_ArcLength / 7.0f;
+        m_AnimationLength = (float)m_ArcLength / 7.0f;
         m_NormalizedDistanceAlongArc = 0.0f;
     }
 

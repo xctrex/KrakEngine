@@ -21,6 +21,7 @@ Creation date: 1/20/2014
 namespace KrakEngine{
 
     struct TAMStroke;
+    class DrawingState;
 
     struct SpriteAnimation{
         float Length;
@@ -89,20 +90,7 @@ namespace KrakEngine{
         XMFLOAT3 ConvertToWorldCoordinates(XMFLOAT2 screenCoordinate, XMFLOAT3 p0, XMFLOAT3 p1, XMFLOAT3 p2);
 
         void SetDrawTAMs(bool drawTAMs) { m_drawTAMs = drawTAMs; }
-        void ToggleDebug(){ m_DrawDebug = (m_DrawDebug + 1) % 6; }
-        void ToggleModel(){ m_ChooseModel = 1 + (m_ChooseModel + 1) % 5; }
-        bool IsGBufferCreationOn();
-        bool IsDebugDrawingOn();
-        bool IsGrayscaleDrawingOn();
-        bool IsGBufferDrawingOn();
-        bool IsSceneDrawingOn();
-        bool IsMeshDrawingOn();
-        bool IsSkeletonDrawingOn();
-        bool IsDrawBindPose();
-        bool IsSkinningOn();
-        bool IsLuminanceVisualizerOn();
-        void ToggleIsLightDynamic();
-        void ToggleIsRotationDynamic();
+        void ToggleModel(){ m_ChooseModel = 1 + (m_ChooseModel + 1) % (m_ModelList.size() + 1); }
         void LoadModels();
         void LoadAlbedoModel(tinyxml2::XMLElement* txmlElement, std::string ModelName);
         void LoadTexturedModel(tinyxml2::XMLElement* txmlElement, std::string ModelName);
@@ -409,12 +397,8 @@ namespace KrakEngine{
 
 
         // Real-Time Pencil Rendering Variables
-        float m_lightTime = 4.0f;
-        float m_lightPosition[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-        bool m_isLightDynamic = false;
-        float m_rotationTime = 0.0f;
-        bool m_isRotationDynamic = false;
 
 	};
 	extern GraphicsSystem* g_GRAPHICSSYSTEM;
+    extern DrawingState* g_DRAWSTATE;
 }
