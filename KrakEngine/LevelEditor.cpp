@@ -913,9 +913,9 @@ namespace KrakEngine{
 	void LevelEditor::FindAllVisibleObjects()
 	{
 		AllObjectsVisible.clear();
-		Transform * tc = Cursor->has(Transform);
+		Transform * cursortc = Cursor->has(Transform);
 
-		XMFLOAT3 cursorpos = tc->GetPosition();
+		XMFLOAT3 cursorpos = cursortc->GetPosition();
 		
 		ObjectList::iterator it = AllGameObjectsInLevel.begin();
 		for( ; it != AllGameObjectsInLevel.end(); ++it)

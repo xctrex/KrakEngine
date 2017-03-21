@@ -11,8 +11,8 @@ Creation date: 2/7/14
 #pragma once
 
 //For Lua
-#include "Lua\lua.hpp"
-#pragma comment(lib, "lua5.1.lib")
+#include "Lua\include\lua.hpp"
+#pragma comment(lib, "lua53.lib")
 
 #include <string>
 

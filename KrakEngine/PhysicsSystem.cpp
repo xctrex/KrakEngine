@@ -112,7 +112,7 @@ namespace KrakEngine{
 
 	void PhysicsSystem::BroadPhaseCollision(){
 
-		ObjectLinkList<RigidBody>::iterator it = Bodies.begin();
+		it = Bodies.begin();
 		
 		for (; it != Bodies.end(); ++it){	
 

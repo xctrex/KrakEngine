@@ -68,7 +68,7 @@ namespace KrakEngine{
 
         spD2DDeviceContext->DrawTextA(
             content,
-            m_TextContent.length(),
+            (UINT32)m_TextContent.length(),
             spDWriteTextFormat.Get(),
             m_Rect,
             spBrush.Get()

@@ -46,7 +46,7 @@ namespace KrakEngine{
             GChunk c;
             c.Type = 0;
             file.read((char*)&c.Type, sizeof(UINT) * 2);
-            c.StartPos = file.tellg();
+            c.StartPos = (UINT)file.tellg();
             c.EndPos = c.StartPos + c.Size;
             return c;
         }

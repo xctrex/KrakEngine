@@ -74,7 +74,7 @@ namespace KrakEngine
 			m_time = m_maxtime;
 		}
 		else
-			m_time = rand() % m_maxtime + m_mintime;
+			m_time = (float)( rand() % (int)m_maxtime + (int)m_mintime);
 
 	}
 

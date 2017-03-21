@@ -43,13 +43,31 @@ Temporary Items
 .apdisk
 
 #KrakEngine stuff
-/Debug
-/*.sdf
-/*.opensdf
-/*.suo
-/Release
-/Debug
+*.sdf
+*.opensdf
+*.suo
+Release/
+Debug/
 /ipch
 /*.psess
-/*.exe
+*.exe
 /*.zip
+x64/
+*.tlog
+
+# Visual C++ cache files
+ipch/
+*.aps
+*.ncb
+*.opendb
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+*.VC.VC.opendb
+
+# Visual Studio profiler
+*.psess
+*.vsp
+*.vspx
+*.sap

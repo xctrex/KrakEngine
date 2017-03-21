@@ -28,6 +28,8 @@ Creation date: 1/20/2014
 
 #include <iostream>
 
+#include "TAM.h"
+
 #define TRACK_DEPTH 4.0f
 
 namespace KrakEngine{
@@ -161,6 +163,19 @@ namespace KrakEngine{
         }
 	};
 
+
+    bool GraphicsSystem::IsGBufferCreationOn() { return true; }
+    bool GraphicsSystem::IsDebugDrawingOn() { return m_DrawDebug == 1; }
+    bool GraphicsSystem::IsGrayscaleDrawingOn() { return m_DrawDebug == 0; }
+    bool GraphicsSystem::IsGBufferDrawingOn() { return m_DrawDebug == 2; }
+    bool GraphicsSystem::IsSceneDrawingOn() { return m_DrawDebug == 1 || m_DrawDebug == 5; }
+    bool GraphicsSystem::IsMeshDrawingOn() { return true; }
+    bool GraphicsSystem::IsSkeletonDrawingOn() { return m_DrawDebug == 4; }
+    bool GraphicsSystem::IsDrawBindPose() { return m_DrawDebug == 3; }
+    bool GraphicsSystem::IsSkinningOn() { return m_DrawDebug == 5; }
+    bool GraphicsSystem::IsLuminanceVisualizerOn() { return m_DrawDebug == 0; }
+    void GraphicsSystem::ToggleIsLightDynamic() { m_isLightDynamic = !m_isLightDynamic; }
+    void GraphicsSystem::ToggleIsRotationDynamic() { m_isRotationDynamic = !m_isRotationDynamic; }
     void GraphicsSystem::Update(float dt){        
         m_spD3DDeviceContext1->ClearRenderTargetView(m_spD3DRenderTargetView.Get(), Colors::Transparent);
         m_spD3DDeviceContext1->ClearRenderTargetView(m_spIntermediateRTV.Get(), Colors::Transparent);
@@ -185,12 +200,34 @@ namespace KrakEngine{
 
         m_pCurrentCamera->Update(dt);
 
+        // Update the lighting
+        // TODO: control this with the input system
+        if (m_isLightDynamic)
+        {
+            float multiplier = 50.f;
+            m_lightTime += dt;
+            m_lightPosition[0] = sin(m_lightTime) * multiplier;
+            m_lightPosition[1] = 10.f;
+            m_lightPosition[2] = cos(m_lightTime) * multiplier;
+            m_lightPosition[3] = .5f;
+        }
+
+        if (m_isRotationDynamic)
+        {
+            m_rotationTime += dt;
+        }
+
         // Update the once per-frame constant buffer
         ConstantBufferPerFrame cbPerFrame;
         XMStoreFloat4x4(&(cbPerFrame.View), XMMatrixTranspose(XMLoadFloat4x4(m_CameraList.front()->GetView())));
         XMStoreFloat4x4(&(cbPerFrame.Projection), XMMatrixTranspose(XMLoadFloat4x4(&m_Projection)));
         cbPerFrame.ScreenSize.x = (float)m_WindowSize.x; //g_GRAPHICSSYSTEM->GetWindowSize().x;//m_WindowSize.x;
         cbPerFrame.ScreenSize.y = (float)m_WindowSize.y; //g_GRAPHICSSYSTEM->GetWindowSize().y;//m_WindowSize.y;
+        cbPerFrame.LightPosition.x = m_lightPosition[0];
+        cbPerFrame.LightPosition.y = m_lightPosition[1];
+        cbPerFrame.LightPosition.z = m_lightPosition[2];
+        cbPerFrame.LightPosition.w = m_lightPosition[3];
+        cbPerFrame.StrokeRotation = m_rotationTime;
         m_spD3DDeviceContext1->UpdateSubresource(m_spConstantBufferPerFrame.Get(), 0, nullptr, &cbPerFrame, 0, 0);
 
         // Setup the graphics pipeline. For now we use the same InputLayout and set of
@@ -201,22 +238,22 @@ namespace KrakEngine{
         
         m_spD3DDeviceContext1->PSSetConstantBuffers(0, 1, m_spConstantBufferPerFrame.GetAddressOf());
 
-        //UpdateAnimation(dt);
-        //DrawFloor();
-        DrawBodies(g_PHYSICSSYSTEM->m_rigidBodies, NBODIES);
-        //UpdateModels(dt);
+        UpdateAnimation(dt);
+//        DrawFloor();
+        //DrawBodies(g_PHYSICSSYSTEM->m_rigidBodies, NBODIES);
+        UpdateModels(dt);
         if(true){//IsGBufferCreationOn()){            
             // Draw the models to the GBuffer
-//            m_GBuffer.TargetGBuffer(m_spD3DDeviceContext1);
+            m_GBuffer.TargetGBuffer(m_spD3DDeviceContext1);
             DrawModels();
-//            m_GBuffer.UnbindTargets(m_spD3DDeviceContext1);
+            m_GBuffer.UnbindTargets(m_spD3DDeviceContext1);
 
             if(IsGBufferDrawingOn()){
                 // Target the back buffer
                 m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spD3DRenderTargetView.GetAddressOf(), NULL);            
             
                 // Bind the Resource Views
-                m_GBuffer.BindInput(m_spD3DDeviceContext1, m_spPointSampler);
+                m_GBuffer.BindInput(m_spD3DDeviceContext1, m_spPointSampler, m_spMirrorSampler);
                 m_GBuffer.PrepareForUnpack(m_spD3DDeviceContext1, m_spConstantBufferGBufferUnpack, m_pCurrentCamera->GetView(), &m_Projection);
                 
                 // Render the GBuffer visualizer shaders
@@ -225,9 +262,12 @@ namespace KrakEngine{
                 // Cleanup
                 m_GBuffer.UnbindInput(m_spD3DDeviceContext1);
             }
+            if (IsLuminanceVisualizerOn())
+            {
+                DoLighting();
+            }
             if(IsSceneDrawingOn()){//true){//IsSceneDrawingOn()){
-//                DoLighting();
-                //DoPostProcessing();
+                DoPostProcessing();
             }
         }
 
@@ -248,8 +288,27 @@ namespace KrakEngine{
             DrawSprites();
         }
         // Draw FPS
-
         m_spD2DDeviceContext->BeginDraw();
+
+        //DrawTAMs
+        //get dimension of each TAM
+        /*float tamHeight = m_spD2DDeviceContext->GetSize().height / (float)m_tamGenerator.m_imageTable.size();
+        float tamWidth = m_spD2DDeviceContext->GetSize().width / (float)m_tamGenerator.m_imageTable[0].size();
+        float tamDimension = min(tamHeight, tamWidth);
+        for (size_t i = 0; i < m_tamGenerator.m_imageTable.size(); ++i)
+        {
+            for (size_t j = 0; j < m_tamGenerator.m_imageTable[i].size(); ++j)
+            {
+                m_spD2DDeviceContext->DrawBitmap(
+                    m_tamGenerator.m_imageTable[i][j].Get(),
+                    D2D1::RectF(
+                        j * tamDimension,
+                        i * tamDimension,
+                        j * tamDimension + tamDimension,
+                        i * tamDimension + tamDimension));
+            }
+        }*/
+
 
         // Create a text component for fps
 		char buffer[32];
@@ -283,12 +342,31 @@ namespace KrakEngine{
         //str.append("\rMin Framerate: ");
         //str.append(minbuffer);
         str.append("\rPress g to toggle render mode");
+        std::string debugModeString;
+        switch (m_DrawDebug)
+        {
+        case 0:
+            str.append("\rRender Mode " + std::to_string(m_DrawDebug) + ": Standard");
+            break;
+        case 1:
+            str.append("\rRender Mode " + std::to_string(m_DrawDebug) + ": Grayscale");
+            break;
+        case 2:
+            str.append("\rRender Mode " + std::to_string(m_DrawDebug) + ": GBuffer");
+            break;
+        case 3:
+            str.append("\rRender Mode " + std::to_string(m_DrawDebug) + ": Bind Pose");
+            break;
+        case 4:
+            str.append("\rRender Mode " + std::to_string(m_DrawDebug) + ": Skeleton");
+            break;
+
+        default:
+            break;
+        }
         str.append("\rWASD to move along x and z axis");
         str.append("\rx and z to move up and down the y axis");
         str.append("\rMove mouse to look around.");
-        str.append("\rHit e to edit the anchor points. Left click to make the nearest point an anchor point.");
-        str.append("\rRight click to make the nearest anchor point no longer an anchor point.");
-        str.append("\rPress e again to go back to moving the camera.");
         str.append("\rHit Esc to bring up the menu and quit the application.");
 		std::list<Text*>::iterator textit = m_TextList.begin();
         for(;textit!=m_TextList.end();++textit)
@@ -310,12 +388,14 @@ namespace KrakEngine{
 			}
 		}
 #endif*/
-        UpdateImages(dt);
-        DrawImages();
+        //UpdateImages(dt);
+        //DrawImages();
         
         SortText();
         DrawTextComponents();
         
+       
+
         DXThrowIfFailed(
             m_spD2DDeviceContext->EndDraw()
             );
@@ -327,7 +407,7 @@ namespace KrakEngine{
         }*/
         if (IsSkeletonDrawingOn())
         {
-        //    DrawBones();
+            DrawBones();
         }
         //DrawPathMidpoint();
         //DrawPathSplineInterpolation();
@@ -360,14 +440,14 @@ namespace KrakEngine{
         m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spD3DRenderTargetView.GetAddressOf(), m_GBuffer.GetReadOnlyDSV());            
             
         // Bind the GBuffer as input
-        m_GBuffer.BindInput(m_spD3DDeviceContext1, m_spPointSampler);
+        m_GBuffer.BindInput(m_spD3DDeviceContext1, m_spPointSampler, m_spMirrorSampler);
 
         // Prepare the GBuffer to be unpacked
         m_GBuffer.PrepareForUnpack(m_spD3DDeviceContext1, m_spConstantBufferGBufferUnpack, m_pCurrentCamera->GetView(), &m_Projection);
             
         // Render the directional lights
         // Draw a fullscreen quad with the output
-        DrawFullScreenQuad(m_spDirectionalLightVertexShader, m_spDirectionalLightPixelShader);
+        DrawFullScreenQuad(m_spLuminanceVertexShader, m_spLuminancePixelShader);
 
         // Unbind input
         m_GBuffer.UnbindInput(m_spD3DDeviceContext1);
@@ -379,7 +459,7 @@ namespace KrakEngine{
         //m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spD3DRenderTargetView.GetAddressOf(), NULL);
 
         // Bind the GBuffer as input
-        m_GBuffer.BindInput(m_spD3DDeviceContext1, m_spPointSampler);
+        m_GBuffer.BindInput(m_spD3DDeviceContext1, m_spPointSampler, m_spMirrorSampler);
         // Prepare the GBuffer to be unpacked
         m_GBuffer.PrepareForUnpack(m_spD3DDeviceContext1, m_spConstantBufferGBufferUnpack, m_pCurrentCamera->GetView(), &m_Projection);
         
@@ -815,13 +895,13 @@ namespace KrakEngine{
 
             a[n - 1][i] = m_LinearSystemDoublePrimed[n - 3][i];
         }
-        int info = 0;
+        alglib::ae_int_t  info = 0;
         alglib::densesolverreport report;
         
         alglib::rmatrixsolve(a, n, coords, info, report, constants);
 
         std::vector<double> out;
-        for (size_t i = 0; i < constants.length(); ++i)
+        for (int i = 0; i < constants.length(); ++i)
         {
             out.push_back(constants[i]);
         }
@@ -1687,6 +1767,7 @@ namespace KrakEngine{
         
         CreateShaders(L"Shaders\\ContourDetectionPass1.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, m_spContourDetectionPass1VertexShader, m_spContourDetectionPass1PixelShader);
         CreateShaders(L"Shaders\\ContourDetectionPass2.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, m_spContourDetectionPass2VertexShader, m_spContourDetectionPass2PixelShader);
+        CreateShaders(L"Shaders\\LuminanceVisualizer.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, m_spLuminanceVertexShader, m_spLuminancePixelShader);
 
         CreateBuffers();
         CreateQuadResources();
@@ -2026,7 +2107,7 @@ namespace KrakEngine{
         D2D1_BITMAP_PROPERTIES1 bitmapProperties =
             D2D1::BitmapProperties1(
                 D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW,
-                D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED),
+                D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE),
                 m_DPIX,
                 m_DPIY
             );
@@ -2219,6 +2300,13 @@ namespace KrakEngine{
             m_spD3DDevice1->CreateSamplerState( &sampDesc, m_spLinearSampler.GetAddressOf())
             );
 
+        sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_MIRROR;
+        sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_MIRROR;
+        sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_MIRROR;
+        DXThrowIfFailed(
+            m_spD3DDevice1->CreateSamplerState(&sampDesc, m_spMirrorSampler.GetAddressOf())
+        );
+
         sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
         DXThrowIfFailed(
             m_spD3DDevice1->CreateSamplerState( &sampDesc, m_spPointSampler.GetAddressOf())
@@ -2270,7 +2358,7 @@ namespace KrakEngine{
 #endif
 
 		ComPtr<ID3DBlob> spErrorBlob;
-		hr = D3DCompileFromFile(szFileName, nullptr, nullptr, szEntryPoint, szShaderModel,
+		hr = D3DCompileFromFile(szFileName, nullptr, D3D_COMPILE_STANDARD_FILE_INCLUDE, szEntryPoint, szShaderModel,
 			dwShaderFlags, 0, &m_spBlobOut, &spErrorBlob);
 		if (FAILED(hr))
 		{
@@ -2346,7 +2434,8 @@ namespace KrakEngine{
         tinyxml2::XMLElement* modelElement = txmlDoc.FirstChildElement("Model");
         while (modelElement != nullptr)
         {   
-            //Model* newModel = LoadBinaryModel(modelElement->Attribute("Path"), m_spD3DDevice1);
+            Model newModel;
+            newModel.LoadBinaryModel(modelElement->Attribute("Path"), m_spD3DDevice1);
             //ThrowErrorIf(newModel == NULL, "Model did not load");
             
             /*
@@ -2513,6 +2602,16 @@ namespace KrakEngine{
 
     
     void GraphicsSystem::LoadBitmapFromFile(std::string BitmapName, std::wstring BitmapFilePath){
+        // Add the bitmap to the bitmap map
+        m_BitmapMap.insert(std::pair<std::string, ComPtr<ID2D1Bitmap1> >(BitmapName, CreateBitmapFromFile(BitmapFilePath)));
+    }
+
+    ComPtr<ID2D1Bitmap1> GraphicsSystem::CreateBitmapFromFile(std::wstring BitmapFilePath)
+    {
+        return CreateBitmapFromFile(BitmapFilePath, D2D1_BITMAP_OPTIONS_NONE);
+    }
+
+    ComPtr<ID2D1Bitmap1> GraphicsSystem::CreateBitmapFromFile(std::wstring BitmapFilePath, D2D1_BITMAP_OPTIONS options) {
         // Create the decoder
         ComPtr<IWICBitmapDecoder> spDecoder;
         DXThrowIfFailed(
@@ -2522,48 +2621,111 @@ namespace KrakEngine{
                 GENERIC_READ,
                 WICDecodeMetadataCacheOnLoad,
                 &spDecoder
-                )
-            );
+            )
+        );
 
         // Create the initial frame
         ComPtr<IWICBitmapFrameDecode> spSource;
         DXThrowIfFailed(
             spDecoder->GetFrame(0, &spSource)
-            );
+        );
 
         // Convert the image format to 32bppPBGRA
         ComPtr<IWICFormatConverter> spConverter;
         DXThrowIfFailed(
             m_spWICFactory->CreateFormatConverter(&spConverter)
-            );
+        );
 
         DXThrowIfFailed(
             spConverter->Initialize(
                 spSource.Get(),
-                GUID_WICPixelFormat32bppPBGRA,
+                GUID_WICPixelFormat32bppBGR,
                 WICBitmapDitherTypeNone,
                 NULL,
                 0.0f,
                 WICBitmapPaletteTypeMedianCut
-                )
-            );
+            )
+        );
 
         // Create a Direct2D bitmap from the WIC bitmap
         ComPtr<ID2D1Bitmap1> spBitmap;
+
+        D2D1_BITMAP_PROPERTIES1 properties;
+        properties.dpiX = m_DPIX;
+        properties.dpiY = m_DPIY;
+        properties.pixelFormat.format = DXGI_FORMAT_B8G8R8A8_UNORM;
+        properties.pixelFormat.alphaMode = D2D1_ALPHA_MODE_IGNORE;
+        properties.bitmapOptions = options;
+        properties.colorContext = nullptr;
         DXThrowIfFailed(
             m_spD2DDeviceContext->CreateBitmapFromWicBitmap(
                 spConverter.Get(),
-                NULL,
+                properties,
                 spBitmap.GetAddressOf()
-                )
-            );
-        
-        // Add the bitmap to the bitmap map
-        m_BitmapMap.insert(std::pair<std::string, ComPtr<ID2D1Bitmap1> >(BitmapName, spBitmap));
+            )
+        );
+
+        return spBitmap;
     }
     
+    ComPtr<ID2D1Bitmap1> GraphicsSystem::CreateWriteableBitmap(D2D1_SIZE_U size)
+    {
+        ComPtr<ID2D1Bitmap1> spBitmap;
+
+        D2D1_BITMAP_PROPERTIES1 properties;
+        properties.dpiX = m_DPIX;
+        properties.dpiY = m_DPIY;
+        properties.pixelFormat.format = DXGI_FORMAT_B8G8R8A8_UNORM;
+        properties.pixelFormat.alphaMode = D2D1_ALPHA_MODE_IGNORE;
+        properties.bitmapOptions = D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW;
+        properties.colorContext = nullptr;
+        DXThrowIfFailed(
+            m_spD2DDeviceContext->CreateBitmap(
+                size,
+                nullptr,
+                0,
+                properties,
+                spBitmap.GetAddressOf()                
+            )
+        );
+
+        return spBitmap;
+    }
+
+    ComPtr<ID2D1Bitmap1> GraphicsSystem::CreateBitmapCopy(ComPtr<ID2D1Bitmap1> sourceBitmap, D2D1_BITMAP_OPTIONS options)
+    {
+        ComPtr<ID2D1Bitmap1> destinationBitmap;
+        D2D1_BITMAP_PROPERTIES1 properties;
+        properties.dpiX = m_DPIX;
+        properties.dpiY = m_DPIY;
+        properties.pixelFormat.format = DXGI_FORMAT_B8G8R8A8_UNORM;
+        properties.pixelFormat.alphaMode = D2D1_ALPHA_MODE_IGNORE;
+        properties.bitmapOptions = options;
+        properties.colorContext = nullptr;
+
+        DXThrowIfFailed(
+            m_spD2DDeviceContext->CreateBitmap(
+                sourceBitmap.Get()->GetPixelSize(),
+                nullptr,
+                0,
+                &properties,
+                destinationBitmap.GetAddressOf()
+            ));
+
+        DXThrowIfFailed(
+            destinationBitmap->CopyFromBitmap(nullptr, sourceBitmap.Get(), nullptr)
+        );
+
+        return destinationBitmap;
+    }
+
+    ComPtr<ID2D1Bitmap1> GraphicsSystem::CreateReadableBitmapCopy(ComPtr<ID2D1Bitmap1> sourceBitmap)
+    {
+        return CreateBitmapCopy(sourceBitmap, D2D1_BITMAP_OPTIONS_CPU_READ | D2D1_BITMAP_OPTIONS_CANNOT_DRAW);
+    }
+
     const AlbedoModel* GraphicsSystem::GetAlbedoModel(std::string ModelName){
-        std::hash_map<std::string, AlbedoModel >::iterator it = m_AlbedoModelMap.find(ModelName);
+        std::unordered_map<std::string, AlbedoModel >::iterator it = m_AlbedoModelMap.find(ModelName);
         if (it != m_AlbedoModelMap.end())
             return &it->second;
         else
@@ -2571,7 +2733,7 @@ namespace KrakEngine{
     }
 
     const TexturedModel* GraphicsSystem::GetTexturedModel(std::string ModelName){
-        std::hash_map<std::string, TexturedModel >::iterator it = m_TexturedModelMap.find(ModelName);
+        std::unordered_map<std::string, TexturedModel >::iterator it = m_TexturedModelMap.find(ModelName);
         if (it != m_TexturedModelMap.end())
             return &it->second;
         else
@@ -2579,7 +2741,7 @@ namespace KrakEngine{
     }
 
     const ComPtr<ID3D11ShaderResourceView> GraphicsSystem::GetTexture(std::string TextureName){
-        std::hash_map<std::string, ComPtr<ID3D11ShaderResourceView> >::iterator it = m_TextureMap.find(TextureName);
+        std::unordered_map<std::string, ComPtr<ID3D11ShaderResourceView> >::iterator it = m_TextureMap.find(TextureName);
         if (it != m_TextureMap.end())
             return it->second;
         else
@@ -2587,7 +2749,7 @@ namespace KrakEngine{
     }
 
     const ComPtr<ID2D1Bitmap1> GraphicsSystem::GetBitmap(std::string BitmapName){
-        std::hash_map<std::string, ComPtr<ID2D1Bitmap1> >::iterator it = m_BitmapMap.find(BitmapName);
+        std::unordered_map<std::string, ComPtr<ID2D1Bitmap1> >::iterator it = m_BitmapMap.find(BitmapName);
         if (it != m_BitmapMap.end())
             return it->second;
         else
@@ -2916,6 +3078,201 @@ namespace KrakEngine{
         }
 
         DXThrowIfFailed(m_spD2DDeviceContext->EndDraw());
+    }
+
+    //Tonal Art Map
+    TAMTexture GraphicsSystem::CreateBitmapCopy(TAMTexture source)
+    {
+        TAMTexture copy;
+        D2D1_BITMAP_PROPERTIES1 properties;
+        // TAMTODO: do not force all bitmaps to be CPU_READ
+        properties.bitmapOptions = D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW;
+        properties.dpiX = m_DPIX;
+        properties.dpiY = m_DPIY;
+        properties.pixelFormat.format = DXGI_FORMAT_B8G8R8A8_UNORM;
+        properties.pixelFormat.alphaMode = D2D1_ALPHA_MODE_IGNORE;
+        properties.colorContext = nullptr;
+
+        m_spD2DDeviceContext->CreateBitmap(
+            source.Get()->GetPixelSize(),
+            nullptr,
+            0,// TAMTODO: calculate proper pitch?
+            properties,
+            copy.GetAddressOf()
+        );
+
+        DXThrowIfFailed(copy.Get()->CopyFromBitmap(nullptr, source.Get(), nullptr));
+
+        /*m_spD2DDeviceContext->SetTarget(copy.Get());
+        m_spD2DDeviceContext->BeginDraw();
+        m_spD2DDeviceContext->DrawBitmap(source.Get());
+        DXThrowIfFailed(m_spD2DDeviceContext->EndDraw());*/
+
+        return copy;
+    }
+
+    void GraphicsSystem::SaveBitmapToFile(
+        ComPtr<ID2D1Bitmap1> d2dBitmap,
+        REFGUID wicFormat,
+        std::wstring filePath
+    )
+    {
+        ComPtr<IWICStream> stream;
+        DXThrowIfFailed(m_spWICFactory->CreateStream(stream.GetAddressOf()));
+        DXThrowIfFailed(stream->InitializeFromFilename(filePath.c_str(), GENERIC_WRITE));
+        // Create and initialize WIC Bitmap Encoder.
+        ComPtr<IWICBitmapEncoder> wicBitmapEncoder;
+        DXThrowIfFailed(
+            m_spWICFactory->CreateEncoder(
+                wicFormat,
+                nullptr,    // No preferred codec vendor.
+                &wicBitmapEncoder
+            )
+        );
+
+        DXThrowIfFailed(
+            wicBitmapEncoder->Initialize(
+                stream.Get(),
+                WICBitmapEncoderNoCache
+            )
+        );
+
+        // Create and initialize WIC Frame Encoder.
+        ComPtr<IWICBitmapFrameEncode> wicFrameEncode;
+        DXThrowIfFailed(
+            wicBitmapEncoder->CreateNewFrame(
+                &wicFrameEncode,
+                nullptr     // No encoder options.
+            )
+        );
+
+        DXThrowIfFailed(
+            wicFrameEncode->Initialize(nullptr)
+        );
+
+        ComPtr<IWICBitmap> wicBitmap;
+        DXThrowIfFailed(
+            m_spWICFactory->CreateBitmap(d2dBitmap.Get()->GetPixelSize().width, d2dBitmap.Get()->GetPixelSize().height, GUID_WICPixelFormat32bppBGR, WICBitmapCacheOnDemand, &wicBitmap)
+        );
+        D2D1_RENDER_TARGET_PROPERTIES rtProps = D2D1::RenderTargetProperties();
+        rtProps.pixelFormat = D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_IGNORE);
+        rtProps.type = D2D1_RENDER_TARGET_TYPE_DEFAULT;
+        rtProps.usage = D2D1_RENDER_TARGET_USAGE_NONE;
+
+        // define the render target
+        ComPtr<ID2D1RenderTarget> spRenderTarget = 0;
+        DXThrowIfFailed(m_spD2DFactory->CreateWicBitmapRenderTarget(wicBitmap.Get(), rtProps, spRenderTarget.GetAddressOf())
+        );
+        ComPtr<ID2D1Bitmap> spBitmap;
+        DXThrowIfFailed(
+            spRenderTarget->CreateBitmap(d2dBitmap.Get()->GetPixelSize(), D2D1::BitmapProperties(d2dBitmap->GetPixelFormat()), &spBitmap)
+        );
+
+       /* DXThrowIfFailed(
+            spBitmap->CopyFromBitmap(nullptr, d2dBitmap.Get(), nullptr)
+            );
+        m_spD2DDeviceContext->SetTarget(spBitmap.Get());
+        spRenderTarget->BeginDraw();
+        spRenderTarget->Clear();
+        spRenderTarget->DrawBitmap(spBitmap.Get());
+        DXThrowIfFailed(spRenderTarget->EndDraw());*/
+
+        ComPtr<ID2D1Bitmap1> readableD2DBitmap = CreateReadableBitmapCopy(d2dBitmap);
+        D2D1_MAP_OPTIONS options = D2D1_MAP_OPTIONS_READ;
+        D2D1_MAPPED_RECT mappedRect;
+        DXThrowIfFailed(readableD2DBitmap.Get()->Map(options, &mappedRect));
+
+        UINT width = readableD2DBitmap.Get()->GetPixelSize().width;
+        UINT height = readableD2DBitmap.Get()->GetPixelSize().height;
+        UINT  pitch = 4;
+        ComPtr<IWICBitmap> spWICBitmapFromMappedRect;
+        DXThrowIfFailed(
+            m_spWICFactory->CreateBitmapFromMemory(width, height, GUID_WICPixelFormat32bppBGR, pitch * width, width * height * pitch, reinterpret_cast<BYTE*>(mappedRect.bits), spWICBitmapFromMappedRect.GetAddressOf())
+        );
+         DXThrowIfFailed(
+            wicFrameEncode->WriteSource(wicBitmap.Get(), nullptr)
+        );// Create IWICImageEncoder.
+        /*ComPtr<IWICImageEncoder> imageEncoder;
+        DXThrowIfFailed(
+            m_spWICFactory->CreateImageEncoder(
+                m_spD2DDevice.Get(),
+                &imageEncoder
+            )
+        );
+
+        DXThrowIfFailed(
+            imageEncoder->WriteFrame(
+                d2dBitmap.Get(),
+                wicFrameEncode.Get(),
+                nullptr     // Use default WICImageParameter options.
+            )
+        );*/
+
+        DXThrowIfFailed(
+            wicFrameEncode->Commit()
+        );
+
+        DXThrowIfFailed(
+            wicBitmapEncoder->Commit()
+        );
+
+        // Flush all memory buffers to the next-level storage object.
+        /*DXThrowIfFailed(
+            stream->Commit(STGC_DEFAULT)
+        );*/
+    }
+    void GraphicsSystem::Set2DTarget(TAMTexture target)
+    {
+        m_spD2DDeviceContext->SetTarget(target.Get());
+        m_spD2DDeviceContext->SetTransform(D2D1::Matrix3x2F::Identity());
+    }
+    void GraphicsSystem::Begin2DDraw()
+    {
+        m_spD2DDeviceContext->BeginDraw();
+    }
+    void GraphicsSystem::End2DDraw()
+    {
+        DXThrowIfFailed(
+            m_spD2DDeviceContext->EndDraw()
+        );
+    }
+    void GraphicsSystem::Clear2DRenderTarget(D2D1_COLOR_F& color)
+    {
+        m_spD2DDeviceContext->Clear(color);
+    }
+    void GraphicsSystem::DrawTAMStroke(TAMStroke stroke, TAMTexture target)
+    {
+        /*ComPtr<ID2D1BitmapBrush1> brushStroke;
+        m_spD2DDeviceContext->CreateBitmapBrush(
+            stroke.strokeTexture.Get(),
+            &brushStroke
+            );*/
+
+        m_spD2DDeviceContext->BeginDraw();
+
+        // Figure out the place on the target image the stroke should go
+        D2D1_SIZE_F targetSize = target.Get()->GetSize();
+        D2D1_RECT_F strokeRect;
+        strokeRect.left = stroke.uvCoordinate.x * targetSize.width;
+        strokeRect.top = stroke.uvCoordinate.y * targetSize.height;
+        strokeRect.right = strokeRect.left + (float)stroke.dimension.x * targetSize.width;
+        strokeRect.bottom = strokeRect.top + (float)stroke.dimension.y * targetSize.height;
+
+        // TAMTODO: blend like a pencil would really blend
+        m_spD2DDeviceContext->SetPrimitiveBlend(D2D1_PRIMITIVE_BLEND_SOURCE_OVER);
+
+        m_spD2DDeviceContext->DrawBitmap(
+            stroke.strokeTexture.Get(),
+            strokeRect
+        );
+
+        DXThrowIfFailed(m_spD2DDeviceContext->EndDraw());
+    }
+
+    void GraphicsSystem::GenerateTAMs(int minMipResolution, int maxDimension, int numTones)
+    {
+        m_tamGenerator = TonalArtMapGenerator(minMipResolution, maxDimension, numTones);
+        m_tamGenerator.GenerateTAM("");
     }
 }
 

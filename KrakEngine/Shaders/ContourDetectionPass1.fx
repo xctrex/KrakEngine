@@ -68,6 +68,7 @@ cbuffer ConstantBufferPerFrame : register( b0 )
 {
     matrix View;
     matrix Projection;
+    float4 lightPosition;
     float2 ScreenSize;
 };
 

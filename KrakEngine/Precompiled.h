@@ -8,7 +8,7 @@
 #include <list>
 #include <algorithm>
 #include <io.h>
-#include <hash_map>
+#include <unordered_map>
 #include <locale>
 #include <codecvt>
 #include <wrl\client.h> // Include for ComPtr.

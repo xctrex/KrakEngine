@@ -213,7 +213,7 @@ namespace KrakEngine{
 
             float timePerFrame = animation.Length / animation.NumFrames;
             UINT numxframes = (UINT)(1.0f / m_FrameWidth);
-            UINT currentFrame = (UINT)(m_Time / timePerFrame) + animation.StartFrame;
+            UINT currentFrame = (UINT)(m_Time / timePerFrame) + (UINT)animation.StartFrame;
 
             UINT currentXFrame = currentFrame % numxframes;
             UINT currentYFrame = currentFrame / numxframes;

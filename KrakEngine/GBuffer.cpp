@@ -10,6 +10,7 @@ Creation date: 2/9/2014
 - End Header -----------------------------------------------------*/
 
 #include "GBuffer.h"
+#include "GraphicsSystem.h"
 
 namespace KrakEngine{
     GBuffer::GBuffer(){}
@@ -194,7 +195,7 @@ namespace KrakEngine{
             spD3DDevice1->CreateTexture2D(
                 &bufferDesc,
                 nullptr,
-                &m_spSpecularExponentRT
+                &m_spPositonRT
                 )
             );
 
@@ -203,9 +204,9 @@ namespace KrakEngine{
 
         DXThrowIfFailed(
             spD3DDevice1->CreateRenderTargetView(
-                m_spSpecularExponentRT.Get(),
+                m_spPositonRT.Get(),
                 &RTVDesc,
-                &m_spSpecularExponentRTV
+                &m_spPositionRTV
                 )
             );
         
@@ -214,9 +215,9 @@ namespace KrakEngine{
 
         DXThrowIfFailed(
             spD3DDevice1->CreateShaderResourceView(
-                m_spSpecularExponentRT.Get(),
+                m_spPositonRT.Get(),
                 &SRVDesc,
-                &m_spSpecularExponentSRV
+                &m_spPositionSRV
                 )
             );
     }
@@ -230,10 +231,10 @@ namespace KrakEngine{
         // Clear the render target views
         spD3DDeviceContext1->ClearRenderTargetView(m_spColorSpecularIntensityRTV.Get(), ClearColor);
         spD3DDeviceContext1->ClearRenderTargetView(m_spNormalRTV.Get(), ClearColor);
-        spD3DDeviceContext1->ClearRenderTargetView(m_spSpecularExponentRTV.Get(), ClearColor);
+        spD3DDeviceContext1->ClearRenderTargetView(m_spPositionRTV.Get(), ClearColor);
 
         // Bind the render targets together
-        ID3D11RenderTargetView* rt[3] = { m_spColorSpecularIntensityRTV.Get(), m_spNormalRTV.Get(), m_spSpecularExponentRTV.Get() };
+        ID3D11RenderTargetView* rt[3] = { m_spColorSpecularIntensityRTV.Get(), m_spNormalRTV.Get(), m_spPositionRTV.Get() };
         spD3DDeviceContext1->OMSetRenderTargets(3, rt, m_spDepthStencilView.Get());
     
         spD3DDeviceContext1->OMSetDepthStencilState(m_spDepthStencilState.Get(), 1);
@@ -246,18 +247,32 @@ namespace KrakEngine{
         spD3DDeviceContext1->OMSetRenderTargets(ARRAYSIZE(views), views, m_spDepthStencilViewReadOnly.Get());
     }
 
-    void GBuffer::BindInput(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1, const ComPtr<ID3D11SamplerState> &spSampler) const{
+    void GBuffer::BindInput(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1, const ComPtr<ID3D11SamplerState> &spSampler, const ComPtr<ID3D11SamplerState> &spWrapSampler) const{
         // Bind the Resource Views
-        //ID3D11ShaderResourceView* views[4] = {m_spDepthStencilSRV.Get(), m_spColorSpecularIntensitySRV.Get(), m_spNormalSRV.Get(), m_spSpecularExponentSRV.Get()};
-        ID3D11ShaderResourceView* views[3] = {m_spDepthStencilSRV.Get(), m_spColorSpecularIntensitySRV.Get(), m_spNormalSRV.Get()};
+        ID3D11ShaderResourceView* views[10] = {m_spDepthStencilSRV.Get(), m_spColorSpecularIntensitySRV.Get(), m_spNormalSRV.Get(), m_spPositionSRV.Get(),
+            g_GRAPHICSSYSTEM->GetTexture("shade0").Get(),
+            g_GRAPHICSSYSTEM->GetTexture("shade1").Get(),
+            g_GRAPHICSSYSTEM->GetTexture("shade2").Get(),
+            g_GRAPHICSSYSTEM->GetTexture("shade3").Get(),
+            g_GRAPHICSSYSTEM->GetTexture("shade4").Get(),
+            g_GRAPHICSSYSTEM->GetTexture("shade5").Get()};
+        //ID3D11ShaderResourceView* views[3] = {m_spDepthStencilSRV.Get(), m_spColorSpecularIntensitySRV.Get(), m_spNormalSRV.Get()};
         spD3DDeviceContext1->PSSetShaderResources(0, ARRAYSIZE(views), views);
-        spD3DDeviceContext1->PSSetSamplers( 0, 1, spSampler.GetAddressOf() );
+
+        ID3D11SamplerState* samplers[2] = { spSampler.Get(), spWrapSampler.Get() };
+        spD3DDeviceContext1->PSSetSamplers( 0, ARRAYSIZE(samplers), samplers );
     }
 
     void GBuffer::UnbindInput(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1) const{
         // Cleanup
-        //ID3D11ShaderResourceView* views[4] = {m_spDepthStencilSRV.Get(), m_spColorSpecularIntensitySRV.Get(), m_spNormalSRV.Get(), m_spSpecularExponentSRV.Get()};
-        ID3D11ShaderResourceView* views[3] = {m_spDepthStencilSRV.Get(), m_spColorSpecularIntensitySRV.Get(), m_spNormalSRV.Get()};
+        ID3D11ShaderResourceView* views[10] = {m_spDepthStencilSRV.Get(), m_spColorSpecularIntensitySRV.Get(), m_spNormalSRV.Get(), m_spPositionSRV.Get(),
+            g_GRAPHICSSYSTEM->GetTexture("shade0").Get(),
+            g_GRAPHICSSYSTEM->GetTexture("shade1").Get(),
+            g_GRAPHICSSYSTEM->GetTexture("shade2").Get(),
+            g_GRAPHICSSYSTEM->GetTexture("shade3").Get(),
+            g_GRAPHICSSYSTEM->GetTexture("shade4").Get(),
+            g_GRAPHICSSYSTEM->GetTexture("shade5").Get()};
+        //ID3D11ShaderResourceView* views[3] = {m_spDepthStencilSRV.Get(), m_spColorSpecularIntensitySRV.Get(), m_spNormalSRV.Get()};
         ZeroMemory(views, sizeof(views));
         spD3DDeviceContext1->PSSetShaderResources(0, ARRAYSIZE(views), views);
     }

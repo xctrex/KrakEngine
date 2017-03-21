@@ -25,7 +25,7 @@ namespace KrakEngine{
         void Initialize(const ComPtr<ID3D11Device1> &spD3DDevice1, D3D11_TEXTURE2D_DESC &bufferDesc);
 	    void TargetGBuffer(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1) const;
         void UnbindTargets(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1);
-        void BindInput(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1, const ComPtr<ID3D11SamplerState> &spSampler) const;
+        void BindInput(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1, const ComPtr<ID3D11SamplerState> &spSampler, const ComPtr<ID3D11SamplerState> &spWrapSampler) const;
         void UnbindInput(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1) const;
         void DrawVisualization(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1, const ComPtr<ID3D11VertexShader> &spVertexShader, const ComPtr<ID3D11PixelShader> &spPixelShader) const;
 
@@ -40,30 +40,28 @@ namespace KrakEngine{
         ID3D11ShaderResourceView*const* GetDepthViewAddress() const { return m_spDepthStencilSRV.GetAddressOf(); }
         ID3D11ShaderResourceView* GetColorSpecularIntensityView() const { return m_spColorSpecularIntensitySRV.Get(); }
         ID3D11ShaderResourceView* GetNormalView() const { return m_spNormalSRV.Get(); }
-        ID3D11ShaderResourceView* GetSpecularExponentView() const { return m_spSpecularExponentSRV.Get(); }
+        ID3D11ShaderResourceView* GetSpecularExponentView() const { return m_spPositionSRV.Get(); }
 
-        ComPtr<ID3D11ShaderResourceView> m_ExternalSRV;
-        ComPtr<ID3D11ShaderResourceView> m_ExternalSRV2;
         
     private:
         // GBuffer textures
         ComPtr<ID3D11Texture2D> m_spDepthStencilRT;
         ComPtr<ID3D11Texture2D> m_spColorSpecularIntensityRT;
         ComPtr<ID3D11Texture2D> m_spNormalRT;
-        ComPtr<ID3D11Texture2D> m_spSpecularExponentRT;
+        ComPtr<ID3D11Texture2D> m_spPositonRT;
 
         // GBuffer render target views
         ComPtr<ID3D11DepthStencilView> m_spDepthStencilView;
         ComPtr<ID3D11DepthStencilView> m_spDepthStencilViewReadOnly;
 	    ComPtr<ID3D11RenderTargetView> m_spColorSpecularIntensityRTV;
 	    ComPtr<ID3D11RenderTargetView> m_spNormalRTV;
-	    ComPtr<ID3D11RenderTargetView> m_spSpecularExponentRTV;
+	    ComPtr<ID3D11RenderTargetView> m_spPositionRTV;
 
         // GBuffer shader resource views
         ComPtr<ID3D11ShaderResourceView> m_spDepthStencilSRV;
         ComPtr<ID3D11ShaderResourceView> m_spColorSpecularIntensitySRV;
         ComPtr<ID3D11ShaderResourceView> m_spNormalSRV;
-        ComPtr<ID3D11ShaderResourceView> m_spSpecularExponentSRV;
+        ComPtr<ID3D11ShaderResourceView> m_spPositionSRV;
 
         //
         // Texture, Render View, and Resource View formats

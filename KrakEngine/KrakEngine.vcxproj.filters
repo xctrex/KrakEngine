@@ -261,6 +261,9 @@
     <ClCompile Include="alglib\src\statistics.cpp">
       <Filter>Alglib</Filter>
     </ClCompile>
+    <ClCompile Include="TAM.cpp">
+      <Filter>Systems\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core.h">
@@ -491,6 +494,9 @@
     <ClInclude Include="RBody.h">
       <Filter>Systems\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="TAM.h">
+      <Filter>Systems\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\SpriteShader.fx">
@@ -554,6 +560,18 @@
       <Filter>Systems\Graphics\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\ContourDetectionPass2_VS.hlsl">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\LuminanceVisualizer.fx">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\LuminanceVisualizer_PS.hlsl">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\LuminanceVisualizer_VS.hlsl">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\Common.fx">
       <Filter>Systems\Graphics\Shaders</Filter>
     </FxCompile>
   </ItemGroup>

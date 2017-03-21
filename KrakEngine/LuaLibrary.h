@@ -11,7 +11,7 @@ Creation date: 2/19/14
 
 #pragma once
 
-#include "Lua\lua.hpp"
+#include "Lua\include\lua.hpp"
 
 
 namespace KrakEngine

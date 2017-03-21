@@ -308,3 +308,27 @@
 	Name="city"
 	Path="Assets\Textures\city.dds"
 />
+<Texture
+	Name="shade0"
+	Path="Assets\Textures\shade0.dds"
+/>
+<Texture
+	Name="shade1"
+	Path="Assets\Textures\shade1.dds"
+/>
+<Texture
+	Name="shade2"
+	Path="Assets\Textures\shade2.dds"
+/>
+<Texture
+	Name="shade3"
+	Path="Assets\Textures\shade3.dds"
+/>
+<Texture
+	Name="shade4"
+	Path="Assets\Textures\shade4.dds"
+/>
+<Texture
+	Name="shade5"
+	Path="Assets\Textures\shade5.dds"
+/>

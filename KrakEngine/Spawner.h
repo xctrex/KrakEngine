@@ -34,9 +34,9 @@ namespace KrakEngine
 	private:
 		bool m_RecentlyFired;
 		std::string m_objScriptName;
-		int m_time;
-		int m_maxtime;
-		int m_mintime;
+		float m_time;
+        float m_maxtime;
+        float m_mintime;
 	
 		LuaInterpreter Li;
 

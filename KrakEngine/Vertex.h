@@ -103,7 +103,9 @@ namespace KrakEngine
 	{
         XMFLOAT4X4 View;
         XMFLOAT4X4 Projection;
+        XMFLOAT4 LightPosition;
         XMFLOAT2 ScreenSize;
+        float StrokeRotation;
 	};
 
     struct ConstantBufferPerSpriteObject

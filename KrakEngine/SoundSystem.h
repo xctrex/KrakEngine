@@ -7,7 +7,7 @@ Creation Date: 1/17/2014
 #pragma once
 #include "ISystem.h"
 #include "WindowSystem.h"
-#include "XAudio\xaud.h"
+#include <xaudio2.h>
 #include "ObjectLinkedList.h"
 
 #include <iostream>

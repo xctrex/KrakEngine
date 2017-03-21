@@ -23,6 +23,7 @@ Creation date: 12/15/2013
 #include "AISystem.h"
 #include <io.h>
 #include <Fcntl.h>
+#include "TAM.h"
 
 using namespace KrakEngine;
 
@@ -35,7 +36,7 @@ const bool FULL_SCREEN = true;
 //The second parameter is the previous app instance which you can use to prevent being launched multiple times
 //The third parameter is the command line string, but use GetCommandLine() instead.
 //The last parameter is the manner in which the application's window is to be displayed (not needed).
-INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInstance, LPSTR, INT)
+INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInstance, LPSTR command, INT)
 {
 	{
 	//Create the core engine which manages all the systems that make up the game
@@ -78,6 +79,46 @@ INT WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInstance, LPSTR, INT)
 	engine->AddSystem(controller);
 
 	engine->InitializeSystems();
+
+    LPWSTR *szArglist;
+    int nArgs;
+    int i;
+
+    szArglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);
+    if (NULL == szArglist)
+    {
+        wprintf(L"CommandLineToArgvW failed\n");
+        return 0;
+    }
+    else
+    {
+        for (i = 0; i < nArgs; i++) 
+        {
+            std::wstring argument(szArglist[i]);
+            if (argument == L"GenerateTAM")
+            {
+                // Get the min dimension
+                ++i;
+                std::wstring minDimensionStr(szArglist[i]);
+                int minMipResolution = std::stoi(minDimensionStr);
+                // Get the max dimension
+                ++i;
+                std::wstring maxDimensionStr(szArglist[i]);
+                int maxDimension = std::stoi(maxDimensionStr);
+                // Get the number of tones
+                ++i;
+                std::wstring numTonesStr(szArglist[i]);
+                int numTones = std::stoi(numTonesStr);
+
+                //g_GRAPHICSSYSTEM->GenerateTAMs(minMipResolution, maxDimension, numTones);
+            }
+            printf("%d: %ws\n", i, szArglist[i]);
+        }
+    }
+
+    // Free memory allocated for CommandLineToArgvW arguments.
+
+    LocalFree(szArglist);
 
 	//Run the game
 	engine->UpdateSystems();

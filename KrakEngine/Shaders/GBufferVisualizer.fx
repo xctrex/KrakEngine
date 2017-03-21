@@ -77,6 +77,7 @@ cbuffer ConstantBufferPerFrame : register( b0 )
 {
     matrix View;
     matrix Projection;
+    float4 lightPosition;
     float2 ScreenSize;
 };
 
@@ -175,9 +176,9 @@ float4 PS(VS_OUTPUT input) : SV_TARGET
     // Thus, only the depth will be added to finalColor, and all other values (color, normal, specular values) will be zero after being multiplied by the mask.
     // If the pixel is in the rect for displaying color, only SampleMask.y will equal 1 and thus only color data will be added to final color.
     // The same logic goes for displaying normal and specular intensity data.
-    finalColor += float4(1.0f - saturate(GBufferData.LinearDepth / 75.0f), 1.0f - saturate(GBufferData.LinearDepth / 125.0f), 1.0f - saturate(GBufferData.LinearDepth / 200.0f), 0.0f);// * input.SampleMask.xxxx;
+    //finalColor += float4(1.0f - saturate(GBufferData.LinearDepth / 75.0f), 1.0f - saturate(GBufferData.LinearDepth / 125.0f), 1.0f - saturate(GBufferData.LinearDepth / 200.0f), 0.0f);// * input.SampleMask.xxxx;
     //finalColor += float4(GBufferData.Color.xyz, 0.0f);// * input.SampleMask.yyyy;
-    //finalColor += float4(GBufferData.Normal.xyz * 0.5f + 0.5f, 0.0f);// * input.SampleMask.zzzz;
+    finalColor += float4(GBufferData.Normal.xyz * 0.5f + 0.5f, 0.0f);// * input.SampleMask.zzzz;
     //finalColor += float4(GBufferData.SpecularIntensity, GBufferData.SpecularExponent, 0.0f, 0.0f);// * input.SampleMask.wwww;
 
     return finalColor;

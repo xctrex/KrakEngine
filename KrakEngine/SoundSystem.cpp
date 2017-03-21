@@ -40,7 +40,7 @@ namespace KrakEngine{
 		bool SoundSystem::Initialize()
 		{
 			#if defined(_DEBUG)
-				m_flags = XAUDIO2_DEBUG_ENGINE;
+            m_flags = 0;
 			#else
 				m_flags = 0;
 			#endif

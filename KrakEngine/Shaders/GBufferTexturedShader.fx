@@ -76,7 +76,7 @@ struct PS_GBUFFER_OUT
 {
     float4 ColorSpecularIntensity : SV_TARGET0;
     float4 Normal : SV_TARGET1;
-//    float4 SpecularExponent : SV_TARGET2;
+    float4 Position : SV_TARGET2;
 };
 
 static const float2 g_SpecularExponentRange = { 0.1f, 250.0f };
@@ -84,7 +84,7 @@ static const float2 g_SpecularExponentRange = { 0.1f, 250.0f };
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------
-PS_GBUFFER_OUT PackGBuffer(float3 Color, float3 Normal, float SpecularIntensity, float SpecularExponent)
+PS_GBUFFER_OUT PackGBuffer(float3 Color, float3 Normal, float SpecularIntensity, float SpecularExponent, float3 Position)
 {
     PS_GBUFFER_OUT output;
 
@@ -95,11 +95,11 @@ PS_GBUFFER_OUT PackGBuffer(float3 Color, float3 Normal, float SpecularIntensity,
     output.ColorSpecularIntensity = float4(Color.rgb, SpecularIntensity);
     output.Normal = float4(Normal * 0.5f + 0.5f, 0.0f);
 //    output.SpecularExponent = float4(SpecularExponent, 0.0f, 0.0f, 0.0f);
-
+    output.Position = float4(Position, 1.0f);
     return output;
 }
 
 PS_GBUFFER_OUT PS(VS_OUTPUT input)
 {
-    return PackGBuffer(ModelTexture.Sample( LinearSampler, input.TextureUV ).rgb, normalize(input.Normal), SpecularIntensity, SpecularExponent);
+    return PackGBuffer(ModelTexture.Sample( LinearSampler, input.TextureUV ).rgb, normalize(input.Normal), SpecularIntensity, SpecularExponent, input.Pos);
 }

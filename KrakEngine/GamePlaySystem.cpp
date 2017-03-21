@@ -45,7 +45,7 @@ namespace KrakEngine{
 	Gameplay* g_GAMEPLAYSYSTEM = NULL;
 	Gameplay::Gameplay() : Player(NULL), ColHandler(new CollisionHandler()), m_MenuManager(new MenuManager()), CurrentLevelEditor(NULL), zTarget(0.0f), zCamerachange(false), m_Time(0.0f), m_backimage(NULL), SpeedUpCheat(false), CheatDoubleJump(false) {
 		g_GAMEPLAYSYSTEM = this;
-		srand (time(NULL));
+		srand ((unsigned int)time(NULL));
 	};
 
 	Gameplay::~Gameplay()
@@ -231,264 +231,264 @@ namespace KrakEngine{
 	/// <summary>
 	/// Ins the game.
 	/// </summary>
-	void Gameplay::InGame(float dt)
-	{
-		g_INPUTSYSTEM->UnpauseVibration();
-		GameObject * currentcontrol = g_CONTROLLERSYSTEM->FindController();
+    void Gameplay::InGame(float dt)
+    {
+        g_INPUTSYSTEM->UnpauseVibration();
+        GameObject * currentcontrol = g_CONTROLLERSYSTEM->FindController();
 
-		if(currentcontrol)
-			if(currentcontrol->GetType() != "mime")
-				HideCursor();
-			else
-			{
-				Image * ic = Cursor->has(Image);
-				XMFLOAT3 cursor_pos = ic->GetPosition();
+        if (currentcontrol)
+            if (currentcontrol->GetType() != "mime")
+                HideCursor();
+            else
+            {
+                Image * ic = Cursor->has(Image);
+                XMFLOAT3 cursor_pos = ic->GetPosition();
 
-				
-			}
-		
-		CurrentLevelEditor = NULL;
-		//rundown timers
 
-		m_Time += dt;
-		
-		if(m_Time > 0.03f)
-		{
-			Tick();
-			Spawn(dt);
-			Trigger();
-			AdjustZCamera();
-		    AdjustYCamera();
-			ParticleRun();		
-			m_gameMechanics.Update();
-			m_Time = 0.0f;
-		}
+            }
 
-		if(Player)
-		{
-			Controller * cc = Player->has(Controller);
-			RigidBody* playerPhysics = NULL;
+        CurrentLevelEditor = NULL;
+        //rundown timers
 
-			if(cc->IsCurrentController())
-			{
-				playerPhysics = Player->has(RigidBody);
-			}
-				
-			Transform *playerTransform = Player->has(Transform);
+        m_Time += dt;
 
-			// If the player is on the ground, set animation to idle by default (will be overridden later if the player is running)
-            if (playerPhysics->collision & COLLISION_BOTTOM){
+        if (m_Time > 0.03f)
+        {
+            Tick();
+            Spawn(dt);
+            Trigger();
+            AdjustZCamera();
+            AdjustYCamera();
+            ParticleRun();
+            m_gameMechanics.Update();
+            m_Time = 0.0f;
+        }
+
+        if (Player)
+        {
+            Controller * cc = Player->has(Controller);
+            RigidBody* playerPhysics = NULL;
+
+            if (cc->IsCurrentController())
+            {
+                playerPhysics = Player->has(RigidBody);
+            }
+
+            Transform *playerTransform = Player->has(Transform);
+
+            // If the player is on the ground, set animation to idle by default (will be overridden later if the player is running)
+            if (playerPhysics->collision & COLLISION_BOTTOM) {
                 SetAnimationState(AnimationStateIdle);
             }
 
-			/****MOVE DOWN****/
-			if (g_INPUTSYSTEM->IsKeyTriggered(DIK_DOWN) ||
-				g_INPUTSYSTEM->IsKeyTriggered(DIK_S) ||
-				g_INPUTSYSTEM->IsButtonTriggered(XINPUT_GAMEPAD_DPAD_DOWN)) 
-			{ 
-				/*Controller * c = g_CONTROLLERSYSTEM->FindController()->has(Controller);
-				if(c->IsImmobile()) return;
+            /****MOVE DOWN****/
+            if (g_INPUTSYSTEM->IsKeyTriggered(DIK_DOWN) ||
+                g_INPUTSYSTEM->IsKeyTriggered(DIK_S) ||
+                g_INPUTSYSTEM->IsButtonTriggered(XINPUT_GAMEPAD_DPAD_DOWN))
+            {
+                /*Controller * c = g_CONTROLLERSYSTEM->FindController()->has(Controller);
+                if(c->IsImmobile()) return;
 
-				XMFLOAT3 newPos = playerTransform->GetPosition();
+                XMFLOAT3 newPos = playerTransform->GetPosition();
 
-				if(newPos.z != -TRACK_DEPTH)
-				{
-					prevz = newPos.z;
+                if(newPos.z != -TRACK_DEPTH)
+                {
+                    prevz = newPos.z;
 
-					newPos.z -= TRACK_DEPTH;
+                    newPos.z -= TRACK_DEPTH;
 
-					if(newPos.z == 0)
-						zTarget = m_LevelDepth;
-					else
-						zTarget = m_LevelDepth - TRACK_DEPTH;
-	
-					zCurrent = zTarget + TRACK_DEPTH;
+                    if(newPos.z == 0)
+                        zTarget = m_LevelDepth;
+                    else
+                        zTarget = m_LevelDepth - TRACK_DEPTH;
 
-					isZoomDirectionIn = false;
-					zCamerachange = true;					
-					
-					zstep = 0;
-				}
-				
-				playerTransform->SetPosition(newPos);*/
+                    zCurrent = zTarget + TRACK_DEPTH;
 
-			}
-			/****MOVE UP****/
-			if (g_INPUTSYSTEM->IsKeyTriggered(DIK_UP) ||
-				g_INPUTSYSTEM->IsKeyTriggered(DIK_W) ||
-				g_INPUTSYSTEM->IsButtonTriggered(XINPUT_GAMEPAD_DPAD_UP))
-			{ 
-				Controller * c = g_CONTROLLERSYSTEM->FindController()->has(Controller);
-				if(c->IsImmobile()) return;
-				
-				XMFLOAT3 newPos = playerTransform->GetPosition();
+                    isZoomDirectionIn = false;
+                    zCamerachange = true;
 
-				if(newPos.z != TRACK_DEPTH)
-				{
-					prevz = newPos.z;
+                    zstep = 0;
+                }
 
-					newPos.z += TRACK_DEPTH;
-					if(newPos.z == 0)
-						zTarget = m_LevelDepth;
-					else
-						zTarget = m_LevelDepth + TRACK_DEPTH;
-					
-					////Get Previous Depth
-					//Camera * cam = g_GRAPHICSSYSTEM->GetCurrentCamera();
-					//float camDepth = cam->GetDepth();
-				
-					////Add 4 to it
-					//zTarget = cam->GetDepth() + TRACK_DEPTH;
+                playerTransform->SetPosition(newPos);*/
 
-					zCurrent = zTarget - TRACK_DEPTH;
+            }
+            /****MOVE UP****/
+            if (g_INPUTSYSTEM->IsKeyTriggered(DIK_UP) ||
+                g_INPUTSYSTEM->IsKeyTriggered(DIK_W) ||
+                g_INPUTSYSTEM->IsButtonTriggered(XINPUT_GAMEPAD_DPAD_UP))
+            {
+                Controller * c = g_CONTROLLERSYSTEM->FindController()->has(Controller);
+                if (c->IsImmobile()) return;
 
-					isZoomDirectionIn = true;
-					zCamerachange = true;
+                XMFLOAT3 newPos = playerTransform->GetPosition();
 
-					zstep = 0;
-				}
+                if (newPos.z != TRACK_DEPTH)
+                {
+                    prevz = newPos.z;
 
-				playerTransform->SetPosition(newPos);
-				
-			}
-			/****MOVE LEFT****/
-			if (g_INPUTSYSTEM->IsKeyDown(DIK_LEFT) || 
-				g_INPUTSYSTEM->IsKeyDown(DIK_A)	||
-				g_INPUTSYSTEM->IsButtonDown(XINPUT_GAMEPAD_DPAD_LEFT))
-			{ 
-				Controller * c = g_CONTROLLERSYSTEM->FindController()->has(Controller);
-				if(c->IsImmobile()) return;
+                    newPos.z += TRACK_DEPTH;
+                    if (newPos.z == 0)
+                        zTarget = m_LevelDepth;
+                    else
+                        zTarget = m_LevelDepth + TRACK_DEPTH;
 
-				SetIsPlayerFacingRight(false);
-				
-				// If the player is on the ground, set animation to run
-                if (playerPhysics->collision & COLLISION_BOTTOM){
+                    ////Get Previous Depth
+                    //Camera * cam = g_GRAPHICSSYSTEM->GetCurrentCamera();
+                    //float camDepth = cam->GetDepth();
+
+                    ////Add 4 to it
+                    //zTarget = cam->GetDepth() + TRACK_DEPTH;
+
+                    zCurrent = zTarget - TRACK_DEPTH;
+
+                    isZoomDirectionIn = true;
+                    zCamerachange = true;
+
+                    zstep = 0;
+                }
+
+                playerTransform->SetPosition(newPos);
+
+            }
+            /****MOVE LEFT****/
+            if (g_INPUTSYSTEM->IsKeyDown(DIK_LEFT) ||
+                g_INPUTSYSTEM->IsKeyDown(DIK_A) ||
+                g_INPUTSYSTEM->IsButtonDown(XINPUT_GAMEPAD_DPAD_LEFT))
+            {
+                Controller * c = g_CONTROLLERSYSTEM->FindController()->has(Controller);
+                if (c->IsImmobile()) return;
+
+                SetIsPlayerFacingRight(false);
+
+                // If the player is on the ground, set animation to run
+                if (playerPhysics->collision & COLLISION_BOTTOM) {
                     SetAnimationState(AnimationStateRunning);
                 }
 
-				if(playerPhysics){
-					playerPhysics->velocity.x = -(playerPhysics->speed);
-				}
+                if (playerPhysics) {
+                    playerPhysics->velocity.x = -(playerPhysics->speed);
+                }
 
-			}
-			/****MOVE RIGHT****/
-			else if (g_INPUTSYSTEM->IsKeyDown(DIK_RIGHT) || 
-					 g_INPUTSYSTEM->IsKeyDown(DIK_D) ||
-					 g_INPUTSYSTEM->IsButtonDown(XINPUT_GAMEPAD_DPAD_RIGHT))
-			{ 
-				Controller * c = g_CONTROLLERSYSTEM->FindController()->has(Controller);
-				if(c->IsImmobile()) return;
+            }
+            /****MOVE RIGHT****/
+            else if (g_INPUTSYSTEM->IsKeyDown(DIK_RIGHT) ||
+                g_INPUTSYSTEM->IsKeyDown(DIK_D) ||
+                g_INPUTSYSTEM->IsButtonDown(XINPUT_GAMEPAD_DPAD_RIGHT))
+            {
+                Controller * c = g_CONTROLLERSYSTEM->FindController()->has(Controller);
+                if (c->IsImmobile()) return;
 
-				SetIsPlayerFacingRight(true);
-				
-				// If the player is on the ground, set animation to run
-				if (playerPhysics->collision & COLLISION_BOTTOM){
+                SetIsPlayerFacingRight(true);
+
+                // If the player is on the ground, set animation to run
+                if (playerPhysics->collision & COLLISION_BOTTOM) {
                     SetAnimationState(AnimationStateRunning);
                 }
 
-				if(playerPhysics){
-					playerPhysics->velocity.x = playerPhysics->speed;
-				}
-			}
-			else{
-				if(playerPhysics)
-					playerPhysics->velocity.x = 0.0f;
-			}
+                if (playerPhysics) {
+                    playerPhysics->velocity.x = playerPhysics->speed;
+                }
+            }
+            else {
+                if (playerPhysics)
+                    playerPhysics->velocity.x = 0.0f;
+            }
 
-			/****MOVE PLAYER WITH LEFT THUMB STICK****/
-
-
-			/*
-			if(g_INPUTSYSTEM->IsLeftThumbStickTriggered(ThumbX, ThumbY))
-			{
-				playerPhysics->velocity.x += (ThumbX / 5000.0f);
-
-				if(LeftThumbStickTimer)
-					return;
-				
-				if(ThumbY > 25000)
-				{
-					XMFLOAT3 newPos = playerTransform->GetPosition();
-					if(newPos.z != TRACK_DEPTH)
-						newPos.z += TRACK_DEPTH;
-					playerTransform->SetPosition(newPos);
-			}
-				else if (ThumbY < -25000)
-				{
-					XMFLOAT3 newPos = playerTransform->GetPosition();
-				if(newPos.z != -TRACK_DEPTH)
-					newPos.z -= TRACK_DEPTH;
-					playerTransform->SetPosition(newPos);
-				}
-
-				LeftThumbStickTimer = new CounterTimer(20, "LeftThumbStickTimer");
-
-			}
-			*/
-			//****JUMP****//
-			if(g_INPUTSYSTEM->IsKeyTriggered(DIK_SPACE) ||
-			   g_INPUTSYSTEM->IsButtonTriggered(XINPUT_GAMEPAD_A))
-			{ //is space being pressed
-				Jump();
-			}
-
-			/****RESET CURSOR TO PLAYER POSITION****/
-			if(g_INPUTSYSTEM->IsButtonDown(XINPUT_GAMEPAD_LEFT_THUMB) || g_INPUTSYSTEM->IsMouseButtonTriggered(MouseButton::Middle))
-			{
-				if(Cursor)
-				{
-					XMFLOAT4X4 identity;
-					XMStoreFloat4x4(&identity, XMMatrixIdentity());
-					Image * tc = Cursor->has(Image);
-					Transform *tc2 = Player->has(Transform);
-					XMFLOAT3 pos = tc2->GetPosition();
-					XMStoreFloat4x4(&identity, XMMatrixIdentity());
-					XMFLOAT2 screencoord = g_GRAPHICSSYSTEM->ConvertToScreenCoordinates(pos, identity);
-					XMUINT2 screensize = g_GRAPHICSSYSTEM->GetWindowSize();
-					pos.x = screencoord.x / screensize.x;
-					pos.y = screencoord.y / screensize.y;
-					pos.z = 100.0f;
-					tc->SetPosition(pos);
-				}
-			}
+            /****MOVE PLAYER WITH LEFT THUMB STICK****/
 
 
-			if(g_CONTROLLERSYSTEM->FindController()->GetType() == "mime")
-			/****MOVE CURSOR WITH MOUSE****/
-			if(g_INPUTSYSTEM->HasMouseMoved()){
-				MoveCursor();
-			}
+            /*
+            if(g_INPUTSYSTEM->IsLeftThumbStickTriggered(ThumbX, ThumbY))
+            {
+                playerPhysics->velocity.x += (ThumbX / 5000.0f);
 
-			/****MOVE CURSOR WITH RIGHT THUMB STICK****/
-			float ThumbX, ThumbY;
-			if(g_INPUTSYSTEM->IsRightThumbStickTriggered(ThumbX, ThumbY))
-			{
-			if(Cursor)
-				{
-					Image * tc = Cursor->has(Image);
-					if(tc)
-					{
-						XMFLOAT3 pos = tc->GetPosition();
-						pos.x += (ThumbX / 8000000.0f);
-						pos.y -= (ThumbY / 8000000.0f);
-						
-						if(pos.x > 1.0f)
-							pos.x = 1.0f;
-						else if(pos.x < 0.0f)
-							pos.x = 0.0f;
+                if(LeftThumbStickTimer)
+                    return;
 
-						if(pos.y > 1.0f)
-							pos.y = 1.0f;
-						else if(pos.y < 0.0f)
-							pos.y = 0.0f;
+                if(ThumbY > 25000)
+                {
+                    XMFLOAT3 newPos = playerTransform->GetPosition();
+                    if(newPos.z != TRACK_DEPTH)
+                        newPos.z += TRACK_DEPTH;
+                    playerTransform->SetPosition(newPos);
+            }
+                else if (ThumbY < -25000)
+                {
+                    XMFLOAT3 newPos = playerTransform->GetPosition();
+                if(newPos.z != -TRACK_DEPTH)
+                    newPos.z -= TRACK_DEPTH;
+                    playerTransform->SetPosition(newPos);
+                }
+
+                LeftThumbStickTimer = new CounterTimer(20, "LeftThumbStickTimer");
+
+            }
+            */
+            //****JUMP****//
+            if (g_INPUTSYSTEM->IsKeyTriggered(DIK_SPACE) ||
+                g_INPUTSYSTEM->IsButtonTriggered(XINPUT_GAMEPAD_A))
+            { //is space being pressed
+                Jump();
+            }
+
+            /****RESET CURSOR TO PLAYER POSITION****/
+            if (g_INPUTSYSTEM->IsButtonDown(XINPUT_GAMEPAD_LEFT_THUMB) || g_INPUTSYSTEM->IsMouseButtonTriggered(MouseButton::Middle))
+            {
+                if (Cursor)
+                {
+                    XMFLOAT4X4 identity;
+                    XMStoreFloat4x4(&identity, XMMatrixIdentity());
+                    Image * tc = Cursor->has(Image);
+                    Transform *tc2 = Player->has(Transform);
+                    XMFLOAT3 pos = tc2->GetPosition();
+                    XMStoreFloat4x4(&identity, XMMatrixIdentity());
+                    XMFLOAT2 screencoord = g_GRAPHICSSYSTEM->ConvertToScreenCoordinates(pos, identity);
+                    XMUINT2 screensize = g_GRAPHICSSYSTEM->GetWindowSize();
+                    pos.x = screencoord.x / screensize.x;
+                    pos.y = screencoord.y / screensize.y;
+                    pos.z = 100.0f;
+                    tc->SetPosition(pos);
+                }
+            }
 
 
-						tc->SetPosition(pos);
-					}
-					
-				}
-			}			
-		}
+            if (g_CONTROLLERSYSTEM->FindController()->GetType() == "mime")
+                /****MOVE CURSOR WITH MOUSE****/
+                if (g_INPUTSYSTEM->HasMouseMoved()) {
+                    MoveCursor();
+                }
+
+            /****MOVE CURSOR WITH RIGHT THUMB STICK****/
+            float ThumbX, ThumbY;
+            if (g_INPUTSYSTEM->IsRightThumbStickTriggered(ThumbX, ThumbY))
+            {
+                if (Cursor)
+                {
+                    Image * tc = Cursor->has(Image);
+                    if (tc)
+                    {
+                        XMFLOAT3 pos = tc->GetPosition();
+                        pos.x += (ThumbX / 8000000.0f);
+                        pos.y -= (ThumbY / 8000000.0f);
+
+                        if (pos.x > 1.0f)
+                            pos.x = 1.0f;
+                        else if (pos.x < 0.0f)
+                            pos.x = 0.0f;
+
+                        if (pos.y > 1.0f)
+                            pos.y = 1.0f;
+                        else if (pos.y < 0.0f)
+                            pos.y = 0.0f;
+
+
+                        tc->SetPosition(pos);
+                    }
+
+                }
+            }
+        }
 
         /****CAMERA MOVEMENT****/
         if (g_INPUTSYSTEM->IsKeyTriggered(DIK_E))
@@ -496,9 +496,9 @@ namespace KrakEngine{
             g_GRAPHICSSYSTEM->ToggleEditPath();
         }
         Camera * cam = g_GRAPHICSSYSTEM->GetCurrentCamera();
-        if (cam && !g_GRAPHICSSYSTEM->IsEditPathOn()){
+        if (cam && !g_GRAPHICSSYSTEM->IsEditPathOn()) {
             float LookSpeed = 40.0f * dt;
-			float speed = 1000.0f * dt;
+            float speed = 1000.0f * dt;
             if (g_INPUTSYSTEM->IsKeyDown(DIK_A))
             {
                 cam->MoveLeftRight(-2.0f * speed);
@@ -507,10 +507,10 @@ namespace KrakEngine{
             {
                 cam->MoveLeftRight(2.0f * speed);
             }
-			else
-			{
-				cam->MoveLeftRight(0.0f);
-			}
+            else
+            {
+                cam->MoveLeftRight(0.0f);
+            }
 
             if (g_INPUTSYSTEM->IsKeyDown(DIK_W))
             {
@@ -520,10 +520,10 @@ namespace KrakEngine{
             {
                 cam->MoveBackForward(-speed);
             }
-			else
-			{
-				cam->MoveBackForward(0.0f);
-			}
+            else
+            {
+                cam->MoveBackForward(0.0f);
+            }
 
             if (g_INPUTSYSTEM->IsKeyDown(DIK_Z))
             {
@@ -533,16 +533,16 @@ namespace KrakEngine{
             {
                 cam->MoveUpDown(speed);
             }
-			else
-			{
-				cam->MoveUpDown(0.0f);
-			}
+            else
+            {
+                cam->MoveUpDown(0.0f);
+            }
 
             if (g_INPUTSYSTEM->HasMouseMoved())
             {
-				cam->AdjustYaw(g_INPUTSYSTEM->getMouseX() * 0.0005f / LookSpeed);
+                cam->AdjustYaw(g_INPUTSYSTEM->getMouseX() * 0.0005f / LookSpeed);
 
-				cam->AdjustPitch(g_INPUTSYSTEM->getMouseY() * 0.0005f / LookSpeed);
+                cam->AdjustPitch(g_INPUTSYSTEM->getMouseY() * 0.0005f / LookSpeed);
             }
 
             //cam->UpdateCamera();
@@ -588,114 +588,118 @@ namespace KrakEngine{
             {
                 g_GRAPHICSSYSTEM->ToggleClosestPoint(mousePos);
             }
-                
+
             if (g_INPUTSYSTEM->IsMouseButtonTriggered(Right))
             {
                 g_GRAPHICSSYSTEM->ToggleClosestAnchor(mousePos);
 
             }
 
-            if (g_INPUTSYSTEM->HasMouseMoved()){
+            if (g_INPUTSYSTEM->HasMouseMoved()) {
                 MoveCursor();
             }
         }
 
-		/****ACTION 1 BUTTON****/
-		if(	g_INPUTSYSTEM->IsButtonDown(XINPUT_GAMEPAD_B) ||
-			g_INPUTSYSTEM->IsLeftTriggerJustPressed() ||
-			g_INPUTSYSTEM->IsMouseButtonDown(MouseButton::Left))
-		{
-			if(Player)
-			{
-				/*
-				Audio * a = Player->has(Audio);
-					if(a)
-						a->playAction1();
-				*/
-				Action *ac = Player->has(Action);
-				if(ac)
-				{
-					ac->PerformAction1(Player);
-				}
-			}
-		}else{
-			if(Player)
-			{
-				Particle* p = Player->has(Particle);
-				if(p)
-					p->setScript("");
+        /****ACTION 1 BUTTON****/
+        if (g_INPUTSYSTEM->IsButtonDown(XINPUT_GAMEPAD_B) ||
+            g_INPUTSYSTEM->IsLeftTriggerJustPressed() ||
+            g_INPUTSYSTEM->IsMouseButtonDown(MouseButton::Left))
+        {
+            if (Player)
+            {
+                /*
+                Audio * a = Player->has(Audio);
+                    if(a)
+                        a->playAction1();
+                */
+                Action *ac = Player->has(Action);
+                if (ac)
+                {
+                    ac->PerformAction1(Player);
+                }
+            }
+        }
+        else {
+            if (Player)
+            {
+                Particle* p = Player->has(Particle);
+                if (p)
+                    p->setScript("");
 
-			}
-		}
+            }
+        }
 
-		///****ACTION 2 BUTTON****/
-		//if(	g_INPUTSYSTEM->IsButtonTriggered(XINPUT_GAMEPAD_Y) ||
-		//	g_INPUTSYSTEM->IsRightTriggerJustPressed() ||
-		//	g_INPUTSYSTEM->IsMouseButtonTriggered(MouseButton::Right))
-		//{
-		//	if(Player)
-		//	{
-		//		Audio * a = Player->has(Audio);
-		//			if(a)
-		//				a->playAction2();
+        ///****ACTION 2 BUTTON****/
+        //if(	g_INPUTSYSTEM->IsButtonTriggered(XINPUT_GAMEPAD_Y) ||
+        //	g_INPUTSYSTEM->IsRightTriggerJustPressed() ||
+        //	g_INPUTSYSTEM->IsMouseButtonTriggered(MouseButton::Right))
+        //{
+        //	if(Player)
+        //	{
+        //		Audio * a = Player->has(Audio);
+        //			if(a)
+        //				a->playAction2();
 
-		//		Action *ac = Player->has(Action);
-		//		if(ac)
-		//		{
-		//			ac->PerformAction2(Player);
-		//		}
-		//	}
-		//}
-	
-		/****REMOVE HAT****/
-		/*if(g_INPUTSYSTEM->IsKeyTriggered(DIK_E) ||
-			g_INPUTSYSTEM->IsButtonTriggered(XINPUT_GAMEPAD_X))
-		{
-			Particle* p = Player->has(Particle);
-			if(p)
-				p->setScript("");
-		
-			
-			Sprite * sc = Player->has(Sprite);
-			if(sc)
-			{
-				sc->SetAnimationState(AnimationStateIdle);
-			}
-			
-			g_CONTROLLERSYSTEM->ReturnControlToHat();
+        //		Action *ac = Player->has(Action);
+        //		if(ac)
+        //		{
+        //			ac->PerformAction2(Player);
+        //		}
+        //	}
+        //}
+
+        /****REMOVE HAT****/
+        /*if(g_INPUTSYSTEM->IsKeyTriggered(DIK_E) ||
+            g_INPUTSYSTEM->IsButtonTriggered(XINPUT_GAMEPAD_X))
+        {
+            Particle* p = Player->has(Particle);
+            if(p)
+                p->setScript("");
 
 
-		
+            Sprite * sc = Player->has(Sprite);
+            if(sc)
+            {
+                sc->SetAnimationState(AnimationStateIdle);
+            }
 
-		}*/
+            g_CONTROLLERSYSTEM->ReturnControlToHat();
 
-		/****PAUSE****/
-		//Cristina 20140324: Pause Menu should be called by ESC or START according to TCRs
-		if(g_INPUTSYSTEM->IsKeyTriggered(DIK_ESCAPE)||
-			g_INPUTSYSTEM->IsButtonTriggered(XINPUT_GAMEPAD_START))
-		{
-			m_MenuManager->CreateNewMenu(Pause);
-			CORE->SetNextState(GameStates::InMenu);
-		}
 
-		if(g_INPUTSYSTEM->IsKeyTriggered(DIK_F12))
-		{        
-			m_MenuManager->CreateNewMenu(CheatMenu);
-			CORE->SetNextState(GameStates::InMenu);
-		}
-		
-		if(Player)
-		{
-			RigidBody *rb = Player->has(RigidBody);
-			if(!SpeedUpCheat)
-				rb->speed = 6.0f;
-			else
-				rb->speed = 20.0f;
-		}
 
-		//All controlls defined here are for debug uses only and should not be included in release
-		/****DEBUG****/
-		
+
+        }*/
+
+        /****PAUSE****/
+        //Cristina 20140324: Pause Menu should be called by ESC or START according to TCRs
+        if (g_INPUTSYSTEM->IsKeyTriggered(DIK_ESCAPE) ||
+            g_INPUTSYSTEM->IsButtonTriggered(XINPUT_GAMEPAD_START))
+        {
+            m_MenuManager->CreateNewMenu(Pause);
+            CORE->SetNextState(GameStates::InMenu);
+        }
+
+        if (g_INPUTSYSTEM->IsKeyTriggered(DIK_F12))
+        {
+            m_MenuManager->CreateNewMenu(CheatMenu);
+            CORE->SetNextState(GameStates::InMenu);
+        }
+
+        if (Player)
+        {
+            RigidBody *rb = Player->has(RigidBody);
+            if (!SpeedUpCheat)
+                rb->speed = 6.0f;
+            else
+                rb->speed = 20.0f;
+        }
+
+        //All controlls defined here are for debug uses only and should not be included in release
+        /****DEBUG****/
+        if (g_INPUTSYSTEM->IsKeyTriggered(DIK_Q))
+        {
+            CORE->SetNextState(GameStates::Quit);
+        }
 		if(g_INPUTSYSTEM->IsKeyTriggered(DIK_G) ||
 			g_INPUTSYSTEM->IsButtonTriggered(XINPUT_GAMEPAD_RIGHT_SHOULDER))
 		{            
@@ -704,6 +708,14 @@ namespace KrakEngine{
         if (g_INPUTSYSTEM->IsKeyTriggered(DIK_M))
         {            
             g_GRAPHICSSYSTEM->ToggleModel();
+        }
+        if (g_INPUTSYSTEM->IsKeyTriggered(DIK_L))
+        {
+            g_GRAPHICSSYSTEM->ToggleIsLightDynamic();
+        }
+        if (g_INPUTSYSTEM->IsKeyTriggered(DIK_O))
+        {
+            g_GRAPHICSSYSTEM->ToggleIsRotationDynamic();
         }
 
 #if defined(_DEBUG)

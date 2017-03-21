@@ -16,9 +16,12 @@ Creation date: 1/20/2014
 #include "ObjectLinkedList.h"
 #include "Vertex.h"
 #include "GBuffer.h"
+#include "TAM.h"
 
 namespace KrakEngine{
-    
+
+    struct TAMStroke;
+
     struct SpriteAnimation{
         float Length;
         float NumFrames;
@@ -85,16 +88,21 @@ namespace KrakEngine{
         XMFLOAT3 ConvertToWorldCoordinates(XMFLOAT2 screenCoordinate, float zPlane = 0.0f);
         XMFLOAT3 ConvertToWorldCoordinates(XMFLOAT2 screenCoordinate, XMFLOAT3 p0, XMFLOAT3 p1, XMFLOAT3 p2);
 
-        void ToggleDebug(){ m_DrawDebug = (m_DrawDebug + 1) % 3; }
+        void SetDrawTAMs(bool drawTAMs) { m_drawTAMs = drawTAMs; }
+        void ToggleDebug(){ m_DrawDebug = (m_DrawDebug + 1) % 6; }
         void ToggleModel(){ m_ChooseModel = 1 + (m_ChooseModel + 1) % 5; }
-        bool IsGBufferCreationOn(){ return m_DrawDebug != 4; }
-        bool IsDebugDrawingOn(){ return m_DrawDebug == 1 || m_DrawDebug == 2; }
-        bool IsGBufferDrawingOn(){ return m_DrawDebug == 5; }
-        bool IsSceneDrawingOn(){ return m_DrawDebug != 5; }
-        bool IsMeshDrawingOn(){ return m_DrawDebug == 1 || m_DrawDebug == 2; }
-        bool IsSkeletonDrawingOn(){ return m_DrawDebug != 5;}
-        bool IsDrawBindPose(){ return m_DrawDebug == 2; }
-        bool IsSkinningOn(){ return m_DrawDebug == 1; }
+        bool IsGBufferCreationOn();
+        bool IsDebugDrawingOn();
+        bool IsGrayscaleDrawingOn();
+        bool IsGBufferDrawingOn();
+        bool IsSceneDrawingOn();
+        bool IsMeshDrawingOn();
+        bool IsSkeletonDrawingOn();
+        bool IsDrawBindPose();
+        bool IsSkinningOn();
+        bool IsLuminanceVisualizerOn();
+        void ToggleIsLightDynamic();
+        void ToggleIsRotationDynamic();
         void LoadModels();
         void LoadAlbedoModel(tinyxml2::XMLElement* txmlElement, std::string ModelName);
         void LoadTexturedModel(tinyxml2::XMLElement* txmlElement, std::string ModelName);
@@ -255,12 +263,16 @@ namespace KrakEngine{
         ComPtr<ID3D11VertexShader> m_spContourDetectionPass2VertexShader;
         ComPtr<ID3D11PixelShader> m_spContourDetectionPass2PixelShader;
 
+        ComPtr<ID3D11VertexShader> m_spLuminanceVertexShader;
+        ComPtr<ID3D11PixelShader> m_spLuminancePixelShader;
+
         // Sprite Layout and Shaders
         ComPtr<ID3D11InputLayout> m_spSpriteVertexLayout;
         ComPtr<ID3D11VertexShader> m_spSpriteVertexShader;
         ComPtr<ID3D11PixelShader> m_spSpritePixelShader;
         ComPtr<ID3D11SamplerState> m_spLinearSampler;
         ComPtr<ID3D11SamplerState> m_spPointSampler;
+        ComPtr<ID3D11SamplerState> m_spMirrorSampler;
         ComPtr<ID3D11BlendState1> m_spBlendStateEnable;
         ComPtr<ID3D11BlendState1> m_spBlendStateDisable;
 
@@ -288,8 +300,8 @@ namespace KrakEngine{
 
         //ConstantBuffer m_CB;
         float m_Rotate;
-        std::hash_map<std::string, AlbedoModel > m_AlbedoModelMap;
-        std::hash_map<std::string, TexturedModel > m_TexturedModelMap;
+        std::unordered_map<std::string, AlbedoModel > m_AlbedoModelMap;
+        std::unordered_map<std::string, TexturedModel > m_TexturedModelMap;
 
         // D2D Resources	
         ComPtr<ID2D1Factory1> m_spD2DFactory;
@@ -302,14 +314,15 @@ namespace KrakEngine{
         ComPtr<ID2D1SolidColorBrush> m_spBlueBrush;
         ComPtr<ID2D1SolidColorBrush> m_spOrangeBrush;
         ComPtr<ID2D1SolidColorBrush> m_spYellowBrush;
-        std::hash_map<std::string, ComPtr<ID3D11ShaderResourceView> > m_TextureMap;
-        std::hash_map<std::string, ComPtr<ID2D1Bitmap1> > m_BitmapMap;
+        std::unordered_map<std::string, ComPtr<ID3D11ShaderResourceView> > m_TextureMap;
+        std::unordered_map<std::string, ComPtr<ID2D1Bitmap1> > m_BitmapMap;
 
         // DWrite Resources
         ComPtr<IDWriteFactory1> m_spDWriteFactory;
 
         // WIC Resources
         ComPtr<IWICImagingFactory> m_spWICFactory;
+        ComPtr<IWICImagingFactory2> m_spWICFactory2;
 
         // Window Properties
         WindowSystem* m_Window;
@@ -367,6 +380,40 @@ namespace KrakEngine{
         float m_coiDelta = 0.02f;
         float m_StepSizeFactor = 0.15f;
         bool m_bDoIK;
+
+
+        // Tonal Art Map
+        public:
+            typedef ComPtr<ID2D1Bitmap1> gTAMTexture;
+        void Set2DTarget(gTAMTexture target);
+        void GraphicsSystem::Begin2DDraw();
+        void GraphicsSystem::End2DDraw();
+        void GraphicsSystem::Clear2DRenderTarget(D2D1_COLOR_F& color);
+
+        ComPtr<ID2D1Bitmap1> GraphicsSystem::CreateBitmapFromFile(std::wstring BitmapFilePath, D2D1_BITMAP_OPTIONS options);
+        ComPtr<ID2D1Bitmap1> CreateBitmapFromFile(std::wstring filename);
+        ComPtr<ID2D1Bitmap1> CreateWriteableBitmap(D2D1_SIZE_U size);
+        ComPtr<ID2D1Bitmap1> CreateBitmapCopy(gTAMTexture source);
+        ComPtr<ID2D1Bitmap1> CreateBitmapCopy(ComPtr<ID2D1Bitmap1> sourceBitmap, D2D1_BITMAP_OPTIONS options);
+        ComPtr<ID2D1Bitmap1> CreateReadableBitmapCopy(ComPtr<ID2D1Bitmap1> bitmap);
+        void SaveBitmapToFile(
+            ComPtr<ID2D1Bitmap1> d2dBitmap,
+            REFGUID wicFormat,
+            std::wstring filePath
+        );
+
+        void DrawTAMStroke(TAMStroke stroke, gTAMTexture target);
+        bool m_drawTAMs = false;
+        void GenerateTAMs(int minMipResolution, int maxDimension, int numTones);
+        TonalArtMapGenerator m_tamGenerator;
+
+
+        // Real-Time Pencil Rendering Variables
+        float m_lightTime = 4.0f;
+        float m_lightPosition[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+        bool m_isLightDynamic = false;
+        float m_rotationTime = 0.0f;
+        bool m_isRotationDynamic = false;
 
 	};
 	extern GraphicsSystem* g_GRAPHICSSYSTEM;
