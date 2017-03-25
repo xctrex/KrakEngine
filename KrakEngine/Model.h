@@ -40,6 +40,8 @@ namespace KrakEngine{
 
         void Skin(const ComPtr<ID3D11Device1> &spD3DDevice1, const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1);
         void Draw(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1, const ComPtr<ID3D11Buffer> &spConstantBufferPerObject, const ComPtr<ID3D11Buffer> &spConstantBufferPerObjectPS) const;
+        void DrawShader(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1, const ComPtr<ID3D11Buffer> &spConstantBufferPerObjectVS, const ComPtr<ID3D11Buffer> &spConstantBufferPerObjectPS,
+            const ComPtr<ID3D11VertexShader> &spVertexShader, const ComPtr<ID3D11PixelShader> &spPixelShader, int numViews, ID3D11ShaderResourceView *const *views, int numSamplers, ID3D11SamplerState *const *samplers)const;
 
         void DrawBones(const ComPtr<ID2D1DeviceContext> &spD2DDeviceContext, const ComPtr<ID2D1Factory> &spD2DFactory, const ComPtr<ID3D11Buffer> &spConstantBufferPerObject, const ComPtr<ID3D11Buffer> &spConstantBufferPerObjectPS) const;
 

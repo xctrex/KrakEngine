@@ -146,10 +146,15 @@ namespace KrakEngine{
     private:
         // Draw Functions
         void DrawFullScreenQuad(ComPtr<ID3D11VertexShader> spVertexShader, ComPtr<ID3D11PixelShader> spPixelShader);
-        void DoLighting();
+        void BindGBufferAsInput();
+        void UnbindGBuffer();
+        void BindPencilShaderInput();
+        void RenderLuminance(ComPtr<ID3D11RenderTargetView> renderTarget);
+        void RenderUniformDirection();
         void DoPostProcessing();
         void UpdateModels(float dt);
         void DrawModels();
+        void DrawModels(const ComPtr<ID3D11VertexShader> &spVertexShader, const ComPtr<ID3D11PixelShader> &spPixelShader, int numViews, ID3D11ShaderResourceView *const *views, int numSamplers, ID3D11SamplerState *const *samplers);
         void DrawBones();
         void DrawSelected();
         void UpdateSprites(float dt);
@@ -177,7 +182,7 @@ namespace KrakEngine{
         void UpdateForWindowSizeChange();
 
         // D3D Resource Creation
-        void CreateShaders(wchar_t *fxFileName, D3D11_INPUT_ELEMENT_DESC* layout, UINT numElements, ComPtr<ID3D11InputLayout> &spVertexLayout, ComPtr<ID3D11VertexShader> &spVertexShader, ComPtr<ID3D11PixelShader> &spPixelShader);
+        void CreateShaders(wchar_t *fxFileName, D3D11_INPUT_ELEMENT_DESC* layout, UINT numElements, ComPtr<ID3D11InputLayout> &spVertexLayout, LPCSTR vertexShaderEntryPoint, ComPtr<ID3D11VertexShader> &spVertexShader, LPCSTR pixelShaderEntryPoint, ComPtr<ID3D11PixelShader> &spPixelShader);
         void CreateBuffers();
         void CreateQuadResources();
         void CreateSamplers();
@@ -212,6 +217,12 @@ namespace KrakEngine{
         ComPtr<ID3D11RenderTargetView> m_spIntermediateRTVDebug;
         ComPtr<ID3D11ShaderResourceView> m_spIntermediateSRVDebug;
         DXGI_FORMAT m_IntermediateRTFormatDebug;
+
+        // GradientBuffer resources
+        ComPtr<ID3D11Texture2D> m_spGradientBufferRT;
+        ComPtr<ID3D11RenderTargetView> m_spGradientBufferRTV;
+        ComPtr<ID3D11ShaderResourceView> m_spGradientBufferSRV;
+
 
         //ComPtr<ID3D11DepthStencilView> m_spD3DDepthStencilView;
         D3D_FEATURE_LEVEL m_FeatureLevel;
@@ -253,6 +264,9 @@ namespace KrakEngine{
 
         ComPtr<ID3D11VertexShader> m_spLuminanceVertexShader;
         ComPtr<ID3D11PixelShader> m_spLuminancePixelShader;
+
+        ComPtr<ID3D11VertexShader> m_spStrokeDirectionUniformVertexShader;
+        ComPtr<ID3D11PixelShader> m_spStrokeDirectionUniformPixelShader;
 
         // Sprite Layout and Shaders
         ComPtr<ID3D11InputLayout> m_spSpriteVertexLayout;

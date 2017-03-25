@@ -577,6 +577,18 @@
     <FxCompile Include="Shaders\Common.fx">
       <Filter>Systems\Graphics\Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\StrokeDirection.fx">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\StrokeDirectionUniform_PS.hlsl">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\StrokeDirectionUniform_VS.hlsl">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\CommonGBufferInput.fx">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsli">

@@ -24,6 +24,7 @@ namespace KrakEngine{
 
         void Initialize(const ComPtr<ID3D11Device1> &spD3DDevice1, D3D11_TEXTURE2D_DESC &bufferDesc);
 	    void TargetGBuffer(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1) const;
+        void TargetPositionLuminanceBuffer(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1) const;        
         void UnbindTargets(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1);
         void BindInput(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1, const ComPtr<ID3D11SamplerState> &spSampler, const ComPtr<ID3D11SamplerState> &spWrapSampler) const;
         void UnbindInput(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1) const;

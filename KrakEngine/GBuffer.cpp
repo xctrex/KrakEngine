@@ -240,23 +240,21 @@ namespace KrakEngine{
         spD3DDeviceContext1->OMSetDepthStencilState(m_spDepthStencilState.Get(), 1);
     }
 
+    void GBuffer::TargetPositionLuminanceBuffer(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1) const {
+        // Bind the position-luminance render target
+        spD3DDeviceContext1->OMSetRenderTargets(1, m_spPositionRTV.GetAddressOf(), nullptr);
+    }
+
     void GBuffer::UnbindTargets(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1){
         spD3DDeviceContext1->IASetPrimitiveTopology( D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
                
-        ID3D11RenderTargetView* views[3] = {NULL, NULL, NULL};
+        ID3D11RenderTargetView* views[4] = {NULL, NULL, NULL, NULL};
         spD3DDeviceContext1->OMSetRenderTargets(ARRAYSIZE(views), views, m_spDepthStencilViewReadOnly.Get());
     }
 
     void GBuffer::BindInput(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1, const ComPtr<ID3D11SamplerState> &spSampler, const ComPtr<ID3D11SamplerState> &spWrapSampler) const{
         // Bind the Resource Views
-        ID3D11ShaderResourceView* views[10] = {m_spDepthStencilSRV.Get(), m_spColorSpecularIntensitySRV.Get(), m_spNormalSRV.Get(), m_spPositionSRV.Get(),
-            g_GRAPHICSSYSTEM->GetTexture("shade0").Get(),
-            g_GRAPHICSSYSTEM->GetTexture("shade1").Get(),
-            g_GRAPHICSSYSTEM->GetTexture("shade2").Get(),
-            g_GRAPHICSSYSTEM->GetTexture("shade3").Get(),
-            g_GRAPHICSSYSTEM->GetTexture("shade4").Get(),
-            g_GRAPHICSSYSTEM->GetTexture("shade5").Get()};
-        //ID3D11ShaderResourceView* views[3] = {m_spDepthStencilSRV.Get(), m_spColorSpecularIntensitySRV.Get(), m_spNormalSRV.Get()};
+        ID3D11ShaderResourceView* views[4] = {m_spDepthStencilSRV.Get(), m_spColorSpecularIntensitySRV.Get(), m_spNormalSRV.Get(), m_spPositionSRV.Get()};
         spD3DDeviceContext1->PSSetShaderResources(0, ARRAYSIZE(views), views);
 
         ID3D11SamplerState* samplers[2] = { spSampler.Get(), spWrapSampler.Get() };
@@ -265,13 +263,7 @@ namespace KrakEngine{
 
     void GBuffer::UnbindInput(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1) const{
         // Cleanup
-        ID3D11ShaderResourceView* views[10] = {m_spDepthStencilSRV.Get(), m_spColorSpecularIntensitySRV.Get(), m_spNormalSRV.Get(), m_spPositionSRV.Get(),
-            g_GRAPHICSSYSTEM->GetTexture("shade0").Get(),
-            g_GRAPHICSSYSTEM->GetTexture("shade1").Get(),
-            g_GRAPHICSSYSTEM->GetTexture("shade2").Get(),
-            g_GRAPHICSSYSTEM->GetTexture("shade3").Get(),
-            g_GRAPHICSSYSTEM->GetTexture("shade4").Get(),
-            g_GRAPHICSSYSTEM->GetTexture("shade5").Get()};
+        ID3D11ShaderResourceView* views[4] = {m_spDepthStencilSRV.Get(), m_spColorSpecularIntensitySRV.Get(), m_spNormalSRV.Get(), m_spPositionSRV.Get()};
         //ID3D11ShaderResourceView* views[3] = {m_spDepthStencilSRV.Get(), m_spColorSpecularIntensitySRV.Get(), m_spNormalSRV.Get()};
         ZeroMemory(views, sizeof(views));
         spD3DDeviceContext1->PSSetShaderResources(0, ARRAYSIZE(views), views);

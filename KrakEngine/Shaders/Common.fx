@@ -1,71 +1,37 @@
+// Common
 
-//--------------------------------------------------------------------------------------
-// GBuffer Textures and Samplers
-//--------------------------------------------------------------------------------------
+float2 get2dPoint(float3 point3D, float4x4 viewMatrix,
+    float4x4 projectionMatrix, float width, float height) {
 
-Texture2D<float>  DepthTexture                  : register(t0);
-Texture2D<float4> ColorSpecularIntensityTexture : register(t1);
-Texture2D<float3> NormalTexture                 : register(t2);
-Texture2D<float4> PositionTexture               : register(t3);
-Texture2D<float4> shade0               : register(t4);
-Texture2D<float4> shade1               : register(t5);
-Texture2D<float4> shade2               : register(t6);
-Texture2D<float4> shade3               : register(t7);
-Texture2D<float4> shade4               : register(t8);
-Texture2D<float4> shade5               : register(t9);
-SamplerState      PointSampler                  : register(s0);
-SamplerState      MirrorSampler                  : register(s1);
-
-cbuffer ConstantBufferGBufferUnpack : register(b2)
-{
-    float4 PerspectiveValues : packoffset(c0);
-    float4x4 ViewInverse     : packoffset(c1);
-};
-
-
-struct SurfaceData
-{
-    float LinearDepth;
-    float3 Color;
-    float3 Normal;
-    float SpecularIntensity;
-    float3 Position;
-};
-
-
-float3 DecodeNormal(float2 EncodedNormal)
-{
-    float4 DecodedNormal = EncodedNormal.xyyy * float4(2.0f, 2.0f, 0.0f, 0.0f) + float4(-1.0f, -1.0f, 1.0f, -1.0f);
-    DecodedNormal.z = dot(DecodedNormal.xyz, -DecodedNormal.xyw);
-    DecodedNormal.xy *= sqrt(DecodedNormal.z);
-    return DecodedNormal.xyz * 2.0f + float3(0.0f, 0.0f, -1.0f);
+    float4x4 viewProjectionMatrix = projectionMatrix * viewMatrix;
+    //transform world to clipping coordinates
+    point3D = mul(viewProjectionMatrix, point3D);
+    float winX = ((point3D.x + 1.0f) / 2.0f) * width;
+    //we calculate -point3D.getY() because the screen Y axis is
+    //oriented top->down 
+    int winY = ((1.0f - point3D.y) / 2.0) * height;
+    return float2(winX, winY);
 }
 
-float ConvertZToLinearDepth(float depth)
+// Tranforms position from object to homogenous space
+inline float4 UnityObjectToClipPos(in float3 pos, float4x4 MVP)
 {
-    return PerspectiveValues.z / (depth + PerspectiveValues.w);
+    return mul(MVP, float4(pos, 1.0));
 }
 
-SurfaceData UnpackGBuffer(float2 UV)
+float4 ComputeScreenPos(float4 pos) {
+    float4 o = pos * 0.5f;
+//#if defined(UNITY_HALF_TEXEL_OFFSET)
+//    o.xy = float2(o.x, o.y*_ProjectionParams.x) + o.w * _ScreenParams.zw;
+
+    o.xy = float2(o.x, o.y*1.0) + o.w;
+
+    o.zw = pos.zw;
+    return o;
+}
+
+// pos is the input position multiplied by the ModelViewProjection matrix
+float4 ScreenSpaceInVertexShader(in float4 pos, in float2 ScreenSize)
 {
-    SurfaceData output;
-
-    // Get the depth from the GBuffer and convert it to linear space
-    float depth = DepthTexture.Sample(PointSampler, UV.xy).x;
-    output.LinearDepth = ConvertZToLinearDepth(depth);
-
-    // Get the Color and specular intensity from the GBuffer
-    float4 ColorSpecularIntensity = ColorSpecularIntensityTexture.Sample(PointSampler, UV.xy);
-    output.Color = ColorSpecularIntensity.xyz;
-    output.SpecularIntensity = ColorSpecularIntensity.w;
-
-    // Get the normal and unpack it
-    output.Normal = NormalTexture.Sample(PointSampler, UV.xy).xyz;
-    output.Normal = normalize(output.Normal * 2.0f - 1.0f);
-
-    // Get the specular exponent and scale it back to the original range
-    //    output.SpecularExponent = SpecularExponentTexture.Sample( PointSampler, UV.xy ).x;
-    // Get the position
-    output.Position = PositionTexture.Sample(PointSampler, UV.xy).xyz;
-    return output;
+    return float4(0.5 * (float2(pos.x + pos.w, pos.w - pos.y) + pos.w * ScreenSize.xy), pos.zw) * (1.0f / pos.w);
 }

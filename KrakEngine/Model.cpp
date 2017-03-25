@@ -261,34 +261,44 @@ namespace KrakEngine{
         }
     }
 
-    void Model::Draw(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1, const ComPtr<ID3D11Buffer> &spConstantBufferPerObjectVS, const ComPtr<ID3D11Buffer> &spConstantBufferPerObjectPS)const{        
-        if (m_Mesh){
+    void Model::Draw(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1, const ComPtr<ID3D11Buffer> &spConstantBufferPerObjectVS, const ComPtr<ID3D11Buffer> &spConstantBufferPerObjectPS)const{
+        ID3D11ShaderResourceView* views[1] = { g_GRAPHICSSYSTEM->GetTexture(m_TextureName).Get() };   
+
+        ID3D11SamplerState* samplers[1] = { g_GRAPHICSSYSTEM->GetSampler().Get() };
+        DrawShader(spD3DDeviceContext1, spConstantBufferPerObjectVS, spConstantBufferPerObjectPS, m_spVertexShader, m_spPixelShader, ARRAYSIZE(views), views, ARRAYSIZE(samplers), samplers);
+    }
+
+    void Model::DrawShader(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1, const ComPtr<ID3D11Buffer> &spConstantBufferPerObjectVS, const ComPtr<ID3D11Buffer> &spConstantBufferPerObjectPS,
+        const ComPtr<ID3D11VertexShader> &spVertexShader, const ComPtr<ID3D11PixelShader> &spPixelShader, int numViews, ID3D11ShaderResourceView *const *views, int numSamplers,  ID3D11SamplerState *const *samplers)const {
+        if (m_Mesh) {
             m_Mesh->Set(spD3DDeviceContext1, g_DRAWSTATE->m_isSkinningOn);
         }
 
         // Set input layout
         spD3DDeviceContext1->IASetInputLayout(m_spVertexLayout.Get());
-        
+
         // Update per-object constant buffer
         ConstantBufferPerObjectVS cbPerObjectVS;
         XMStoreFloat4x4(&(cbPerObjectVS.World), XMMatrixTranspose(XMLoadFloat4x4(&m_World)));
         spD3DDeviceContext1->UpdateSubresource(spConstantBufferPerObjectVS.Get(), 0, nullptr, &cbPerObjectVS, 0, 0);
 
-        
+
         ConstantBufferPerObjectPS cbPerObjectPS;
         cbPerObjectPS.SpecularExponent = m_SpecularExponent;
         cbPerObjectPS.SpecularIntensity = m_SpecularIntensity;
         spD3DDeviceContext1->UpdateSubresource(spConstantBufferPerObjectPS.Get(), 0, nullptr, &cbPerObjectPS, 0, 0);
 
         //if(m_VertexType == VertexTypeTexturedModel){
-            spD3DDeviceContext1->PSSetShaderResources( 0, 1, g_GRAPHICSSYSTEM->GetTexture(m_TextureName).GetAddressOf() );
-            spD3DDeviceContext1->PSSetSamplers( 0, 1, g_GRAPHICSSYSTEM->GetSampler().GetAddressOf() );
+        //spD3DDeviceContext1->PSSetShaderResources(0, 1, g_GRAPHICSSYSTEM->GetTexture(m_TextureName).GetAddressOf());
+        //spD3DDeviceContext1->PSSetSamplers(0, 1, g_GRAPHICSSYSTEM->GetSampler().GetAddressOf());
+        spD3DDeviceContext1->PSSetShaderResources(0, numViews, views);
+        spD3DDeviceContext1->PSSetSamplers(0, numSamplers, samplers);
         //}
-		// Render
-        spD3DDeviceContext1->VSSetShader(m_spVertexShader.Get(), nullptr, 0);       
-        spD3DDeviceContext1->PSSetShader(m_spPixelShader.Get(), nullptr, 0);
+        // Render
+        spD3DDeviceContext1->VSSetShader(spVertexShader.Get(), nullptr, 0);
+        spD3DDeviceContext1->PSSetShader(spPixelShader.Get(), nullptr, 0);
 
-        if (m_Mesh){
+        if (m_Mesh) {
             m_Mesh->Draw(spD3DDeviceContext1);
         }
     }
