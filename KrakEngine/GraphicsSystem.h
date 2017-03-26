@@ -58,7 +58,7 @@ namespace KrakEngine{
         double s;
         XMFLOAT2 p;
     };
-
+    
     class GraphicsSystem : public ISystem{
 
     public:
@@ -149,7 +149,12 @@ namespace KrakEngine{
         void BindGBufferAsInput();
         void UnbindGBuffer();
         void BindPencilShaderInput();
+        void DrawBufferSetup(ComPtr<ID3D11ShaderResourceView> &buffer);
+        void DrawBuffer(ComPtr<ID3D11ShaderResourceView> &buffer);
+        void DrawBufferRed(ComPtr<ID3D11ShaderResourceView> &buffer);
+        void DrawBufferGreen(ComPtr<ID3D11ShaderResourceView> &buffer);
         void RenderLuminance(ComPtr<ID3D11RenderTargetView> renderTarget);
+        void RenderLuminanceGradient();
         void RenderUniformDirection();
         void DoPostProcessing();
         void UpdateModels(float dt);
@@ -182,6 +187,7 @@ namespace KrakEngine{
         void UpdateForWindowSizeChange();
 
         // D3D Resource Creation
+        void CreatePixelShader(wchar_t* fxFileName, LPCSTR pixelShaderEntryPoint, ComPtr<ID3D11PixelShader> &spPixelShader);
         void CreateShaders(wchar_t *fxFileName, D3D11_INPUT_ELEMENT_DESC* layout, UINT numElements, ComPtr<ID3D11InputLayout> &spVertexLayout, LPCSTR vertexShaderEntryPoint, ComPtr<ID3D11VertexShader> &spVertexShader, LPCSTR pixelShaderEntryPoint, ComPtr<ID3D11PixelShader> &spPixelShader);
         void CreateBuffers();
         void CreateQuadResources();
@@ -217,6 +223,11 @@ namespace KrakEngine{
         ComPtr<ID3D11RenderTargetView> m_spIntermediateRTVDebug;
         ComPtr<ID3D11ShaderResourceView> m_spIntermediateSRVDebug;
         DXGI_FORMAT m_IntermediateRTFormatDebug;
+
+        // LuminanceBuffer resources
+        ComPtr<ID3D11Texture2D> m_spLuminanceBufferRT;
+        ComPtr<ID3D11RenderTargetView> m_spLuminanceBufferRTV;
+        ComPtr<ID3D11ShaderResourceView> m_spLuminanceBufferSRV;
 
         // GradientBuffer resources
         ComPtr<ID3D11Texture2D> m_spGradientBufferRT;
@@ -264,6 +275,14 @@ namespace KrakEngine{
 
         ComPtr<ID3D11VertexShader> m_spLuminanceVertexShader;
         ComPtr<ID3D11PixelShader> m_spLuminancePixelShader;
+
+        ComPtr<ID3D11VertexShader> m_spLuminanceGradientVertexShader;
+        ComPtr<ID3D11PixelShader> m_spLuminanceGradientPixelShader;
+
+        ComPtr<ID3D11VertexShader> m_spBufferVisualizerVertexShader;
+        ComPtr<ID3D11PixelShader> m_spBufferVisualizerPixelShader;
+        ComPtr<ID3D11PixelShader> m_spBufferVisualizerRedPixelShader;
+        ComPtr<ID3D11PixelShader> m_spBufferVisualizerGreenPixelShader;
 
         ComPtr<ID3D11VertexShader> m_spStrokeDirectionUniformVertexShader;
         ComPtr<ID3D11PixelShader> m_spStrokeDirectionUniformPixelShader;

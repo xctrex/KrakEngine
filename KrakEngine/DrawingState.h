@@ -5,10 +5,14 @@ namespace KrakEngine
     enum class DebugDrawingMode : int
     {
         Default = 0,
-        GBufferDepth,
-        GBufferNormal,
-        GBufferLuminance,
+        LuminanceBuffer,
+        LuminanceGradientBufferX,
+        LuminanceGradientBufferY,
+        LuminanceGradientBuffer,
         UniformDirection,
+        EndCycle,
+        GBufferNormal,
+        GBufferDepth,
         Depth,
         Luminance,
         ProjectedNormal,
@@ -70,7 +74,7 @@ namespace KrakEngine
             case DebugDrawingMode::GBufferDepth:
                 str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Depth Buffer";
                 break;
-            case DebugDrawingMode::GBufferLuminance:
+            case DebugDrawingMode::LuminanceBuffer:
                 str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Luminance Buffer";
                 break;
             case DebugDrawingMode::UniformDirection:
@@ -81,6 +85,11 @@ namespace KrakEngine
                 break;
             }
             return str;
+        }
+
+        void CycleDrawingMode()
+        {
+            m_drawingMode = static_cast<DebugDrawingMode>(((int)m_drawingMode + 1) % (int)DebugDrawingMode::EndCycle);
         }
     };
 }

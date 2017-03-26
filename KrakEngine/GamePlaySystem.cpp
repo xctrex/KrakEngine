@@ -704,7 +704,7 @@ namespace KrakEngine{
 		if(g_INPUTSYSTEM->IsKeyTriggered(DIK_G) ||
 			g_INPUTSYSTEM->IsButtonTriggered(XINPUT_GAMEPAD_RIGHT_SHOULDER))
 		{            
-            g_DRAWSTATE->m_drawingMode = static_cast<DebugDrawingMode>(((int)g_DRAWSTATE->m_drawingMode + 1) % (int)DebugDrawingMode::Depth);
+            g_DRAWSTATE->CycleDrawingMode();
 		}
         if (g_INPUTSYSTEM->IsKeyTriggered(DIK_M))
         {            

@@ -264,6 +264,9 @@
     <ClCompile Include="TAM.cpp">
       <Filter>Systems\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="ShaderResources.cpp">
+      <Filter>Systems\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core.h">
@@ -500,6 +503,9 @@
     <ClInclude Include="DrawingState.h">
       <Filter>Systems\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderResources.h">
+      <Filter>Systems\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\SpriteShader.fx">
@@ -587,6 +593,30 @@
       <Filter>Systems\Graphics\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\CommonGBufferInput.fx">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\GradientBuffer.fx">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\GradientBuffer_PS.hlsl">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\GradientBuffer_VS.hlsl">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\BufferVisualizer.fx">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\BufferVisualizer_PS.hlsl">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\BufferVisualizer_VS.hlsl">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\BufferVisualizer_PS_Green.hlsl">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\BufferVisualizer_PS_Red.hlsl">
       <Filter>Systems\Graphics\Shaders</Filter>
     </FxCompile>
   </ItemGroup>

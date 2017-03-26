@@ -30,6 +30,7 @@ Creation date: 1/20/2014
 
 #include "TAM.h"
 #include "DrawingState.h"
+#include "ShaderResources.h"
 
 #define TRACK_DEPTH 4.0f
 
@@ -229,7 +230,9 @@ namespace KrakEngine{
             DrawModels();
             m_GBuffer.UnbindTargets(m_spD3DDeviceContext1);
 
-            RenderLuminance(m_spGradientBufferRTV);
+            RenderLuminance(m_spLuminanceBufferRTV);
+
+            RenderLuminanceGradient();
 
             if(g_DRAWSTATE->m_drawingMode == DebugDrawingMode::GBufferNormal){
                 // Target the back buffer
@@ -245,9 +248,21 @@ namespace KrakEngine{
                 // Cleanup
                 UnbindGBuffer();
             }
-            if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::GBufferLuminance)
+            if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::LuminanceBuffer)
             {
-                RenderLuminance(m_spD3DRenderTargetView);
+                DrawBufferRed(m_spLuminanceBufferSRV);
+            }
+            if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::LuminanceGradientBufferX)
+            {
+                DrawBufferRed(m_spGradientBufferSRV);
+            }
+            if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::LuminanceGradientBufferY)
+            {
+                DrawBufferGreen(m_spGradientBufferSRV);
+            }
+            if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::LuminanceGradientBuffer)
+            {
+                DrawBuffer(m_spGradientBufferSRV);
             }
             if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::UniformDirection, g_DRAWSTATE->m_drawingMode == DebugDrawingMode::Default) {
                 RenderUniformDirection();
@@ -424,6 +439,58 @@ namespace KrakEngine{
 
         // Unbind input
         UnbindGBuffer();
+    }
+
+    void GraphicsSystem::DrawBufferSetup(ComPtr<ID3D11ShaderResourceView> &buffer)
+    {
+        // Target Back Buffer
+        m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spD3DRenderTargetView.GetAddressOf(), nullptr);
+
+        // Bind Shader Resources
+        ShaderResources resources(
+        {}, // Vertex Shader Textures
+        {}, // Vertex Shader Samplers
+        { buffer.Get() }, // Pixel Shader Textures
+        { m_spPointSampler.Get() } // Pixel Shader Samplers
+        );
+        BindShaderResources(m_spD3DDeviceContext1, resources);
+    }
+
+    void GraphicsSystem::DrawBuffer(ComPtr<ID3D11ShaderResourceView> &buffer)
+    {
+        DrawBufferSetup(buffer);
+        // Draw a fullscreen quad with the output
+        DrawFullScreenQuad(m_spBufferVisualizerVertexShader, m_spBufferVisualizerPixelShader);
+    }
+
+    void GraphicsSystem::DrawBufferRed(ComPtr<ID3D11ShaderResourceView> &buffer)
+    {
+        DrawBufferSetup(buffer);
+        // Draw a fullscreen quad with the output
+        DrawFullScreenQuad(m_spBufferVisualizerVertexShader, m_spBufferVisualizerRedPixelShader);
+    }
+
+    void GraphicsSystem::DrawBufferGreen(ComPtr<ID3D11ShaderResourceView> &buffer)
+    {
+        DrawBufferSetup(buffer);
+        // Draw a fullscreen quad with the output
+        DrawFullScreenQuad(m_spBufferVisualizerVertexShader, m_spBufferVisualizerGreenPixelShader);
+    }
+
+    void GraphicsSystem::RenderLuminanceGradient() {
+        m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spGradientBufferRTV.GetAddressOf(), nullptr);
+
+        // Bind Shader Resources
+        ShaderResources resources(
+            {}, // Vertex Shader Textures
+            {}, // Vertex Shader Samplers
+            { m_spLuminanceBufferSRV.Get() }, // Pixel Shader Textures
+            { m_spPointSampler.Get(), m_spMirrorSampler.Get() } // Pixel Shader Samplers
+        );
+        BindShaderResources(m_spD3DDeviceContext1, resources);
+
+        // Draw a fullscreen quad with the output
+        DrawFullScreenQuad(m_spLuminanceGradientVertexShader, m_spLuminanceGradientPixelShader);
     }
 
     void GraphicsSystem::RenderUniformDirection()
@@ -1789,6 +1856,10 @@ namespace KrakEngine{
         CreateShaders(L"Shaders\\ContourDetectionPass1.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spContourDetectionPass1VertexShader, "PS", m_spContourDetectionPass1PixelShader);
         CreateShaders(L"Shaders\\ContourDetectionPass2.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spContourDetectionPass2VertexShader, "PS", m_spContourDetectionPass2PixelShader);
         CreateShaders(L"Shaders\\LuminanceVisualizer.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spLuminanceVertexShader, "PS", m_spLuminancePixelShader);
+        CreateShaders(L"Shaders\\GradientBuffer.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spLuminanceGradientVertexShader, "PS", m_spLuminanceGradientPixelShader);
+        CreateShaders(L"Shaders\\BufferVisualizer.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spBufferVisualizerVertexShader, "PS", m_spBufferVisualizerPixelShader);
+        CreatePixelShader(L"Shaders\\BufferVisualizer.fx", "PS_Red", m_spBufferVisualizerRedPixelShader);
+        CreatePixelShader(L"Shaders\\BufferVisualizer.fx", "PS_Green", m_spBufferVisualizerGreenPixelShader);
         CreateShaders(L"Shaders\\StrokeDirection.fx", FBXBinModelLayout, ARRAYSIZE(FBXBinModelLayout), m_spFBXBinModelVertexLayout, "Uniform_VS", m_spStrokeDirectionUniformVertexShader, "Uniform_PS", m_spStrokeDirectionUniformPixelShader);
 
         CreateBuffers();
@@ -2093,6 +2164,29 @@ namespace KrakEngine{
                 )
             );
 
+        // Create the LuminanceBuffer
+        DXThrowIfFailed(
+            m_spD3DDevice1->CreateTexture2D(
+                &backBufferDesc,
+                nullptr,
+                &m_spLuminanceBufferRT
+            )
+        );
+        DXThrowIfFailed(
+            m_spD3DDevice1->CreateRenderTargetView(
+                m_spLuminanceBufferRT.Get(),
+                &RTVDesc,
+                &m_spLuminanceBufferRTV
+            )
+        );
+        DXThrowIfFailed(
+            m_spD3DDevice1->CreateShaderResourceView(
+                m_spLuminanceBufferRT.Get(),
+                &SRVDesc,
+                &m_spLuminanceBufferSRV
+            )
+        );
+
         // Create the GradientBuffer
         DXThrowIfFailed(
             m_spD3DDevice1->CreateTexture2D(
@@ -2190,6 +2284,18 @@ namespace KrakEngine{
         CreateWindowSizeDependentResources();
     }
 
+    void GraphicsSystem::CreatePixelShader(wchar_t* fxFileName, LPCSTR pixelShaderEntryPoint, ComPtr<ID3D11PixelShader> &spPixelShader)
+    {
+        // Compile the pixel shader
+        ComPtr<ID3DBlob> spPSBlob;
+        CompileShaderFromFile(fxFileName, pixelShaderEntryPoint, "ps_5_0", spPSBlob);
+
+        // Create the pixel shader
+        DXThrowIfFailed(
+            m_spD3DDevice1->CreatePixelShader(spPSBlob->GetBufferPointer(), spPSBlob->GetBufferSize(), nullptr, spPixelShader.GetAddressOf())
+        );
+    }
+
     void GraphicsSystem::CreateShaders(wchar_t* fxFileName, D3D11_INPUT_ELEMENT_DESC* layout, UINT numElements, ComPtr<ID3D11InputLayout> &spVertexLayout, LPCSTR vertexShaderEntryPoint, ComPtr<ID3D11VertexShader> &spVertexShader, LPCSTR pixelShaderEntryPoint, ComPtr<ID3D11PixelShader> &spPixelShader){
 	    // Compile the vertex shader
 	    ComPtr<ID3DBlob> spVSBlob;
@@ -2217,14 +2323,7 @@ namespace KrakEngine{
 		        );
         }
 		
-	    // Compile the pixel shader
-	    ComPtr<ID3DBlob> spPSBlob;
-	    CompileShaderFromFile(fxFileName, pixelShaderEntryPoint, "ps_5_0", spPSBlob);
-
-	    // Create the pixel shader
-	    DXThrowIfFailed(
-		    m_spD3DDevice1->CreatePixelShader(spPSBlob->GetBufferPointer(), spPSBlob->GetBufferSize(), nullptr, spPixelShader.GetAddressOf())
-		    );
+        CreatePixelShader(fxFileName, pixelShaderEntryPoint, spPixelShader);
     }
 
     void GraphicsSystem::CreateBuffers(){	    

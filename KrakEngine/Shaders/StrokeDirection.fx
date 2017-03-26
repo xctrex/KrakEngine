@@ -107,7 +107,7 @@ VS_OUTPUT Uniform_VS(VS_INPUT input)
     float2 depthUV = screenPos.xy / screenPos.w;
     //float3 uOffsets = float3(-1, 0, 1) * _CameraDepthTexture_TexelSize.x;
     //float3 vOffsets = float3(-1, 0, 1) * _CameraDepthTexture_TexelSize.y;
-
+    
 
 
     output.TextureUV.xy = input.TextureUV;
@@ -134,7 +134,7 @@ float4 Uniform_PS(VS_OUTPUT input) : SV_TARGET
     float2 direction;
     direction.x = luminanceDirection.g;
     direction.y = luminanceDirection.b;
-    direction = input.Direction0;
+    direction = normalize(input.Direction0);
     float2 xy = screenSpacePosition.xy / float2(143.0f, 143.0f);
     //luminance = GradientBuffer.Sample(PointSampler, xy.xy).rgb;
     float strokeRotation = atan2(direction.y, direction.x);
@@ -186,6 +186,6 @@ float4 Uniform_PS(VS_OUTPUT input) : SV_TARGET
     }
 
     luminance = lerp(lowValue, highValue, blendFactor);*/
-    return float4(luminance, direction.x, direction.y, 1.0f);
+    return float4(0.0f, direction.x, direction.y, 1.0f);
     //return float4(luminance, luminance, luminance, luminance);
 }
