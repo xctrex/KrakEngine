@@ -36,6 +36,7 @@ struct VS_INPUT
     float3 Pos : POSITION;
     float3 Normal : NORMAL;
     float2 TextureUV : TEXCOORD0;
+    uint id : SV_VertexID;
 };
 
 struct VS_OUTPUT

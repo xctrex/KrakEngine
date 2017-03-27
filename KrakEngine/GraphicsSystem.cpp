@@ -260,6 +260,10 @@ namespace KrakEngine{
             {
                 DrawBufferGreen(m_spGradientBufferSRV);
             }
+            if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::LuminanceGradientBufferZ)
+            {
+                DrawBufferBlue(m_spGradientBufferSRV);
+            }
             if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::LuminanceGradientBuffer)
             {
                 DrawBuffer(m_spGradientBufferSRV);
@@ -477,6 +481,13 @@ namespace KrakEngine{
         DrawFullScreenQuad(m_spBufferVisualizerVertexShader, m_spBufferVisualizerGreenPixelShader);
     }
 
+    void GraphicsSystem::DrawBufferBlue(ComPtr<ID3D11ShaderResourceView> &buffer)
+    {
+        DrawBufferSetup(buffer);
+        // Draw a fullscreen quad with the output
+        DrawFullScreenQuad(m_spBufferVisualizerVertexShader, m_spBufferVisualizerBluePixelShader);
+    }
+
     void GraphicsSystem::RenderLuminanceGradient() {
         m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spGradientBufferRTV.GetAddressOf(), nullptr);
 
@@ -500,28 +511,25 @@ namespace KrakEngine{
 
         // Bind the Resource Views
         //BindPencilShaderInput();
-
-        // Bind the Resource Views
-        ID3D11ShaderResourceView* views[7] = { m_spGradientBufferSRV.Get(),
+        ShaderResources resources(
+            { m_spGradientBufferSRV.Get()},
+            { m_spPointSampler.Get(), m_spMirrorSampler.Get() },
+            { m_spGradientBufferSRV.Get(),
+            m_spLuminanceBufferSRV.Get(),
             g_GRAPHICSSYSTEM->GetTexture("shade0").Get(),
             g_GRAPHICSSYSTEM->GetTexture("shade1").Get(),
             g_GRAPHICSSYSTEM->GetTexture("shade2").Get(),
             g_GRAPHICSSYSTEM->GetTexture("shade3").Get(),
             g_GRAPHICSSYSTEM->GetTexture("shade4").Get(),
-            g_GRAPHICSSYSTEM->GetTexture("shade5").Get() };
-
-        ID3D11SamplerState* samplers[2] = { m_spPointSampler.Get(), m_spMirrorSampler.Get() };
-
-        // might need to set vs shader resources and samplers later
-        m_spD3DDeviceContext1->VSSetShaderResources(0, 1, m_spGradientBufferSRV.GetAddressOf());
-        m_spD3DDeviceContext1->VSSetSamplers(0, ARRAYSIZE(samplers), samplers);
+            g_GRAPHICSSYSTEM->GetTexture("shade5").Get() },
+            { m_spPointSampler.Get(), m_spMirrorSampler.Get() });
+        BindShaderResources(m_spD3DDeviceContext1, resources);
 
         // Render the GBuffer visualizer shaders
-        DrawModels(m_spStrokeDirectionUniformVertexShader, m_spStrokeDirectionUniformPixelShader, ARRAYSIZE(views), views, ARRAYSIZE(samplers), samplers);
+        DrawModels(m_spStrokeDirectionUniformVertexShader, m_spStrokeDirectionUniformPixelShader, resources);
     
         // Unbind the resources
-        ID3D11ShaderResourceView* nullViews[1]{ nullptr };
-        m_spD3DDeviceContext1->VSSetShaderResources(0, ARRAYSIZE(nullViews), nullViews);
+        UnBindShaderResources(m_spD3DDeviceContext1, resources);
     }
     void GraphicsSystem::DoPostProcessing(){
         // Target an intermediate Render Target
@@ -668,7 +676,7 @@ namespace KrakEngine{
         }
     }
 
-    void GraphicsSystem::DrawModels(const ComPtr<ID3D11VertexShader> &spVertexShader, const ComPtr<ID3D11PixelShader> &spPixelShader, int numViews, ID3D11ShaderResourceView *const *views, int numSamplers, ID3D11SamplerState *const *samplers) {
+    void GraphicsSystem::DrawModels(const ComPtr<ID3D11VertexShader> &spVertexShader, const ComPtr<ID3D11PixelShader> &spPixelShader, ShaderResources &resources) {
         // Draw each object
         std::list<Model*>::iterator it = m_ModelList.begin();
         UINT ModelNumber = 0;
@@ -679,7 +687,7 @@ namespace KrakEngine{
                 (*it)->Skin(m_spD3DDevice1, m_spD3DDeviceContext1);
             }
             if (/*ModelNumber < 1 ||*/ (ModelNumber == (UINT)m_ChooseModel)) {
-                (*it)->DrawShader(m_spD3DDeviceContext1, m_spConstantBufferPerObjectVS, m_spConstantBufferPerObjectPS, spVertexShader, spPixelShader, numViews, views, numSamplers, samplers);
+                (*it)->DrawShader(m_spD3DDeviceContext1, m_spConstantBufferPerObjectVS, m_spConstantBufferPerObjectPS, spVertexShader, spPixelShader, resources);
             }
 
             ++ModelNumber;
@@ -2250,8 +2258,8 @@ namespace KrakEngine{
                 m_DPIX,
                 m_DPIY
             );
-
         ComPtr<IDXGISurface2> dxgiBackBuffer;
+        //spBackBuffer->QueryInterface(__uuidof(IDXGISurface2), (void**)&dxgiBackBuffer);
         DXThrowIfFailed(
             m_spSwapChain1->GetBuffer(0, IID_PPV_ARGS(&dxgiBackBuffer))
             );

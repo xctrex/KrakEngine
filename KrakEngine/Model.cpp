@@ -262,14 +262,18 @@ namespace KrakEngine{
     }
 
     void Model::Draw(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1, const ComPtr<ID3D11Buffer> &spConstantBufferPerObjectVS, const ComPtr<ID3D11Buffer> &spConstantBufferPerObjectPS)const{
-        ID3D11ShaderResourceView* views[1] = { g_GRAPHICSSYSTEM->GetTexture(m_TextureName).Get() };   
 
-        ID3D11SamplerState* samplers[1] = { g_GRAPHICSSYSTEM->GetSampler().Get() };
-        DrawShader(spD3DDeviceContext1, spConstantBufferPerObjectVS, spConstantBufferPerObjectPS, m_spVertexShader, m_spPixelShader, ARRAYSIZE(views), views, ARRAYSIZE(samplers), samplers);
+        ShaderResources resources(
+        {},
+        {},
+        { g_GRAPHICSSYSTEM->GetTexture(m_TextureName).Get() },
+        { g_GRAPHICSSYSTEM->GetSampler().Get() });
+
+        DrawShader(spD3DDeviceContext1, spConstantBufferPerObjectVS, spConstantBufferPerObjectPS, m_spVertexShader, m_spPixelShader, resources);
     }
 
     void Model::DrawShader(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1, const ComPtr<ID3D11Buffer> &spConstantBufferPerObjectVS, const ComPtr<ID3D11Buffer> &spConstantBufferPerObjectPS,
-        const ComPtr<ID3D11VertexShader> &spVertexShader, const ComPtr<ID3D11PixelShader> &spPixelShader, int numViews, ID3D11ShaderResourceView *const *views, int numSamplers,  ID3D11SamplerState *const *samplers)const {
+        const ComPtr<ID3D11VertexShader> &spVertexShader, const ComPtr<ID3D11PixelShader> &spPixelShader, ShaderResources &resources)const {
         if (m_Mesh) {
             m_Mesh->Set(spD3DDeviceContext1, g_DRAWSTATE->m_isSkinningOn);
         }
@@ -288,13 +292,8 @@ namespace KrakEngine{
         cbPerObjectPS.SpecularIntensity = m_SpecularIntensity;
         spD3DDeviceContext1->UpdateSubresource(spConstantBufferPerObjectPS.Get(), 0, nullptr, &cbPerObjectPS, 0, 0);
 
-        //if(m_VertexType == VertexTypeTexturedModel){
-        //spD3DDeviceContext1->PSSetShaderResources(0, 1, g_GRAPHICSSYSTEM->GetTexture(m_TextureName).GetAddressOf());
-        //spD3DDeviceContext1->PSSetSamplers(0, 1, g_GRAPHICSSYSTEM->GetSampler().GetAddressOf());
-        spD3DDeviceContext1->PSSetShaderResources(0, numViews, views);
-        spD3DDeviceContext1->PSSetSamplers(0, numSamplers, samplers);
-        //}
-        // Render
+        BindShaderResources(spD3DDeviceContext1, resources);
+
         spD3DDeviceContext1->VSSetShader(spVertexShader.Get(), nullptr, 0);
         spD3DDeviceContext1->PSSetShader(spPixelShader.Get(), nullptr, 0);
 

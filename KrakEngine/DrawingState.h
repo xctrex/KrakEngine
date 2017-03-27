@@ -8,6 +8,7 @@ namespace KrakEngine
         LuminanceBuffer,
         LuminanceGradientBufferX,
         LuminanceGradientBufferY,
+        LuminanceGradientBufferZ,
         LuminanceGradientBuffer,
         UniformDirection,
         EndCycle,

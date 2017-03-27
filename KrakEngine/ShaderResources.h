@@ -22,3 +22,4 @@ struct ShaderResources
 };
 
 void BindShaderResources(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1, const ShaderResources &resources);
+void UnBindShaderResources(const ComPtr<ID3D11DeviceContext1> &spD3DDeviceContext1, const ShaderResources &resources);

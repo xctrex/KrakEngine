@@ -1,12 +1,14 @@
 #include "Common.fx"
 
-Texture2D<float4> GradientBuffer       : register(t0);
-Texture2D<float4> shade0               : register(t1);
-Texture2D<float4> shade1               : register(t2);
-Texture2D<float4> shade2               : register(t3);
-Texture2D<float4> shade3               : register(t4);
-Texture2D<float4> shade4               : register(t5);
-Texture2D<float4> shade5               : register(t6);
+
+Texture2D<float4> GradientBuffer       : register(t0); 
+Texture2D<float4> LuminanceBuffer      : register(t1);
+Texture2D<float4> shade0               : register(t2);
+Texture2D<float4> shade1               : register(t3);
+Texture2D<float4> shade2               : register(t4);
+Texture2D<float4> shade3               : register(t5);
+Texture2D<float4> shade4               : register(t6);
+Texture2D<float4> shade5               : register(t7);
 
 SamplerState      PointSampler                  : register(s0);
 SamplerState      MirrorSampler                  : register(s1);
@@ -114,8 +116,8 @@ VS_OUTPUT Uniform_VS(VS_INPUT input)
     fake_frag_coord.xy = normalize(fake_frag_coord.xy);
     fake_frag_coord.xy = depthUV;
     fake_frag_coord.xy = ScreenSpaceInVertexShader(output.Pos, ScreenSize);
-    output.Direction0.x = GradientBuffer.SampleLevel(PointSampler, fake_frag_coord, 0).x;
-    output.Direction0.y = GradientBuffer.SampleLevel(PointSampler, fake_frag_coord, 0).x;
+    output.Direction0 = GradientBuffer.SampleLevel(PointSampler, fake_frag_coord, 0).rg;
+    output.Direction1.x = GradientBuffer.SampleLevel(PointSampler, fake_frag_coord, 0).b;
     return output;
 };
 
@@ -129,20 +131,22 @@ float4 Uniform_PS(VS_OUTPUT input) : SV_TARGET
     screenSpacePosition = input.Pos.xy;
     screenSpacePosition /= ScreenSize;
     //float2 screenSpacePosition = input.Pos.xy;
-    float3 luminanceDirection = GradientBuffer.Sample(PointSampler, screenSpacePosition.xy).rgb;
-    float luminance = luminanceDirection.r;
-    float2 direction;
-    direction.x = luminanceDirection.g;
-    direction.y = luminanceDirection.b;
-    direction = normalize(input.Direction0);
-    float2 xy = screenSpacePosition.xy / float2(143.0f, 143.0f);
+    float4 luminanceBuffer = LuminanceBuffer.Sample(PointSampler, screenSpacePosition.xy);
+    float luminance = luminanceBuffer.r;
+    float4 gradientBuffer = GradientBuffer.Sample(PointSampler, screenSpacePosition.xy);
+    float4 direction;
+
+    direction.xy = normalize(input.Direction0);
+    direction.z = input.Direction1.x;
+    float2 xy = screenSpacePosition.xy * ScreenSize /  float2(143.0f, 143.0f);
     //luminance = GradientBuffer.Sample(PointSampler, xy.xy).rgb;
-    float strokeRotation = atan2(direction.y, direction.x);
+    float strokeRotation = input.Direction1.x;
+    //strokeRotation = StrokeRotation;
     float2 sampleCoordinates = float2(xy.x*cos(strokeRotation) - xy.y * sin(strokeRotation), xy.x * sin(strokeRotation) + xy.y * cos(strokeRotation));
     float lowValue = 0.0f;
     float highValue = 1.0f;
     float blendFactor = 0.5f;
-    /*if (luminance < 0.15f)
+    if (luminance < 0.15f)
     {
         lowValue = 0.0f;
         highValue = shade0.Sample(MirrorSampler, sampleCoordinates);
@@ -185,7 +189,6 @@ float4 Uniform_PS(VS_OUTPUT input) : SV_TARGET
         blendFactor = (luminance - 0.9f) / .1f;
     }
 
-    luminance = lerp(lowValue, highValue, blendFactor);*/
-    return float4(0.0f, direction.x, direction.y, 1.0f);
-    //return float4(luminance, luminance, luminance, luminance);
+    luminance = lerp(lowValue, highValue, blendFactor);
+    return float4(luminance, luminance, luminance, luminance);
 }

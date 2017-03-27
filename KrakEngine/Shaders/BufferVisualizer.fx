@@ -74,3 +74,8 @@ float4 PS_Green(VS_OUTPUT input) : SV_TARGET
 {
     return buffer.Sample(pointSampler, input.TextureUV.xy).gggg;
 }
+
+float4 PS_Blue(VS_OUTPUT input) : SV_TARGET
+{
+    return buffer.Sample(pointSampler, input.TextureUV.xy).bbbb;
+}

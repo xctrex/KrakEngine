@@ -17,6 +17,7 @@ Creation date: 1/20/2014
 #include "Vertex.h"
 #include "GBuffer.h"
 #include "TAM.h"
+#include "ShaderResources.h"
 
 namespace KrakEngine{
 
@@ -153,13 +154,14 @@ namespace KrakEngine{
         void DrawBuffer(ComPtr<ID3D11ShaderResourceView> &buffer);
         void DrawBufferRed(ComPtr<ID3D11ShaderResourceView> &buffer);
         void DrawBufferGreen(ComPtr<ID3D11ShaderResourceView> &buffer);
+        void DrawBufferBlue(ComPtr<ID3D11ShaderResourceView> &buffer);
         void RenderLuminance(ComPtr<ID3D11RenderTargetView> renderTarget);
         void RenderLuminanceGradient();
         void RenderUniformDirection();
         void DoPostProcessing();
         void UpdateModels(float dt);
         void DrawModels();
-        void DrawModels(const ComPtr<ID3D11VertexShader> &spVertexShader, const ComPtr<ID3D11PixelShader> &spPixelShader, int numViews, ID3D11ShaderResourceView *const *views, int numSamplers, ID3D11SamplerState *const *samplers);
+        void DrawModels(const ComPtr<ID3D11VertexShader> &spVertexShader, const ComPtr<ID3D11PixelShader> &spPixelShader, ShaderResources &resources);
         void DrawBones();
         void DrawSelected();
         void UpdateSprites(float dt);
@@ -283,6 +285,7 @@ namespace KrakEngine{
         ComPtr<ID3D11PixelShader> m_spBufferVisualizerPixelShader;
         ComPtr<ID3D11PixelShader> m_spBufferVisualizerRedPixelShader;
         ComPtr<ID3D11PixelShader> m_spBufferVisualizerGreenPixelShader;
+        ComPtr<ID3D11PixelShader> m_spBufferVisualizerBluePixelShader;
 
         ComPtr<ID3D11VertexShader> m_spStrokeDirectionUniformVertexShader;
         ComPtr<ID3D11PixelShader> m_spStrokeDirectionUniformPixelShader;
