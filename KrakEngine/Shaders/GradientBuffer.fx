@@ -223,8 +223,9 @@ float4 PS(VS_OUTPUT input) : SV_TARGET
 {
     // Sample the surrounding pixels
     float4 pixels[3][3];
-    GetSurroundingPixels3x3(GradientBuffer, PointSampler, input.TextureUV, ScreenSize, pixels);
-
+    //GetSurroundingPixels3x3(GradientBuffer, PointSampler, input.TextureUV, ScreenSize, pixels);
+    float4 pixels5x5[5][5];
+    GetSurroundingPixels5x5(GradientBuffer, PointSampler, input.TextureUV, ScreenSize, pixels5x5);
     float convolutionFilter[3][3] = { {1.0f, 2.0f, 1.0f},
                                        {2.0f, 0.0f, 2.0f},
                                        {1.0f, 2.0f, 1.0f} };
@@ -240,6 +241,27 @@ float4 PS(VS_OUTPUT input) : SV_TARGET
                                    { 0.0f,  0.0f,  0.0f},
                                    { 1.0f,  2.0f,  1.0f} };
     sobelDirection.y = ConvolveRed3x3(pixels, sobelYGradient, 8.0f);
+
+    sobelDirection.z = atan2(sobelDirection.y, sobelDirection.x);
+
+    // Calculate the gradient value at x
+    float sobel5x5XGradient[5][5] = { 
+        { -1.0f, -2.0f, 0.0f, 2.0f, 1.0f },
+        { -4.0f, -8.0f, 0.0f, 8.0f, 4.0f },
+        { -6.0f, -12.0f, 0.0f, 12.0f, 6.0f},
+        { -4.0f, -8.0f, 0.0f, 8.0f, 4.0f},
+        { -1.0f, 2.0f, 0.0f, 2.0f, 1.0f} };
+    float4 sobel5x5Direction;
+    sobel5x5Direction.x = ConvolveRed5x5(pixels5x5, sobel5x5XGradient, 8.0f);
+
+    // Calculate the gradient value at y
+    float sobel5x5YGradient[5][5] = {
+        { -1.0f, -4.0f, -6.0f, -4.0f, -1.0f },
+        { -2.0f, -8.0f, -12.0f, -8.0f, -2.0f },
+    { 0.0f,  0.0f,  0.0f, 0.0f, 0.0f },
+    { 2.0f, 8.0f, 12.0f, 8.0f, 2.0f },
+    { 1.0f, 4.0f, 6.0f, 4.0f, 1.0f } };
+    sobelDirection.y = ConvolveRed5x5(pixels5x5, sobel5x5YGradient, 8.0f);
 
     sobelDirection.z = atan2(sobelDirection.y, sobelDirection.x);
 
