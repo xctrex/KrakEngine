@@ -62,9 +62,9 @@ struct VS_OUTPUT
     float3 Normal : NORMAL0;
     float3 WorldPos : POSITION;
     float2 TextureUV : TEXCOORD0;
-    float2 Direction0 : TEXCOORD1;
-    float2 Direction1  : TEXCOORD2;
-    float2 Direction2 : TEXCOORD3;
+    float4 Direction0 : TEXCOORD1;
+    float4 Direction1  : TEXCOORD2;
+    float4 Direction2 : TEXCOORD3;
 };
 
 //--------------------------------------------------------------------------------------
@@ -116,8 +116,19 @@ VS_OUTPUT Uniform_VS(VS_INPUT input)
     fake_frag_coord.xy = normalize(fake_frag_coord.xy);
     fake_frag_coord.xy = depthUV;
     fake_frag_coord.xy = ScreenSpaceInVertexShader(output.Pos, ScreenSize);
-    output.Direction0 = GradientBuffer.SampleLevel(PointSampler, fake_frag_coord, 0).rg;
-    output.Direction1.x = GradientBuffer.SampleLevel(PointSampler, fake_frag_coord, 0).b;
+    output.Direction0 = output.Direction1 = output.Direction2 = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    if (input.id % 3 == 0)
+    {
+        output.Direction0 = GradientBuffer.SampleLevel(PointSampler, fake_frag_coord, 0);
+    }
+    else if (input.id % 3 == 1)
+    {
+        output.Direction1 = GradientBuffer.SampleLevel(PointSampler, fake_frag_coord, 0);
+    }
+    else
+    {
+        output.Direction2 = GradientBuffer.SampleLevel(PointSampler, fake_frag_coord, 0);
+    }
     return output;
 };
 
@@ -136,12 +147,13 @@ float4 Uniform_PS(VS_OUTPUT input) : SV_TARGET
     float4 gradientBuffer = GradientBuffer.Sample(PointSampler, screenSpacePosition.xy);
     float4 direction;
 
-    direction.xy = normalize(input.Direction0);
+    direction.xy = normalize(input.Direction0.xy);// +input.Direction1.xy + input.Direction2.xy);
     direction.z = input.Direction1.x;
     float2 xy = screenSpacePosition.xy * ScreenSize /  float2(143.0f, 143.0f);
     //luminance = GradientBuffer.Sample(PointSampler, xy.xy).rgb;
     float strokeRotation = input.Direction1.x;
     //strokeRotation = StrokeRotation;
+    strokeRotation = atan2(direction.y, direction.x);
     float2 sampleCoordinates = float2(xy.x*cos(strokeRotation) - xy.y * sin(strokeRotation), xy.x * sin(strokeRotation) + xy.y * cos(strokeRotation));
     float lowValue = 0.0f;
     float highValue = 1.0f;
