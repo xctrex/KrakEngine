@@ -271,7 +271,7 @@ namespace KrakEngine{
 		}
 
 		
-#if defined(_DEBUG)
+//#if defined(_DEBUG)
         // Compute window rectangle dimensions based on requested client area dimensions.
 		RECT R = { 0, 0, m_DefaultScreenWidth, m_DefaultScreenHeight };
 		AdjustWindowRect(&R, WS_OVERLAPPEDWINDOW, false);
@@ -287,7 +287,7 @@ namespace KrakEngine{
 			return false;
 		}
 		ShowWindow(m_hwnd, SW_SHOW);
-#else
+/*#else
         // Get the size of the full screen
 		//m_ScreenWidth = GetSystemMetrics(SM_CXSCREEN);
         //m_ScreenHeight = GetSystemMetrics(SM_CYSCREEN);
@@ -307,7 +307,7 @@ namespace KrakEngine{
 
 		ShowWindow(m_hwnd, SW_SHOWMAXIMIZED);
 #endif
-
+*/
 		//m_Resx = GetSystemMetrics(SM_CXSCREEN);
 		//m_Resy = GetSystemMetrics(SM_CYSCREEN);
         GetDesktopResolution(m_Resx, m_Resy);

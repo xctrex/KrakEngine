@@ -42,6 +42,9 @@ namespace KrakEngine
         bool m_isStrokeDirectionDynamic = false;
         float m_strokeDirectionTime = 0.0f;
 
+        bool m_isGradientBufferBlurOn = false;
+        int m_numBlurPasses = 1;
+
         void Update(float dt)
         {
             // Update the lighting
@@ -80,6 +83,21 @@ namespace KrakEngine
                 break;
             case DebugDrawingMode::UniformDirection:
                 str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Uniform Direction";
+                break;
+            case DebugDrawingMode::LuminanceGradientBuffer:
+                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Luminance Gradient Buffer";
+                break;
+            case DebugDrawingMode::LuminanceGradientBufferX:
+                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Luminance Gradient Buffer X";
+                break;
+            case DebugDrawingMode::LuminanceGradientBufferY:
+                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Luminance Gradient Buffer Y";
+                break;
+            case DebugDrawingMode::LuminanceGradientBufferZ:
+                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Luminance Gradient Buffer Z";
+                break;
+            case DebugDrawingMode::AmbientOcclusion:
+                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Ambient Occlusion";
                 break;
 
             default:

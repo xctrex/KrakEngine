@@ -292,6 +292,7 @@ namespace KrakEngine{
             
             DrawSprites();
         }
+#ifdef D2D_ENABLED
         // Draw FPS
         m_spD2DDeviceContext->BeginDraw();
 
@@ -380,7 +381,7 @@ namespace KrakEngine{
         DXThrowIfFailed(
             m_spD2DDeviceContext->EndDraw()
             );
-
+#endif
         // Draw debug shapes
         /*if (IsDebugDrawingOn())
         {
@@ -489,19 +490,98 @@ namespace KrakEngine{
     }
 
     void GraphicsSystem::RenderLuminanceGradient() {
+        // Down-res the luminance buffer
+        m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spQuarterResBufferRTV.GetAddressOf(), nullptr);
+
+        // Bind Shader Resources        
+        BindShaderResources(m_spD3DDeviceContext1, ShaderResources(
+        {}, // Vertex Shader Textures
+        {}, // Vertex Shader Samplers
+        { m_spLuminanceBufferSRV.Get() }, // Pixel Shader Textures
+        { m_spPointSampler.Get(), m_spMirrorSampler.Get() } // Pixel Shader Samplers
+        ));
+
+        // Draw a fullscreen quad with the output
+        DrawFullScreenQuad(m_spDownSampleVertexShader, m_spQuarterResDownSamplePixelShader);
+
+
+        m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spQuarterResBufferRTV2.GetAddressOf(), nullptr);
+
+        // Bind Shader Resources
+        
+        BindShaderResources(m_spD3DDeviceContext1, ShaderResources(
+        {}, // Vertex Shader Textures
+        {}, // Vertex Shader Samplers
+        { m_spQuarterResBufferSRV.Get() }, // Pixel Shader Textures
+        { m_spPointSampler.Get(), m_spMirrorSampler.Get() } // Pixel Shader Samplers
+        ));
+
+        // Draw a fullscreen quad with the output
+        DrawFullScreenQuad(m_spBufferVisualizerVertexShader, m_spHorizontalSobelPixelShader);
+
+
+        m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spQuarterResBufferRTV.GetAddressOf(), nullptr);
+
+        // Bind Shader Resources
+
+        BindShaderResources(m_spD3DDeviceContext1, ShaderResources(
+        {}, // Vertex Shader Textures
+        {}, // Vertex Shader Samplers
+        { m_spQuarterResBufferSRV2.Get() }, // Pixel Shader Textures
+        { m_spPointSampler.Get(), m_spMirrorSampler.Get() } // Pixel Shader Samplers
+        ));
+
+        // Draw a fullscreen quad with the output
+        DrawFullScreenQuad(m_spBufferVisualizerVertexShader, m_spVerticalSobelPixelShader);
+
+        //=============================================
+        // Two pass Gaussian Blur
+        //=============================================
+        if(g_DRAWSTATE->m_isGradientBufferBlurOn)
+        {
+            for (int i = 0; i < g_DRAWSTATE->m_numBlurPasses; ++i)
+            {
+                m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spQuarterResBufferRTV2.GetAddressOf(), nullptr);
+                // Bind Shader Resources
+
+                BindShaderResources(m_spD3DDeviceContext1, ShaderResources(
+                {}, // Vertex Shader Textures
+                {}, // Vertex Shader Samplers
+                { m_spQuarterResBufferSRV.Get() }, // Pixel Shader Textures
+                { m_spPointSampler.Get(), m_spMirrorSampler.Get() } // Pixel Shader Samplers
+                ));
+
+                // Draw a fullscreen quad with the output
+                DrawFullScreenQuad(m_spBufferVisualizerVertexShader, m_spHorizontalGaussianBlurPixelShader);
+
+
+                m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spQuarterResBufferRTV.GetAddressOf(), nullptr);
+
+                // Bind Shader Resources
+                BindShaderResources(m_spD3DDeviceContext1, ShaderResources(
+                {}, // Vertex Shader Textures
+                {}, // Vertex Shader Samplers
+                { m_spQuarterResBufferSRV2.Get() }, // Pixel Shader Textures
+                { m_spPointSampler.Get(), m_spMirrorSampler.Get() } // Pixel Shader Samplers
+                ));
+
+                // Draw a fullscreen quad with the output
+                DrawFullScreenQuad(m_spBufferVisualizerVertexShader, m_spVerticalGaussianBlurPixelShader);
+            }
+        }
+        // UpRes the resulting gradient texture
         m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spGradientBufferRTV.GetAddressOf(), nullptr);
 
         // Bind Shader Resources
-        ShaderResources resources(
-            {}, // Vertex Shader Textures
-            {}, // Vertex Shader Samplers
-            { m_spLuminanceBufferSRV.Get() }, // Pixel Shader Textures
-            { m_spPointSampler.Get(), m_spMirrorSampler.Get() } // Pixel Shader Samplers
-        );
-        BindShaderResources(m_spD3DDeviceContext1, resources);
+        BindShaderResources(m_spD3DDeviceContext1, ShaderResources(
+        {}, // Vertex Shader Textures
+        {}, // Vertex Shader Samplers
+        { m_spQuarterResBufferSRV.Get() }, // Pixel Shader Textures
+        { m_spPointSampler.Get(), m_spMirrorSampler.Get() } // Pixel Shader Samplers
+        ));
 
         // Draw a fullscreen quad with the output
-        DrawFullScreenQuad(m_spLuminanceGradientVertexShader, m_spLuminanceGradientPixelShader);
+        DrawFullScreenQuad(m_spDownSampleVertexShader, m_spQuarterResUpSamplePixelShader);
     }
 
     void GraphicsSystem::RenderUniformDirection()
@@ -1864,7 +1944,13 @@ namespace KrakEngine{
         CreateShaders(L"Shaders\\ContourDetectionPass1.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spContourDetectionPass1VertexShader, "PS", m_spContourDetectionPass1PixelShader);
         CreateShaders(L"Shaders\\ContourDetectionPass2.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spContourDetectionPass2VertexShader, "PS", m_spContourDetectionPass2PixelShader);
         CreateShaders(L"Shaders\\LuminanceVisualizer.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spLuminanceVertexShader, "PS", m_spLuminancePixelShader);
-        CreateShaders(L"Shaders\\GradientBuffer.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spLuminanceGradientVertexShader, "PS", m_spLuminanceGradientPixelShader);
+        CreateShaders(L"Shaders\\DownSample.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "DownSample_VS", m_spDownSampleVertexShader, "DownSampleQuarterRes_PS", m_spQuarterResDownSamplePixelShader);
+        CreatePixelShader(L"Shaders\\DownSample.fx", "UpSampleQuarterRes_PS", m_spQuarterResUpSamplePixelShader);
+        CreatePixelShader(L"Shaders\\GradientBuffer.fx", "HorizontalSobel_PS", m_spHorizontalSobelPixelShader);
+        CreatePixelShader(L"Shaders\\GradientBuffer.fx", "VerticalSobel_PS", m_spVerticalSobelPixelShader);
+        //CreateShaders(L"Shaders\\DownSample.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "UpSample_VS", m_spUpSampleVertexShader, "UpSample_PS", m_spUpSamplePixelShader);
+        CreatePixelShader(L"Shaders\\GradientBuffer.fx", "GaussianBlurHorizontal_PS", m_spHorizontalGaussianBlurPixelShader);
+        CreatePixelShader(L"Shaders\\GradientBuffer.fx", "GaussianBlurVertical_PS", m_spVerticalGaussianBlurPixelShader);
         CreateShaders(L"Shaders\\BufferVisualizer.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spBufferVisualizerVertexShader, "PS", m_spBufferVisualizerPixelShader);
         CreatePixelShader(L"Shaders\\BufferVisualizer.fx", "PS_Red", m_spBufferVisualizerRedPixelShader);
         CreatePixelShader(L"Shaders\\BufferVisualizer.fx", "PS_Green", m_spBufferVisualizerGreenPixelShader);
@@ -2218,6 +2304,54 @@ namespace KrakEngine{
             )
         );
 
+        // Create the downsampled texture resources
+        D3D11_TEXTURE2D_DESC halfResBackBuffer = backBufferDesc;
+        halfResBackBuffer.Height /= 4;
+        halfResBackBuffer.Width /= 4;
+
+        DXThrowIfFailed(
+            m_spD3DDevice1->CreateTexture2D(
+                &halfResBackBuffer,
+                nullptr,
+                &m_spQuarterResBufferRT
+            )
+        );
+        DXThrowIfFailed(
+            m_spD3DDevice1->CreateRenderTargetView(
+                m_spQuarterResBufferRT.Get(),
+                &RTVDesc,
+                &m_spQuarterResBufferRTV
+            )
+        );
+        DXThrowIfFailed(
+            m_spD3DDevice1->CreateShaderResourceView(
+                m_spQuarterResBufferRT.Get(),
+                &SRVDesc,
+                &m_spQuarterResBufferSRV
+            )
+        );
+        DXThrowIfFailed(
+            m_spD3DDevice1->CreateTexture2D(
+                &halfResBackBuffer,
+                nullptr,
+                &m_spQuarterResBufferRT2
+            )
+        );
+        DXThrowIfFailed(
+            m_spD3DDevice1->CreateRenderTargetView(
+                m_spQuarterResBufferRT2.Get(),
+                &RTVDesc,
+                &m_spQuarterResBufferRTV2
+            )
+        );
+        DXThrowIfFailed(
+            m_spD3DDevice1->CreateShaderResourceView(
+                m_spQuarterResBufferRT2.Get(),
+                &SRVDesc,
+                &m_spQuarterResBufferSRV2
+            )
+        );
+
         // Create the color and specular intensity render target view
         DXThrowIfFailed(
             m_spD3DDevice1->CreateRenderTargetView(
@@ -2248,7 +2382,8 @@ namespace KrakEngine{
         }*/
 
         m_spD3DDeviceContext1->RSSetViewports(1, &m_Viewport);
-
+        
+#ifdef D2D_ENABLED
         // Create a Direct2D target bitmap associated with the
         // swap chain back buffer and set it as the current target.
         D2D1_BITMAP_PROPERTIES1 bitmapProperties =
@@ -2276,7 +2411,7 @@ namespace KrakEngine{
 
         // Grayscale text anti-aliasing is recommended for all Windows Store apps.
         m_spD2DDeviceContext->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_GRAYSCALE);
-
+#endif
         // Initialize the projection matrix
         //RECT rc;
         GetClientRect(m_Window->m_hwnd, &rc);
@@ -2523,6 +2658,7 @@ namespace KrakEngine{
 	}
 
     void GraphicsSystem::CreateBrushes(){
+#ifdef D2D_ENABLED
         m_spD2DDeviceContext->CreateSolidColorBrush(
             D2D1::ColorF(D2D1::ColorF::White),
             m_spWhiteBrush.GetAddressOf()
@@ -2552,6 +2688,7 @@ namespace KrakEngine{
             D2D1::ColorF(D2D1::ColorF::Yellow),
             m_spYellowBrush.GetAddressOf()
             );
+#endif
     }
 
     const ComPtr<ID2D1SolidColorBrush> &GraphicsSystem::GetD2DBrush(Color color){

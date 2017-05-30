@@ -132,6 +132,23 @@ VS_OUTPUT Uniform_VS(VS_INPUT input)
     return output;
 };
 
+float2 GetSampleCoordinatesFromDirection(float2 direction, float2 screenSpacePosition, float2 screenSize)
+{
+    if (direction.x < FLT_EPSILON && direction.y < FLT_EPSILON && direction.x >= 0.0 && direction.y >= 0.0)
+    {
+        // Force a direciton if none was set in the gradient buffer
+        direction.x = 0.0;
+        direction.y = 1.0; // straight up and down so it's somewhat clear when debugging
+    }
+
+    direction.xy = normalize(direction);
+
+    float2 xy = screenSpacePosition.xy * screenSize / float2(143.0f, 143.0f);
+
+    float strokeRotation = atan2(direction.y, direction.x);
+    float2 sampleCoordinates = float2(xy.x*cos(strokeRotation) - xy.y * sin(strokeRotation), xy.x * sin(strokeRotation) + xy.y * cos(strokeRotation));
+    return sampleCoordinates;
+}
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------
@@ -145,58 +162,53 @@ float4 Uniform_PS(VS_OUTPUT input) : SV_TARGET
     float4 luminanceBuffer = LuminanceBuffer.Sample(PointSampler, screenSpacePosition.xy);
     float luminance = luminanceBuffer.r;
     float4 gradientBuffer = GradientBuffer.Sample(PointSampler, screenSpacePosition.xy);
-    float4 direction;
-
-    direction.xy = normalize(input.Direction0.xy);// +input.Direction1.xy + input.Direction2.xy);
-    direction.z = input.Direction1.x;
-    float2 xy = screenSpacePosition.xy * ScreenSize /  float2(143.0f, 143.0f);
-    //luminance = GradientBuffer.Sample(PointSampler, xy.xy).rgb;
-    float strokeRotation = input.Direction1.x;
-    //strokeRotation = StrokeRotation;
-    strokeRotation = atan2(direction.y, direction.x);
-    float2 sampleCoordinates = float2(xy.x*cos(strokeRotation) - xy.y * sin(strokeRotation), xy.x * sin(strokeRotation) + xy.y * cos(strokeRotation));
+    float2 sampleCoordinates0 = GetSampleCoordinatesFromDirection(input.Direction0.xy, screenSpacePosition, ScreenSize);
+    float2 sampleCoordinates1 = GetSampleCoordinatesFromDirection(input.Direction1.xy, screenSpacePosition, ScreenSize);
+    float2 sampleCoordinates2 = GetSampleCoordinatesFromDirection(input.Direction2.xy, screenSpacePosition, ScreenSize);
+    
+    
     float lowValue = 0.0f;
     float highValue = 1.0f;
     float blendFactor = 0.5f;
     if (luminance < 0.15f)
     {
         lowValue = 0.0f;
-        highValue = shade0.Sample(MirrorSampler, sampleCoordinates);
+        highValue = (1.0 / 3.0) * (shade0.Sample(MirrorSampler, sampleCoordinates0) + shade0.Sample(MirrorSampler, sampleCoordinates1) + shade0.Sample(MirrorSampler, sampleCoordinates2));
         blendFactor = luminance / 0.15f;
     }
     else if (luminance < 0.3f)
     {
-        lowValue = shade0.Sample(MirrorSampler, sampleCoordinates);
-        highValue = shade1.Sample(MirrorSampler, sampleCoordinates);
+        lowValue = (1.0 / 3.0) * (shade0.Sample(MirrorSampler, sampleCoordinates0) + shade0.Sample(MirrorSampler, sampleCoordinates1) + shade0.Sample(MirrorSampler, sampleCoordinates2));
+        highValue = (1.0 / 3.0) * (shade1.Sample(MirrorSampler, sampleCoordinates0) + shade1.Sample(MirrorSampler, sampleCoordinates1) + shade1.Sample(MirrorSampler, sampleCoordinates2));
         blendFactor = (luminance - .15f) / .15f;
     }
     else if (luminance < 0.45f)
     {
-        lowValue = shade1.Sample(MirrorSampler, sampleCoordinates);
-        highValue = shade2.Sample(MirrorSampler, sampleCoordinates);
+        lowValue = (1.0 / 3.0) * (shade1.Sample(MirrorSampler, sampleCoordinates0) + shade1.Sample(MirrorSampler, sampleCoordinates1) + shade1.Sample(MirrorSampler, sampleCoordinates2));
+        highValue = (1.0 / 3.0) * (shade2.Sample(MirrorSampler, sampleCoordinates0) + shade2.Sample(MirrorSampler, sampleCoordinates1) + shade2.Sample(MirrorSampler, sampleCoordinates2));
         blendFactor = (luminance - 0.3f) / .15f;
     }
     else if (luminance < 0.6f)
     {
-        lowValue = shade2.Sample(MirrorSampler, sampleCoordinates);
-        highValue = shade3.Sample(MirrorSampler, sampleCoordinates);
+        lowValue = (1.0 / 3.0) * (shade2.Sample(MirrorSampler, sampleCoordinates0) + shade2.Sample(MirrorSampler, sampleCoordinates1) + shade2.Sample(MirrorSampler, sampleCoordinates2));
+        highValue = (1.0 / 3.0) * (shade3.Sample(MirrorSampler, sampleCoordinates0) + shade3.Sample(MirrorSampler, sampleCoordinates1) + shade3.Sample(MirrorSampler, sampleCoordinates2));
         blendFactor = (luminance - 0.45f) / .15f;
     }
     else if (luminance < 0.75f)
     {
-        lowValue = shade3.Sample(MirrorSampler, sampleCoordinates);
-        highValue = shade4.Sample(MirrorSampler, sampleCoordinates);
+        lowValue = (1.0 / 3.0) * (shade3.Sample(MirrorSampler, sampleCoordinates0) + shade3.Sample(MirrorSampler, sampleCoordinates1) + shade3.Sample(MirrorSampler, sampleCoordinates2));
+        highValue = (1.0 / 3.0) * (shade4.Sample(MirrorSampler, sampleCoordinates0) + shade4.Sample(MirrorSampler, sampleCoordinates1) + shade4.Sample(MirrorSampler, sampleCoordinates2));
         blendFactor = (luminance - 0.6f) / .15f;
     }
     else if (luminance < 0.9f)
     {
-        lowValue = shade4.Sample(MirrorSampler, sampleCoordinates);
-        highValue = shade5.Sample(MirrorSampler, sampleCoordinates);
+        lowValue = (1.0 / 3.0) * (shade4.Sample(MirrorSampler, sampleCoordinates0) + shade4.Sample(MirrorSampler, sampleCoordinates1) + shade4.Sample(MirrorSampler, sampleCoordinates2));
+        highValue = (1.0 / 3.0) * (shade5.Sample(MirrorSampler, sampleCoordinates0) + shade5.Sample(MirrorSampler, sampleCoordinates1) + shade5.Sample(MirrorSampler, sampleCoordinates2));
         blendFactor = (luminance - 0.75f) / .15f;
     }
     else
     {
-        lowValue = shade5.Sample(MirrorSampler, sampleCoordinates);
+        lowValue = (1.0 / 3.0) * (shade5.Sample(MirrorSampler, sampleCoordinates0) + shade5.Sample(MirrorSampler, sampleCoordinates1) + shade5.Sample(MirrorSampler, sampleCoordinates2));
         highValue = 1.0f;
         blendFactor = (luminance - 0.9f) / .1f;
     }

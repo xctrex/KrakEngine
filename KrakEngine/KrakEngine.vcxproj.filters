@@ -598,12 +598,6 @@
     <FxCompile Include="Shaders\GradientBuffer.fx">
       <Filter>Systems\Graphics\Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\GradientBuffer_PS.hlsl">
-      <Filter>Systems\Graphics\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\GradientBuffer_VS.hlsl">
-      <Filter>Systems\Graphics\Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="Shaders\BufferVisualizer.fx">
       <Filter>Systems\Graphics\Shaders</Filter>
     </FxCompile>
@@ -620,6 +614,30 @@
       <Filter>Systems\Graphics\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\BufferVisualizer_PS_Blue.hlsl">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\DownSample.fx">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\HorizontalSobel_PS.hlsl">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\VerticalSobel_PS.hlsl">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\DownSampleQuarterRes_PS.hlsl">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\DownSample_VS.hlsl">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\UpSampleQuarterRes_PS.hlsl">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\GaussianBlurHorizontal_PS.hlsl">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\GaussianBlurVertical_PS.hlsl">
       <Filter>Systems\Graphics\Shaders</Filter>
     </FxCompile>
   </ItemGroup>

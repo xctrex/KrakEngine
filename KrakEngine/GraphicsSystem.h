@@ -105,7 +105,14 @@ namespace KrakEngine{
 
         const ComPtr<ID2D1SolidColorBrush> &GetD2DBrush(Color color);
 
-        Camera * GetCurrentCamera() { return m_CameraList.front(); };
+        Camera * GetCurrentCamera() 
+        { 
+            if (m_CameraList.size() > 0)
+            {
+                return m_CameraList.front();
+            }
+            return nullptr;
+        };
 
         // Add Components to Lists
         void AddModelToList(Model* pModel);
@@ -236,6 +243,14 @@ namespace KrakEngine{
         ComPtr<ID3D11RenderTargetView> m_spGradientBufferRTV;
         ComPtr<ID3D11ShaderResourceView> m_spGradientBufferSRV;
 
+        // Downsampled resources
+        ComPtr<ID3D11Texture2D> m_spQuarterResBufferRT;
+        ComPtr<ID3D11RenderTargetView> m_spQuarterResBufferRTV;
+        ComPtr<ID3D11ShaderResourceView> m_spQuarterResBufferSRV;
+        ComPtr<ID3D11Texture2D> m_spQuarterResBufferRT2;
+        ComPtr<ID3D11RenderTargetView> m_spQuarterResBufferRTV2;
+        ComPtr<ID3D11ShaderResourceView> m_spQuarterResBufferSRV2;
+
 
         //ComPtr<ID3D11DepthStencilView> m_spD3DDepthStencilView;
         D3D_FEATURE_LEVEL m_FeatureLevel;
@@ -280,6 +295,13 @@ namespace KrakEngine{
 
         ComPtr<ID3D11VertexShader> m_spLuminanceGradientVertexShader;
         ComPtr<ID3D11PixelShader> m_spLuminanceGradientPixelShader;
+        ComPtr<ID3D11VertexShader> m_spDownSampleVertexShader;
+        ComPtr<ID3D11PixelShader> m_spQuarterResDownSamplePixelShader;
+        ComPtr<ID3D11PixelShader> m_spQuarterResUpSamplePixelShader;
+        ComPtr<ID3D11PixelShader> m_spHorizontalGaussianBlurPixelShader;
+        ComPtr<ID3D11PixelShader> m_spVerticalGaussianBlurPixelShader;
+        ComPtr<ID3D11PixelShader> m_spHorizontalSobelPixelShader;
+        ComPtr<ID3D11PixelShader> m_spVerticalSobelPixelShader;
 
         ComPtr<ID3D11VertexShader> m_spBufferVisualizerVertexShader;
         ComPtr<ID3D11PixelShader> m_spBufferVisualizerPixelShader;

@@ -219,54 +219,81 @@ float2 ConvolveRed5x5(in float4 pixels[5][5], in float convolutionFilter[5][5], 
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------
-float4 PS(VS_OUTPUT input) : SV_TARGET
+float4 Convolve7x7(float2 centerUV, float2 offsets[3], float weights[3], Texture2D inputTexture, SamplerState textureSampler, float2 textureSize)
 {
+    ////////////////////////////////////////////////
+    float4 colorOut = { 0, 0, 0, 0 };
+    const int stepCount = 3;
 
-    /*// Sample the surrounding pixels
-    float4 pixels[3][3];
-    GetSurroundingPixels3x3(GradientBuffer, PointSampler, input.TextureUV, ScreenSize, pixels);
-    float convolutionFilter[3][3] = { {1.0f, 2.0f, 1.0f},
-                                       {2.0f, 0.0f, 2.0f},
-                                       {1.0f, 2.0f, 1.0f} };
-    // Calculate the gradient value at x
-    float sobelXGradient[3][3] = { {-1.0f, 0.0f, 1.0f},
-                                    {-2.0f, 0.0f, 2.0f},
-                                    {-1.0f, 0.0f, 1.0f} };
-    float4 sobelDirection;
-    sobelDirection.x = ConvolveRed3x3(pixels, sobelXGradient, 8.0f);
+    colorOut = inputTexture.Sample(textureSampler, centerUV) * weights[0];
+    for (int i = 1; i < stepCount; i++)
+    {
+        float2 texCoordOffset = offsets[i] / textureSize;
+        float4 color = inputTexture.Sample(textureSampler, centerUV + texCoordOffset) +
+            inputTexture.Sample(textureSampler, centerUV - texCoordOffset);
 
-    // Calculate the gradient value at y
-    float sobelYGradient[3][3] = { {-1.0f, -2.0f, -1.0f},
-                                   { 0.0f,  0.0f,  0.0f},
-                                   { 1.0f,  2.0f,  1.0f} };
-    sobelDirection.y = ConvolveRed3x3(pixels, sobelYGradient, 8.0f);
-    sobelDirection.z = atan2(sobelDirection.y, sobelDirection.x);
-    return sobelDirection
-    */
+        colorOut += weights[i] * color;
+    }
 
-
-    float4 pixels5x5[5][5];
-    GetSurroundingPixels5x5(GradientBuffer, PointSampler, input.TextureUV, ScreenSize, pixels5x5);
-    // Calculate the gradient value at x
-    float sobel5x5XGradient[5][5] = { 
-        { -1.0f, -2.0f, 0.0f, 2.0f, 1.0f },
-        { -4.0f, -8.0f, 0.0f, 8.0f, 4.0f },
-        { -6.0f, -12.0f, 0.0f, 12.0f, 6.0f},
-        { -4.0f, -8.0f, 0.0f, 8.0f, 4.0f},
-        { -1.0f, 2.0f, 0.0f, 2.0f, 1.0f} };
-    float4 sobel5x5Direction;
-    sobel5x5Direction.x = ConvolveRed5x5(pixels5x5, sobel5x5XGradient, 8.0f);
-
-    // Calculate the gradient value at y
-    float sobel5x5YGradient[5][5] = {
-        { -1.0f, -4.0f, -6.0f, -4.0f, -1.0f },
-        { -2.0f, -8.0f, -12.0f, -8.0f, -2.0f },
-    { 0.0f,  0.0f,  0.0f, 0.0f, 0.0f },
-    { 2.0f, 8.0f, 12.0f, 8.0f, 2.0f },
-    { 1.0f, 4.0f, 6.0f, 4.0f, 1.0f } };
-    sobel5x5Direction.y = ConvolveRed5x5(pixels5x5, sobel5x5YGradient, 8.0f);
-
-    sobel5x5Direction.z = atan2(sobel5x5Direction.y, sobel5x5Direction.x);
-    // Store the result in the target buffer
-    return sobel5x5Direction;
+    return colorOut;
 }
+
+float4 Convolve7x7_PerChannelWeight(float2 centerUV, float2 offsets[3], float4 weights[3], Texture2D inputTexture, SamplerState textureSampler, float2 textureSize)
+{
+    ////////////////////////////////////////////////
+    float4 colorOut = { 0, 0, 0, 0 };
+    const int stepCount = 3;
+
+    colorOut = inputTexture.Sample(textureSampler, centerUV) * weights[0];
+    for (int i = 1; i < stepCount; i++)
+    {
+        float2 texCoordOffset = offsets[i] / textureSize;
+        float4 color = inputTexture.Sample(textureSampler, centerUV + texCoordOffset) +
+            inputTexture.Sample(textureSampler, centerUV - texCoordOffset);
+
+        colorOut += weights[i] * color;
+    }
+
+    return colorOut;
+}
+
+float4 VerticalSobel_PS(VS_OUTPUT input) : SV_TARGET
+{
+    float2 centerUV = input.TextureUV * 4.0;
+    ////////////////////////////////////////////////;
+    // Kernel width 7 x 7
+    const float2 offsets[3] = { {0.0, 0.0}, {1.3846153846, 0.0}, {3.2307692308, 0.0} };
+    //const float weights[3] = { 0.2270270270, 0.3162162162, 0.0702702703 };
+    const float4 weights[3] = { {2.0, 0.0, 0.0, 0.0}, {1.0, 1.0, 0.0, 0.0}, {1.0, -1.0, 0.0, 0.0} };
+    ////////////////////////////////////////////////
+    return Convolve7x7_PerChannelWeight(centerUV, offsets, weights, GradientBuffer, PointSampler, ScreenSize / 4.0);
+}
+
+float4 HorizontalSobel_PS(VS_OUTPUT input) : SV_TARGET
+{
+    float2 centerUV = input.TextureUV* 4.0;
+    ////////////////////////////////////////////////;
+    // Kernel width 7 x 7
+    const float2 offsets[3] = { {0.0, 0.0}, {1.3846153846, 0.0}, {3.2307692308, 0.0} };
+    //const float weights[3] = { 0.2270270270, 0.3162162162, 0.0702702703 };
+    const float4 weights[3] = { {0.0, 2.0, 0.0, 0.0 }, {1.0, 1.0, 0.0, 0.0}, {-1.0, 1.0, 0.0, 0.0} };
+    ////////////////////////////////////////////////
+    return Convolve7x7_PerChannelWeight(centerUV, offsets, weights, GradientBuffer, PointSampler, ScreenSize / 4.0);
+}
+
+float4 GaussianBlurHorizontal_PS(VS_OUTPUT input) : SV_TARGET
+{
+    float2 centerUV = input.TextureUV* 4.0;
+    const float2 offsets[3] = { { 0.0, 0.0 },{ 1.3846153846, 0.0 },{ 3.2307692308, 0.0 } };
+    const float weights[3] = { 0.2270270270, 0.3162162162, 0.0702702703 };
+    return Convolve7x7(centerUV, offsets, weights, GradientBuffer, PointSampler, ScreenSize / 4.0);
+}
+
+float4 GaussianBlurVertical_PS(VS_OUTPUT input) : SV_TARGET
+{
+    float2 centerUV = input.TextureUV* 4.0;
+    const float2 offsets[3] = { { 0.0, 0.0 },{ 0.0, 1.3846153846 },{ 0.0, 3.2307692308 } };
+    const float weights[3] = { 0.2270270270, 0.3162162162, 0.0702702703 };
+    return Convolve7x7(centerUV, offsets, weights, GradientBuffer, PointSampler, ScreenSize / 4.0);
+}
+

@@ -1,6 +1,10 @@
 #include "Common.fx"
 #include "CommonGBufferInput.fx"
 
+Texture2D<float4> inputTexture       : register(t0);
+
+SamplerState      pointSampler                  : register(s0);
+
 //--------------------------------------------------------------------------------------
 // Constant Buffer Variables
 //--------------------------------------------------------------------------------------
@@ -48,7 +52,7 @@ struct VS_OUTPUT
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 //--------------------------------------------------------------------------------------
-VS_OUTPUT VS(VS_INPUT input)
+VS_OUTPUT DownSample_VS(VS_INPUT input)
 {
     VS_OUTPUT output;
 
@@ -61,22 +65,12 @@ VS_OUTPUT VS(VS_INPUT input)
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------
-float4 PS(VS_OUTPUT input) : SV_TARGET
+float4 DownSampleQuarterRes_PS(VS_OUTPUT input) : SV_TARGET
 {
-    // Upack the GBuffer of this pixel (x)
+    return inputTexture.Sample(pointSampler, input.TextureUV.xy * 4.0);
+}
 
-    SurfaceData GBufferDataX = UnpackGBuffer(input.TextureUV.xy);
-    float3 lightDirection = normalize(lightPosition.xyz - GBufferDataX.Position);
-    float lightIntensity = dot(GBufferDataX.Normal, lightDirection);
-    float luminance = lightIntensity * (GBufferDataX.Color.r + GBufferDataX.Color.g + GBufferDataX.Color.b) / 3.0f;
-
-    //stroke direction
-    float2 start = get2dPoint(GBufferDataX.Position, View, Projection, ScreenSize.x, ScreenSize.y);
-    float2 end = get2dPoint(GBufferDataX.Position + GBufferDataX.Normal, View, Projection, ScreenSize.x, ScreenSize.y);
-    float2 xyprojection = end - start;
-    xyprojection /= sqrt(xyprojection.x * xyprojection.x + xyprojection.y * xyprojection.y);
-    float2 direction = xyprojection;
-    // Store the gradient value in the LuminanceBuffer
-    //return float4(luminance, direction.x, direction.y, luminance);
-    return float4(luminance, luminance, luminance, luminance);
+float4 UpSampleQuarterRes_PS(VS_OUTPUT input) : SV_TARGET
+{
+    return inputTexture.Sample(pointSampler, input.TextureUV.xy);
 }

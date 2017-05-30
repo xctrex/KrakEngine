@@ -258,8 +258,8 @@ namespace KrakEngine{
             Tick();
             Spawn(dt);
             Trigger();
-            AdjustZCamera();
-            AdjustYCamera();
+           /* AdjustZCamera();
+            AdjustYCamera();*/ 
             ParticleRun();
             m_gameMechanics.Update();
             m_Time = 0.0f;
@@ -496,7 +496,7 @@ namespace KrakEngine{
         {
             g_GRAPHICSSYSTEM->ToggleEditPath();
         }
-        Camera * cam = g_GRAPHICSSYSTEM->GetCurrentCamera();
+        /*Camera * cam = g_GRAPHICSSYSTEM->GetCurrentCamera();
         if (cam && !g_GRAPHICSSYSTEM->IsEditPathOn()) {
             float LookSpeed = 40.0f * dt;
             float speed = 1000.0f * dt;
@@ -547,59 +547,7 @@ namespace KrakEngine{
             }
 
             //cam->UpdateCamera();
-        }
-        /****PATH EDIT****/
-        else
-        {
-            // Edit Path
-            //g_PHYSICSSYSTEM->PausePhysics();
-            //g_AISYSTEM->PauseAI();
-            //g_INPUTSYSTEM->PauseVibration();
-
-            // Draw the cursor
-            POINT p;
-            GetCursorPos(&p);
-
-            ScreenToClient(g_GRAPHICSSYSTEM->GetHWND(), &p);
-
-            XMUINT2 screensize = g_GRAPHICSSYSTEM->GetWindowSize();
-
-
-            XMFLOAT2 point;
-
-            point.x = (float)p.x;
-            point.y = (float)p.y;
-
-            point.x /= (float)screensize.x;
-            point.y /= (float)screensize.y;
-
-
-            Image * ic = Cursor->has(Image);
-            XMFLOAT3 cursor_pos = ic->GetPosition();
-
-            XMFLOAT2 mousePos = XMFLOAT2(cursor_pos.x, cursor_pos.y);
-            mousePos.x *= (float)screensize.x;
-            mousePos.y *= (float)screensize.y;
-
-            g_GRAPHICSSYSTEM->SetMousePos(mousePos);
-
-            // If the left mouse button is held down
-            // move the target point
-            if (g_INPUTSYSTEM->IsMouseButtonTriggered(Left))
-            {
-                g_GRAPHICSSYSTEM->ToggleClosestPoint(mousePos);
-            }
-
-            if (g_INPUTSYSTEM->IsMouseButtonTriggered(Right))
-            {
-                g_GRAPHICSSYSTEM->ToggleClosestAnchor(mousePos);
-
-            }
-
-            if (g_INPUTSYSTEM->HasMouseMoved()) {
-                MoveCursor();
-            }
-        }
+        }*/
 
         /****ACTION 1 BUTTON****/
         if (g_INPUTSYSTEM->IsButtonDown(XINPUT_GAMEPAD_B) ||
@@ -712,11 +660,23 @@ namespace KrakEngine{
         }
         if (g_INPUTSYSTEM->IsKeyTriggered(DIK_L))
         {
-            g_DRAWSTATE->m_isLightDynamic = !g_DRAWSTATE->m_isLightDynamic;;
+            g_DRAWSTATE->m_isLightDynamic = !g_DRAWSTATE->m_isLightDynamic;
         }
-        if (g_INPUTSYSTEM->IsKeyTriggered(DIK_O))
+        if (g_INPUTSYSTEM->IsKeyTriggered(DIK_R))
         {
-            g_DRAWSTATE->m_isStrokeDirectionDynamic = !g_DRAWSTATE->m_isStrokeDirectionDynamic;;
+            g_DRAWSTATE->m_isStrokeDirectionDynamic = !g_DRAWSTATE->m_isStrokeDirectionDynamic;
+        }
+        if (g_INPUTSYSTEM->IsKeyTriggered(DIK_B))
+        {
+            g_DRAWSTATE->m_isGradientBufferBlurOn = !g_DRAWSTATE->m_isGradientBufferBlurOn;
+        }
+        if (g_INPUTSYSTEM->IsKeyTriggered(DIK_C))
+        {
+            g_DRAWSTATE->m_numBlurPasses++;
+        }
+        if (g_INPUTSYSTEM->IsKeyTriggered(DIK_X))
+        {
+            g_DRAWSTATE->m_numBlurPasses--;
         }
 
 #if defined(_DEBUG)
@@ -741,10 +701,6 @@ namespace KrakEngine{
 			CORE->SetNextState(GameStates::Restart);
 		}
 
-		if(g_INPUTSYSTEM->IsKeyTriggered(DIK_P))
-		{
-			CORE->SetNextState(GameStates::LevelEdit);
-		}
 		/****Cristina 20140324: Controls to change levels // Debugging*****/
 		if(g_INPUTSYSTEM->IsKeyTriggered(DIK_9))
 		{
