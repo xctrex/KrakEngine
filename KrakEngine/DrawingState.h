@@ -5,6 +5,7 @@ namespace KrakEngine
     enum class DebugDrawingMode : int
     {
         Default = 0,
+        DirectionBuffer,
         LuminanceBuffer,
         LuminanceGradientBufferX,
         LuminanceGradientBufferY,

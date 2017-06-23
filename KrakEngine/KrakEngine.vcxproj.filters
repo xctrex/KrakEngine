@@ -583,15 +583,6 @@
     <FxCompile Include="Shaders\Common.fx">
       <Filter>Systems\Graphics\Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="Shaders\StrokeDirection.fx">
-      <Filter>Systems\Graphics\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\StrokeDirectionUniform_PS.hlsl">
-      <Filter>Systems\Graphics\Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="Shaders\StrokeDirectionUniform_VS.hlsl">
-      <Filter>Systems\Graphics\Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="Shaders\CommonGBufferInput.fx">
       <Filter>Systems\Graphics\Shaders</Filter>
     </FxCompile>
@@ -638,6 +629,21 @@
       <Filter>Systems\Graphics\Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\GaussianBlurVertical_PS.hlsl">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\RenderStrokes_PS.hlsl">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\RenderStrokes.fx">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\LuminanceStrokeDirection.fx">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\LuminanceStrokeDirection_PS.hlsl">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\LuminanceStrokeDirection_VS.hlsl">
       <Filter>Systems\Graphics\Shaders</Filter>
     </FxCompile>
   </ItemGroup>

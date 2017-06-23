@@ -330,7 +330,7 @@ namespace KrakEngine
 
         // This loop represents one iteration of Cyclic Coordinate Descent.
         // The ProcessIK2D function must be called repeatedly for a solution.
-        for (int i = m_TargetJointPositions2D.size() - 1; i >= 0; --i)
+        for (int i = (int)m_TargetJointPositions2D.size() - 1; i >= 0; --i)
         {
             currentPos = CalculateTargetPosition2D();
 

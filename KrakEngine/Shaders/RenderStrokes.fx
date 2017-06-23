@@ -1,7 +1,7 @@
 #include "Common.fx"
 
 
-Texture2D<float4> GradientBuffer       : register(t0); 
+Texture2D<float4> StrokeDirectionBuffer : register(t0);
 Texture2D<float4> LuminanceBuffer      : register(t1);
 Texture2D<float4> shade0               : register(t2);
 Texture2D<float4> shade1               : register(t3);
@@ -56,80 +56,11 @@ struct VS_INPUT
     uint id : SV_VertexID;
 };
 
+// Buffer visualizer (draw full screen rect) vertex output
 struct VS_OUTPUT
 {
-    float4 Pos : SV_Position;
-    float3 Normal : NORMAL0;
-    float3 WorldPos : POSITION;
-    float2 TextureUV : TEXCOORD0;
-    float4 Direction0 : TEXCOORD1;
-    float4 Direction1  : TEXCOORD2;
-    float4 Direction2 : TEXCOORD3;
-};
-
-//--------------------------------------------------------------------------------------
-// Vertex Shader
-//--------------------------------------------------------------------------------------
-VS_OUTPUT Uniform_VS(VS_INPUT input)
-{
-    VS_OUTPUT output = (VS_OUTPUT)0;
-
-    output.Pos = float4(input.Pos, 1.0f);
-    output.Pos = mul(output.Pos, World);
-    output.WorldPos = output.Pos.xyz / output.Pos.w;
-    output.Pos = mul(output.Pos, View);
-    output.Pos = mul(output.Pos, Projection);
-    output.Normal = mul(float4(input.Normal, 0.0f), World).xyz;
-
-    // position to vertex clip-space
-    float4 fake_frag_coord = output.Pos;                // Range:   [-w,w]^4
-
-                                                                            // vertex to NDC-space
-    fake_frag_coord.x = fake_frag_coord.x / fake_frag_coord.w;  // Rescale: [-1,1]^3
-    fake_frag_coord.y = fake_frag_coord.y / fake_frag_coord.w;  // Rescale: [-1,1]^3
-    fake_frag_coord.z = fake_frag_coord.z / fake_frag_coord.w;  // Rescale: [-1,1]^3
-    fake_frag_coord.w = 1.0 / fake_frag_coord.w;                                // Invert W
-
-                                                                                // Vertex in window-space
-    fake_frag_coord.x = fake_frag_coord.x * 0.5;
-    fake_frag_coord.y = fake_frag_coord.y * 0.5;
-    fake_frag_coord.z = fake_frag_coord.z * 0.5;
-
-    fake_frag_coord.x = fake_frag_coord.x + 0.5;
-    fake_frag_coord.y = fake_frag_coord.y + 0.5;
-    fake_frag_coord.z = fake_frag_coord.z + 0.5;
-
-    // Scale and Bias for Viewport (We want the window coordinates, so no need for this)
-    fake_frag_coord.x = fake_frag_coord.x / ScreenSize.x;
-    fake_frag_coord.y = fake_frag_coord.y / ScreenSize.y;
-
-    fake_frag_coord = float4(get2dPoint(output.Pos, View, Projection, ScreenSize.x, ScreenSize.y), 0.0f, 0.0f);
-    float4 unitypos = UnityObjectToClipPos(input.Pos, World * View * Projection);
-    float4 screenPos = ComputeScreenPos(unitypos);
-    float2 depthUV = screenPos.xy / screenPos.w;
-    //float3 uOffsets = float3(-1, 0, 1) * _CameraDepthTexture_TexelSize.x;
-    //float3 vOffsets = float3(-1, 0, 1) * _CameraDepthTexture_TexelSize.y;
-    
-
-
-    output.TextureUV.xy = input.TextureUV;
-    fake_frag_coord.xy = normalize(fake_frag_coord.xy);
-    fake_frag_coord.xy = depthUV;
-    fake_frag_coord.xy = ScreenSpaceInVertexShader(output.Pos, ScreenSize);
-    output.Direction0 = output.Direction1 = output.Direction2 = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    if (input.id % 3 == 0)
-    {
-        output.Direction0 = GradientBuffer.SampleLevel(PointSampler, fake_frag_coord, 0);
-    }
-    else if (input.id % 3 == 1)
-    {
-        output.Direction1 = GradientBuffer.SampleLevel(PointSampler, fake_frag_coord, 0);
-    }
-    else
-    {
-        output.Direction2 = GradientBuffer.SampleLevel(PointSampler, fake_frag_coord, 0);
-    }
-    return output;
+    float4 Pos        : SV_POSITION;
+    float2 TextureUV  : TEXCOORD0;
 };
 
 float2 GetSampleCoordinatesFromDirection(float2 direction, float2 screenSpacePosition, float2 screenSize)
@@ -149,22 +80,29 @@ float2 GetSampleCoordinatesFromDirection(float2 direction, float2 screenSpacePos
     float2 sampleCoordinates = float2(xy.x*cos(strokeRotation) - xy.y * sin(strokeRotation), xy.x * sin(strokeRotation) + xy.y * cos(strokeRotation));
     return sampleCoordinates;
 }
+
+float2 GetSampleCoordinatesFromRotation(float strokeRotation, float2 screenSpacePosition, float2 screenSize, float2 strokeTextureSize)
+{
+    float strokeRotationInRadians = strokeRotation * PI * 2.0;
+    float2 xy = screenSpacePosition.xy * screenSize / strokeTextureSize;
+    return float2(xy.x*cos(strokeRotationInRadians) - xy.y * sin(strokeRotationInRadians), xy.x * sin(strokeRotationInRadians) + xy.y * cos(strokeRotationInRadians));
+}
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------
-float4 Uniform_PS(VS_OUTPUT input) : SV_TARGET
+float4 RenderStrokes_PS(VS_OUTPUT input) : SV_TARGET
 {
-    float2 screenSpacePosition = get2dPoint(input.Pos.xyz, View, Projection, ScreenSize.x, ScreenSize.y);
+    float2 screenSpacePosition = input.Pos.xy;
     screenSpacePosition /= ScreenSize;
-    screenSpacePosition = input.Pos.xy;
-    screenSpacePosition /= ScreenSize;
-    //float2 screenSpacePosition = input.Pos.xy;
+
     float4 luminanceBuffer = LuminanceBuffer.Sample(PointSampler, screenSpacePosition.xy);
     float luminance = luminanceBuffer.r;
-    float4 gradientBuffer = GradientBuffer.Sample(PointSampler, screenSpacePosition.xy);
-    float2 sampleCoordinates0 = GetSampleCoordinatesFromDirection(input.Direction0.xy, screenSpacePosition, ScreenSize);
-    float2 sampleCoordinates1 = GetSampleCoordinatesFromDirection(input.Direction1.xy, screenSpacePosition, ScreenSize);
-    float2 sampleCoordinates2 = GetSampleCoordinatesFromDirection(input.Direction2.xy, screenSpacePosition, ScreenSize);
+
+    float4 directions = StrokeDirectionBuffer.Sample(PointSampler, screenSpacePosition.xy);
+    float2 strokeTextureSize = float2(143.0f, 143.0f);
+    float2 sampleCoordinates0 = GetSampleCoordinatesFromRotation(directions.x, screenSpacePosition, ScreenSize, strokeTextureSize);
+    float2 sampleCoordinates1 = GetSampleCoordinatesFromRotation(directions.y, screenSpacePosition, ScreenSize, strokeTextureSize);
+    float2 sampleCoordinates2 = GetSampleCoordinatesFromRotation(directions.z, screenSpacePosition, ScreenSize, strokeTextureSize);
     
     
     float lowValue = 0.0f;

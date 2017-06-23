@@ -234,6 +234,8 @@ namespace KrakEngine{
 
             RenderLuminanceGradient();
 
+            RenderStrokes();
+
             if(g_DRAWSTATE->m_drawingMode == DebugDrawingMode::GBufferNormal){
                 // Target the back buffer
                 m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spD3DRenderTargetView.GetAddressOf(), NULL);            
@@ -268,8 +270,12 @@ namespace KrakEngine{
             {
                 DrawBuffer(m_spGradientBufferSRV);
             }
-            if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::UniformDirection, g_DRAWSTATE->m_drawingMode == DebugDrawingMode::Default) {
-                RenderUniformDirection();
+            if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::DirectionBuffer)
+            {
+                DrawBuffer(m_spStrokeDirectionBufferSRV);
+            }
+            if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::UniformDirection) {
+//                RenderUniformDirection();
             }
             if(g_DRAWSTATE->m_drawingMode == DebugDrawingMode::EdgeDetection){//true){//IsSceneDrawingOn()){
                 DoPostProcessing();
@@ -569,6 +575,7 @@ namespace KrakEngine{
                 DrawFullScreenQuad(m_spBufferVisualizerVertexShader, m_spVerticalGaussianBlurPixelShader);
             }
         }
+
         // UpRes the resulting gradient texture
         m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spGradientBufferRTV.GetAddressOf(), nullptr);
 
@@ -582,9 +589,55 @@ namespace KrakEngine{
 
         // Draw a fullscreen quad with the output
         DrawFullScreenQuad(m_spDownSampleVertexShader, m_spQuarterResUpSamplePixelShader);
+
+        UnBindShaderResources();
+        // Render the stroke directions based on the gradient buffer
+        m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spStrokeDirectionBufferRTV.GetAddressOf(), nullptr);
+
+        // Bind Shader Resources
+        ShaderResources resources = ShaderResources(
+        { m_spGradientBufferSRV.Get() }, // Vertex Shader Textures
+        { m_spPointSampler.Get(), }, // Vertex Shader Samplers
+        {}, // Pixel Shader Textures
+        {} // Pixel Shader Samplers
+        );
+
+        BindShaderResources(m_spD3DDeviceContext1, resources);
+
+        // Draw a fullscreen quad with the output
+        DrawModels(m_spLuminanceStrokeDirectionVertexShader, m_spLuminanceStrokeDirectionPixelShader, resources);
     }
 
-    void GraphicsSystem::RenderUniformDirection()
+    void GraphicsSystem::RenderStrokes()
+    {
+        // Target the back buffer
+        m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spD3DRenderTargetView.GetAddressOf(), NULL);
+
+        // Bind the Resource Views
+        //BindPencilShaderInput();
+        ShaderResources resources(
+        {},
+        {},
+        {   m_spStrokeDirectionBufferSRV.Get(),
+            m_spLuminanceBufferSRV.Get(),
+            g_GRAPHICSSYSTEM->GetTexture("shade0").Get(),
+            g_GRAPHICSSYSTEM->GetTexture("shade1").Get(),
+            g_GRAPHICSSYSTEM->GetTexture("shade2").Get(),
+            g_GRAPHICSSYSTEM->GetTexture("shade3").Get(),
+            g_GRAPHICSSYSTEM->GetTexture("shade4").Get(),
+            g_GRAPHICSSYSTEM->GetTexture("shade5").Get() },
+         { m_spPointSampler.Get(), m_spMirrorSampler.Get() });
+
+        BindShaderResources(m_spD3DDeviceContext1, resources);
+
+        // Render the Srokes
+        DrawFullScreenQuad(m_spBufferVisualizerVertexShader, m_spRenderStrokesPixelShader);
+
+        // Unbind the resources
+        UnBindShaderResources(m_spD3DDeviceContext1, resources);
+    }
+
+    /*void GraphicsSystem::RenderUniformDirection()
     {
         // Target the back buffer
         m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spD3DRenderTargetView.GetAddressOf(), NULL);
@@ -610,7 +663,7 @@ namespace KrakEngine{
     
         // Unbind the resources
         UnBindShaderResources(m_spD3DDeviceContext1, resources);
-    }
+    }*/
     void GraphicsSystem::DoPostProcessing(){
         // Target an intermediate Render Target
         m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spIntermediateRTV.GetAddressOf(), NULL);
@@ -1954,7 +2007,8 @@ namespace KrakEngine{
         CreateShaders(L"Shaders\\BufferVisualizer.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spBufferVisualizerVertexShader, "PS", m_spBufferVisualizerPixelShader);
         CreatePixelShader(L"Shaders\\BufferVisualizer.fx", "PS_Red", m_spBufferVisualizerRedPixelShader);
         CreatePixelShader(L"Shaders\\BufferVisualizer.fx", "PS_Green", m_spBufferVisualizerGreenPixelShader);
-        CreateShaders(L"Shaders\\StrokeDirection.fx", FBXBinModelLayout, ARRAYSIZE(FBXBinModelLayout), m_spFBXBinModelVertexLayout, "Uniform_VS", m_spStrokeDirectionUniformVertexShader, "Uniform_PS", m_spStrokeDirectionUniformPixelShader);
+        CreateShaders(L"Shaders\\LuminanceStrokeDirection.fx", FBXBinModelLayout, ARRAYSIZE(FBXBinModelLayout), m_spFBXBinModelVertexLayout, "LuminanceStrokeDirection_VS", m_spLuminanceStrokeDirectionVertexShader, "LuminanceStrokeDirection_PS", m_spLuminanceStrokeDirectionPixelShader);
+        CreatePixelShader(L"Shaders\\RenderStrokes.fx", "RenderStrokes_PS", m_spRenderStrokesPixelShader);
 
         CreateBuffers();
         CreateQuadResources();
@@ -2301,6 +2355,29 @@ namespace KrakEngine{
                 m_spGradientBufferRT.Get(),
                 &SRVDesc,
                 &m_spGradientBufferSRV
+            )
+        );
+
+        // Create the stroke direction buffer
+        DXThrowIfFailed(
+            m_spD3DDevice1->CreateTexture2D(
+                &backBufferDesc,
+                nullptr,
+                &m_spStrokeDirectionBufferRT
+            )
+        );
+        DXThrowIfFailed(
+            m_spD3DDevice1->CreateRenderTargetView(
+                m_spGradientBufferRT.Get(),
+                &RTVDesc,
+                &m_spStrokeDirectionBufferRTV
+            )
+        );
+        DXThrowIfFailed(
+            m_spD3DDevice1->CreateShaderResourceView(
+                m_spGradientBufferRT.Get(),
+                &SRVDesc,
+                &m_spStrokeDirectionBufferSRV
             )
         );
 

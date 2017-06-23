@@ -164,7 +164,8 @@ namespace KrakEngine{
         void DrawBufferBlue(ComPtr<ID3D11ShaderResourceView> &buffer);
         void RenderLuminance(ComPtr<ID3D11RenderTargetView> renderTarget);
         void RenderLuminanceGradient();
-        void RenderUniformDirection();
+        //void RenderUniformDirection();
+        void RenderStrokes();
         void DoPostProcessing();
         void UpdateModels(float dt);
         void DrawModels();
@@ -243,6 +244,11 @@ namespace KrakEngine{
         ComPtr<ID3D11RenderTargetView> m_spGradientBufferRTV;
         ComPtr<ID3D11ShaderResourceView> m_spGradientBufferSRV;
 
+        // StrokeDirectionBuffer resources
+        ComPtr<ID3D11Texture2D> m_spStrokeDirectionBufferRT;
+        ComPtr<ID3D11RenderTargetView> m_spStrokeDirectionBufferRTV;
+        ComPtr<ID3D11ShaderResourceView> m_spStrokeDirectionBufferSRV;
+
         // Downsampled resources
         ComPtr<ID3D11Texture2D> m_spQuarterResBufferRT;
         ComPtr<ID3D11RenderTargetView> m_spQuarterResBufferRTV;
@@ -309,8 +315,10 @@ namespace KrakEngine{
         ComPtr<ID3D11PixelShader> m_spBufferVisualizerGreenPixelShader;
         ComPtr<ID3D11PixelShader> m_spBufferVisualizerBluePixelShader;
 
-        ComPtr<ID3D11VertexShader> m_spStrokeDirectionUniformVertexShader;
-        ComPtr<ID3D11PixelShader> m_spStrokeDirectionUniformPixelShader;
+        ComPtr<ID3D11VertexShader> m_spLuminanceStrokeDirectionVertexShader;
+        ComPtr<ID3D11PixelShader> m_spLuminanceStrokeDirectionPixelShader;
+
+        ComPtr<ID3D11PixelShader> m_spRenderStrokesPixelShader;
 
         // Sprite Layout and Shaders
         ComPtr<ID3D11InputLayout> m_spSpriteVertexLayout;

@@ -1,5 +1,6 @@
 // Common
 #define FLT_EPSILON 0.003
+#define PI 3.14159
 
 float2 get2dPoint(float3 point3D, float4x4 viewMatrix,
     float4x4 projectionMatrix, float width, float height) {

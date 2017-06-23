@@ -76,7 +76,7 @@ namespace KrakEngine
         strokes.assign(uniqueStrokes.begin(), uniqueStrokes.end());
 
         //Allocate new image based on dimensions
-        int dimensions = m_minMipResolution * pow(2, row);
+        int dimensions = m_minMipResolution * (int)pow(2, row);
 
         // TAMTODO: investigate if anyone has tried using multiple stroke images or procedurally generated stroke images
         // TAMTODO: use dimension
