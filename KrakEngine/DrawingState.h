@@ -5,12 +5,15 @@ namespace KrakEngine
     enum class DebugDrawingMode : int
     {
         Default = 0,
-        DirectionBuffer,
         LuminanceBuffer,
+        DirectionBuffer,
+        DirectionBufferX,
+        DirectionBufferY,
+        DirectionBufferZ,
+        LuminanceGradientBuffer,
         LuminanceGradientBufferX,
         LuminanceGradientBufferY,
         LuminanceGradientBufferZ,
-        LuminanceGradientBuffer,
         UniformDirection,
         EndCycle,
         GBufferNormal,
@@ -71,39 +74,53 @@ namespace KrakEngine
             switch (m_drawingMode)
             {
             case DebugDrawingMode::Default:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Default";
+                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Default\r";
+                break;
+            case DebugDrawingMode::DirectionBuffer:
+                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Direction Buffer\r";
+                break;
+            case DebugDrawingMode::DirectionBufferX:
+                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Direction BufferX\r";
+                break;
+            case DebugDrawingMode::DirectionBufferY:
+                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Direction BufferY\r";
+                break;
+            case DebugDrawingMode::DirectionBufferZ:
+                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Direction BufferZ\r";
                 break;
             case DebugDrawingMode::GBufferNormal:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Normal Buffer";
+                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Normal Buffer\r";
                 break;
             case DebugDrawingMode::GBufferDepth:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Depth Buffer";
+                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Depth Buffer\r";
                 break;
             case DebugDrawingMode::LuminanceBuffer:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Luminance Buffer";
+                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Luminance Buffer\r";
                 break;
             case DebugDrawingMode::UniformDirection:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Uniform Direction";
+                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Uniform Direction\r";
                 break;
             case DebugDrawingMode::LuminanceGradientBuffer:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Luminance Gradient Buffer";
+                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Luminance Gradient Buffer\r";
                 break;
             case DebugDrawingMode::LuminanceGradientBufferX:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Luminance Gradient Buffer X";
+                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Luminance Gradient Buffer X\r";
                 break;
             case DebugDrawingMode::LuminanceGradientBufferY:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Luminance Gradient Buffer Y";
+                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Luminance Gradient Buffer Y\r";
                 break;
             case DebugDrawingMode::LuminanceGradientBufferZ:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Luminance Gradient Buffer Z";
+                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Luminance Gradient Buffer Z\r";
                 break;
             case DebugDrawingMode::AmbientOcclusion:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Ambient Occlusion";
+                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Ambient Occlusion\r";
                 break;
 
             default:
                 break;
             }
+            str.append("\rToggle Blur(b): " + m_isGradientBufferBlurOn ? "On" : "Off");
+            str.append("\rNum Blur Passes(-x, +c): " + std::to_string(m_numBlurPasses));
             return str;
         }
 

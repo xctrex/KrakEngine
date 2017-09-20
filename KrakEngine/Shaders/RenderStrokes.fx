@@ -76,7 +76,7 @@ float2 GetSampleCoordinatesFromDirection(float2 direction, float2 screenSpacePos
 
     float2 xy = screenSpacePosition.xy * screenSize / float2(143.0f, 143.0f);
 
-    float strokeRotation = atan2(direction.y, direction.x);
+    float strokeRotation = (atan2(direction.y, direction.x) + PI) * 2.0f;
     float2 sampleCoordinates = float2(xy.x*cos(strokeRotation) - xy.y * sin(strokeRotation), xy.x * sin(strokeRotation) + xy.y * cos(strokeRotation));
     return sampleCoordinates;
 }
@@ -103,7 +103,6 @@ float4 RenderStrokes_PS(VS_OUTPUT input) : SV_TARGET
     float2 sampleCoordinates0 = GetSampleCoordinatesFromRotation(directions.x, screenSpacePosition, ScreenSize, strokeTextureSize);
     float2 sampleCoordinates1 = GetSampleCoordinatesFromRotation(directions.y, screenSpacePosition, ScreenSize, strokeTextureSize);
     float2 sampleCoordinates2 = GetSampleCoordinatesFromRotation(directions.z, screenSpacePosition, ScreenSize, strokeTextureSize);
-    
     
     float lowValue = 0.0f;
     float highValue = 1.0f;

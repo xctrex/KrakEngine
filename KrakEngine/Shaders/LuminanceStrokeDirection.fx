@@ -74,40 +74,15 @@ VS_OUTPUT LuminanceStrokeDirection_VS(VS_INPUT input)
     output.Normal = mul(float4(input.Normal, 0.0f), World).xyz;
 
     // position to vertex clip-space
-    float4 fake_frag_coord = output.Pos;                // Range:   [-w,w]^4
+    float4 fake_frag_coord = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
-                                                                            // vertex to NDC-space
-    fake_frag_coord.x = fake_frag_coord.x / fake_frag_coord.w;  // Rescale: [-1,1]^3
-    fake_frag_coord.y = fake_frag_coord.y / fake_frag_coord.w;  // Rescale: [-1,1]^3
-    fake_frag_coord.z = fake_frag_coord.z / fake_frag_coord.w;  // Rescale: [-1,1]^3
-    fake_frag_coord.w = 1.0 / fake_frag_coord.w;                                // Invert W
-
-                                                                                // Vertex in window-space
-    fake_frag_coord.x = fake_frag_coord.x * 0.5;
-    fake_frag_coord.y = fake_frag_coord.y * 0.5;
-    fake_frag_coord.z = fake_frag_coord.z * 0.5;
-
-    fake_frag_coord.x = fake_frag_coord.x + 0.5;
-    fake_frag_coord.y = fake_frag_coord.y + 0.5;
-    fake_frag_coord.z = fake_frag_coord.z + 0.5;
-
-    // Scale and Bias for Viewport (We want the window coordinates, so no need for this)
-    fake_frag_coord.x = fake_frag_coord.x / ScreenSize.x;
-    fake_frag_coord.y = fake_frag_coord.y / ScreenSize.y;
-
-    fake_frag_coord = float4(get2dPoint(output.Pos, View, Projection, ScreenSize.x, ScreenSize.y), 0.0f, 0.0f);
-    float4 unitypos = UnityObjectToClipPos(input.Pos, World * View * Projection);
-    float4 screenPos = ComputeScreenPos(unitypos);
-    float2 depthUV = screenPos.xy / screenPos.w;
-    //float3 uOffsets = float3(-1, 0, 1) * _CameraDepthTexture_TexelSize.x;
-    //float3 vOffsets = float3(-1, 0, 1) * _CameraDepthTexture_TexelSize.y;
+    float4 projectionSpaceCoord = output.Pos;//Projection * View * World * input.Pos;
+    //Is clipped? After that, you need to clip the vector. If any of the vector's 3 first components is greater in absolute value than the fourth component, then it is outside the field of view of the camera and should be clipped.
+    float4 imageSpaceCoord = float4(projectionSpaceCoord.x / projectionSpaceCoord.w, projectionSpaceCoord.y / projectionSpaceCoord.w, projectionSpaceCoord.z / projectionSpaceCoord.w, 1.0f);
+    fake_frag_coord.x = ((imageSpaceCoord.x + 1.0f) / 2.0f);
+    fake_frag_coord.y = ((imageSpaceCoord.y + 1.0f) / 2.0f);
     
-
-
-    output.TextureUV.xy = input.TextureUV;
-    fake_frag_coord.xy = normalize(fake_frag_coord.xy);
-    fake_frag_coord.xy = depthUV;
-    fake_frag_coord.xy = ScreenSpaceInVertexShader(output.Pos, ScreenSize);
+    // Initialize all values to 0, this way each vertex is interpolated between 0 and the desired direction value, which is okay as long as the direction's x and y are interpolated equally
     output.Direction0 = output.Direction1 = output.Direction2 = float4(0.0f, 0.0f, 0.0f, 0.0f);
     if (input.id % 3 == 0)
     {
@@ -117,7 +92,7 @@ VS_OUTPUT LuminanceStrokeDirection_VS(VS_INPUT input)
     {
         output.Direction1 = GradientBuffer.SampleLevel(PointSampler, fake_frag_coord, 0);
     }
-    else
+    else// if(input.id %3 == 2)
     {
         output.Direction2 = GradientBuffer.SampleLevel(PointSampler, fake_frag_coord, 0);
     }

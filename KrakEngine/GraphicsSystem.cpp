@@ -31,7 +31,7 @@ Creation date: 1/20/2014
 #include "TAM.h"
 #include "DrawingState.h"
 #include "ShaderResources.h"
-
+#define D2D_ENABLED
 #define TRACK_DEPTH 4.0f
 
 namespace KrakEngine{
@@ -273,6 +273,18 @@ namespace KrakEngine{
             if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::DirectionBuffer)
             {
                 DrawBuffer(m_spStrokeDirectionBufferSRV);
+            }
+            if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::DirectionBufferX)
+            {
+                DrawBufferRed(m_spStrokeDirectionBufferSRV);
+            }
+            if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::DirectionBufferY)
+            {
+                DrawBufferGreen(m_spStrokeDirectionBufferSRV);
+            }
+            if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::DirectionBufferZ)
+            {
+                DrawBufferBlue(m_spStrokeDirectionBufferSRV);
             }
             if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::UniformDirection) {
 //                RenderUniformDirection();
@@ -578,34 +590,35 @@ namespace KrakEngine{
 
         // UpRes the resulting gradient texture
         m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spGradientBufferRTV.GetAddressOf(), nullptr);
-
-        // Bind Shader Resources
-        BindShaderResources(m_spD3DDeviceContext1, ShaderResources(
+        ShaderResources shaderResources = ShaderResources(
         {}, // Vertex Shader Textures
         {}, // Vertex Shader Samplers
         { m_spQuarterResBufferSRV.Get() }, // Pixel Shader Textures
-        { m_spPointSampler.Get(), m_spMirrorSampler.Get() } // Pixel Shader Samplers
-        ));
+        { m_spPointSampler.Get(), m_spMirrorSampler.Get() }); // Pixel Shader Samplers
+
+        // Bind Shader Resources
+        BindShaderResources(m_spD3DDeviceContext1, shaderResources);
 
         // Draw a fullscreen quad with the output
         DrawFullScreenQuad(m_spDownSampleVertexShader, m_spQuarterResUpSamplePixelShader);
 
-        UnBindShaderResources();
+        UnBindShaderResources(m_spD3DDeviceContext1, shaderResources);
+
         // Render the stroke directions based on the gradient buffer
         m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spStrokeDirectionBufferRTV.GetAddressOf(), nullptr);
 
         // Bind Shader Resources
-        ShaderResources resources = ShaderResources(
+        shaderResources = ShaderResources(
         { m_spGradientBufferSRV.Get() }, // Vertex Shader Textures
         { m_spPointSampler.Get(), }, // Vertex Shader Samplers
         {}, // Pixel Shader Textures
         {} // Pixel Shader Samplers
         );
 
-        BindShaderResources(m_spD3DDeviceContext1, resources);
+        BindShaderResources(m_spD3DDeviceContext1, shaderResources);
 
-        // Draw a fullscreen quad with the output
-        DrawModels(m_spLuminanceStrokeDirectionVertexShader, m_spLuminanceStrokeDirectionPixelShader, resources);
+        // Draw the models and output the stroke direction buffer
+        DrawModels(m_spLuminanceStrokeDirectionVertexShader, m_spLuminanceStrokeDirectionPixelShader, shaderResources);
     }
 
     void GraphicsSystem::RenderStrokes()
@@ -630,7 +643,7 @@ namespace KrakEngine{
 
         BindShaderResources(m_spD3DDeviceContext1, resources);
 
-        // Render the Srokes
+        // Render the Strokes
         DrawFullScreenQuad(m_spBufferVisualizerVertexShader, m_spRenderStrokesPixelShader);
 
         // Unbind the resources
@@ -2007,6 +2020,7 @@ namespace KrakEngine{
         CreateShaders(L"Shaders\\BufferVisualizer.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spBufferVisualizerVertexShader, "PS", m_spBufferVisualizerPixelShader);
         CreatePixelShader(L"Shaders\\BufferVisualizer.fx", "PS_Red", m_spBufferVisualizerRedPixelShader);
         CreatePixelShader(L"Shaders\\BufferVisualizer.fx", "PS_Green", m_spBufferVisualizerGreenPixelShader);
+        CreatePixelShader(L"Shaders\\BufferVisualizer.fx", "PS_Blue", m_spBufferVisualizerBluePixelShader);
         CreateShaders(L"Shaders\\LuminanceStrokeDirection.fx", FBXBinModelLayout, ARRAYSIZE(FBXBinModelLayout), m_spFBXBinModelVertexLayout, "LuminanceStrokeDirection_VS", m_spLuminanceStrokeDirectionVertexShader, "LuminanceStrokeDirection_PS", m_spLuminanceStrokeDirectionPixelShader);
         CreatePixelShader(L"Shaders\\RenderStrokes.fx", "RenderStrokes_PS", m_spRenderStrokesPixelShader);
 
@@ -2368,14 +2382,14 @@ namespace KrakEngine{
         );
         DXThrowIfFailed(
             m_spD3DDevice1->CreateRenderTargetView(
-                m_spGradientBufferRT.Get(),
+                m_spStrokeDirectionBufferRT.Get(),
                 &RTVDesc,
                 &m_spStrokeDirectionBufferRTV
             )
         );
         DXThrowIfFailed(
             m_spD3DDevice1->CreateShaderResourceView(
-                m_spGradientBufferRT.Get(),
+                m_spStrokeDirectionBufferRT.Get(),
                 &SRVDesc,
                 &m_spStrokeDirectionBufferSRV
             )
