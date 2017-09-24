@@ -165,6 +165,7 @@ namespace KrakEngine{
         void DrawBufferBlue(ComPtr<ID3D11ShaderResourceView> &buffer);
         void RenderLuminance(ComPtr<ID3D11RenderTargetView> renderTarget);
         void RenderLuminanceGradient();
+        void ConvertPerPixelXYDirectionBufferToPerVertexDirectionBuffer();
         void RenderPrincipalCurvatureDirection();
         //void RenderUniformDirection();
         void RenderStrokes();
@@ -242,9 +243,9 @@ namespace KrakEngine{
         ComPtr<ID3D11ShaderResourceView> m_spLuminanceBufferSRV;
 
         // GradientBuffer resources
-        ComPtr<ID3D11Texture2D> m_spGradientBufferRT;
-        ComPtr<ID3D11RenderTargetView> m_spGradientBufferRTV;
-        ComPtr<ID3D11ShaderResourceView> m_spGradientBufferSRV;
+        ComPtr<ID3D11Texture2D> m_spXYDirectionBufferRT;
+        ComPtr<ID3D11RenderTargetView> m_spXYDirectionBufferRTV;
+        ComPtr<ID3D11ShaderResourceView> m_spXYDirectionBufferSRV;
 
         // StrokeDirectionBuffer resources
         ComPtr<ID3D11Texture2D> m_spStrokeDirectionBufferRT;

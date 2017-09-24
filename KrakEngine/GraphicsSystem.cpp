@@ -263,19 +263,19 @@ namespace KrakEngine{
             }
             if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::LuminanceGradientBufferX)
             {
-                DrawBufferRed(m_spGradientBufferSRV);
+                DrawBufferRed(m_spXYDirectionBufferSRV);
             }
             if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::LuminanceGradientBufferY)
             {
-                DrawBufferGreen(m_spGradientBufferSRV);
+                DrawBufferGreen(m_spXYDirectionBufferSRV);
             }
             if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::LuminanceGradientBufferZ)
             {
-                DrawBufferBlue(m_spGradientBufferSRV);
+                DrawBufferBlue(m_spXYDirectionBufferSRV);
             }
             if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::LuminanceGradientBuffer)
             {
-                DrawBuffer(m_spGradientBufferSRV);
+                DrawBuffer(m_spXYDirectionBufferSRV);
             }
             if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::DirectionBuffer)
             {
@@ -625,7 +625,7 @@ namespace KrakEngine{
         }
 
         // UpRes the resulting gradient texture
-        m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spGradientBufferRTV.GetAddressOf(), nullptr);
+        m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spXYDirectionBufferRTV.GetAddressOf(), nullptr);
         shaderResources = ShaderResources(
         {}, // Vertex Shader Textures
         {}, // Vertex Shader Samplers
@@ -640,12 +640,17 @@ namespace KrakEngine{
 
         UnBindShaderResources(m_spD3DDeviceContext1, shaderResources);
 
+        ConvertPerPixelXYDirectionBufferToPerVertexDirectionBuffer();
+    }
+
+    void GraphicsSystem::ConvertPerPixelXYDirectionBufferToPerVertexDirectionBuffer()
+    {
         // Render the stroke directions based on the gradient buffer
         m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spStrokeDirectionBufferRTV.GetAddressOf(), nullptr);
 
         // Bind Shader Resources
-        shaderResources = ShaderResources(
-        { m_spGradientBufferSRV.Get() }, // Vertex Shader Textures
+        ShaderResources shaderResources(
+        { m_spXYDirectionBufferSRV.Get() }, // Vertex Shader Textures
         { m_spPointSampler.Get(), }, // Vertex Shader Samplers
         {}, // Pixel Shader Textures
         {} // Pixel Shader Samplers
@@ -659,17 +664,18 @@ namespace KrakEngine{
         UnBindShaderResources(m_spD3DDeviceContext1, shaderResources);
     }
 
-
     void GraphicsSystem::RenderPrincipalCurvatureDirection()
     {
         // Target the stroke direction render target
-        m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spStrokeDirectionBufferRTV.GetAddressOf(), nullptr);
+        m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spXYDirectionBufferRTV.GetAddressOf(), nullptr);
         
         BindGBufferAsInput();
 
         DrawFullScreenQuad(m_spPrincipalCurvatureStrokeDirectionVertexShader, m_spPrincipalCurvatureStrokeDirectionPixelShader);
 
         UnbindGBuffer();
+
+        ConvertPerPixelXYDirectionBufferToPerVertexDirectionBuffer();
     }
 
     void GraphicsSystem::RenderStrokes()
@@ -709,9 +715,9 @@ namespace KrakEngine{
         // Bind the Resource Views
         //BindPencilShaderInput();
         ShaderResources resources(
-            { m_spGradientBufferSRV.Get()},
+            { m_spXYDirectionBufferSRV.Get()},
             { m_spPointSampler.Get(), m_spMirrorSampler.Get() },
-            { m_spGradientBufferSRV.Get(),
+            { m_spXYDirectionBufferSRV.Get(),
             m_spLuminanceBufferSRV.Get(),
             g_GRAPHICSSYSTEM->GetTexture("shade0").Get(),
             g_GRAPHICSSYSTEM->GetTexture("shade1").Get(),
@@ -2406,21 +2412,21 @@ namespace KrakEngine{
             m_spD3DDevice1->CreateTexture2D(
                 &backBufferDesc,
                 nullptr,
-                &m_spGradientBufferRT
+                &m_spXYDirectionBufferRT
             )
         );
         DXThrowIfFailed(
             m_spD3DDevice1->CreateRenderTargetView(
-                m_spGradientBufferRT.Get(),
+                m_spXYDirectionBufferRT.Get(),
                 &RTVDesc,
-                &m_spGradientBufferRTV
+                &m_spXYDirectionBufferRTV
             )
         );
         DXThrowIfFailed(
             m_spD3DDevice1->CreateShaderResourceView(
-                m_spGradientBufferRT.Get(),
+                m_spXYDirectionBufferRT.Get(),
                 &SRVDesc,
-                &m_spGradientBufferSRV
+                &m_spXYDirectionBufferSRV
             )
         );
 
