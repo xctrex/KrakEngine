@@ -654,6 +654,10 @@ namespace KrakEngine{
 		{            
             g_DRAWSTATE->CycleDrawingMode();
 		}
+        if (g_INPUTSYSTEM->IsKeyTriggered(DIK_T))
+        {
+            g_DRAWSTATE->CycleTechnique();
+        }
         if (g_INPUTSYSTEM->IsKeyTriggered(DIK_M))
         {            
             g_GRAPHICSSYSTEM->ToggleModel();

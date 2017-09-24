@@ -2,6 +2,13 @@
 #include "MathLib.h"
 namespace KrakEngine
 {
+    enum class Technique : int
+    {
+        PrincipalCurvature,
+        Luminance,
+        MaxTechnique
+    };
+
     enum class DebugDrawingMode : int
     {
         Default = 0,
@@ -19,9 +26,7 @@ namespace KrakEngine
         GBufferNormal,
         GBufferDepth,
         Depth,
-        Luminance,
         ProjectedNormal,
-        PrincipleCurvature,
         AmbientOcclusion,
         DistanceToFeatureLine,
         CombDirection,
@@ -36,6 +41,7 @@ namespace KrakEngine
         ~DrawingState() {};
 
         DebugDrawingMode m_drawingMode = DebugDrawingMode::Default;
+        Technique m_technique = Technique::PrincipalCurvature;
 
         bool m_isSkinningOn = false;
 
@@ -127,6 +133,11 @@ namespace KrakEngine
         void CycleDrawingMode()
         {
             m_drawingMode = static_cast<DebugDrawingMode>(((int)m_drawingMode + 1) % (int)DebugDrawingMode::EndCycle);
+        }
+
+        void CycleTechnique()
+        {
+            m_technique = static_cast<Technique>(((int)m_technique + 1) % (int)Technique::MaxTechnique);
         }
     };
 }

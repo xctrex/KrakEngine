@@ -37,3 +37,18 @@ float4 ScreenSpaceInVertexShader(in float4 pos, in float2 ScreenSize)
 {
     return float4(0.5 * (float2(pos.x + pos.w, pos.w - pos.y) + pos.w * ScreenSize.xy), pos.zw) * (1.0f / pos.w);
 }
+
+
+float2 GetRotationFromDirection(float2 direction)
+{
+    if (direction.x < FLT_EPSILON && direction.y < FLT_EPSILON && direction.x >= 0.0 && direction.y >= 0.0)
+    {
+        // Force a direciton if none was set in the gradient buffer
+        direction.x = 0.0;
+        direction.y = 1.0; // straight up and down so it's somewhat clear when debugging
+    }
+
+    direction.xy = normalize(direction);
+
+    return (atan2(direction.y, direction.x) + PI) / (2.0 * PI);
+}

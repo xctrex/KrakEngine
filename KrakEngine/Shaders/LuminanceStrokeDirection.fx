@@ -99,19 +99,6 @@ VS_OUTPUT LuminanceStrokeDirection_VS(VS_INPUT input)
     return output;
 };
 
-float2 GetRotationFromDirection(float2 direction)
-{
-    if (direction.x < FLT_EPSILON && direction.y < FLT_EPSILON && direction.x >= 0.0 && direction.y >= 0.0)
-    {
-        // Force a direciton if none was set in the gradient buffer
-        direction.x = 0.0;
-        direction.y = 1.0; // straight up and down so it's somewhat clear when debugging
-    }
-
-    direction.xy = normalize(direction);
-    
-    return (atan2(direction.y, direction.x) + PI) / (2.0 * PI);
-}
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------

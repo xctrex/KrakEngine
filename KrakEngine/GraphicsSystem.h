@@ -158,12 +158,14 @@ namespace KrakEngine{
         void UnbindGBuffer();
         void BindPencilShaderInput();
         void DrawBufferSetup(ComPtr<ID3D11ShaderResourceView> &buffer);
+        void DrawBufferTeardown(ComPtr<ID3D11ShaderResourceView> &buffer);
         void DrawBuffer(ComPtr<ID3D11ShaderResourceView> &buffer);
         void DrawBufferRed(ComPtr<ID3D11ShaderResourceView> &buffer);
         void DrawBufferGreen(ComPtr<ID3D11ShaderResourceView> &buffer);
         void DrawBufferBlue(ComPtr<ID3D11ShaderResourceView> &buffer);
         void RenderLuminance(ComPtr<ID3D11RenderTargetView> renderTarget);
         void RenderLuminanceGradient();
+        void RenderPrincipalCurvatureDirection();
         //void RenderUniformDirection();
         void RenderStrokes();
         void DoPostProcessing();
@@ -317,6 +319,9 @@ namespace KrakEngine{
 
         ComPtr<ID3D11VertexShader> m_spLuminanceStrokeDirectionVertexShader;
         ComPtr<ID3D11PixelShader> m_spLuminanceStrokeDirectionPixelShader;
+        
+        ComPtr<ID3D11VertexShader> m_spPrincipalCurvatureStrokeDirectionVertexShader;
+        ComPtr<ID3D11PixelShader> m_spPrincipalCurvatureStrokeDirectionPixelShader;
 
         ComPtr<ID3D11PixelShader> m_spRenderStrokesPixelShader;
 

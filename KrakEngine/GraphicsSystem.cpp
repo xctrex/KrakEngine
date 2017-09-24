@@ -232,7 +232,14 @@ namespace KrakEngine{
 
             RenderLuminance(m_spLuminanceBufferRTV);
 
-            RenderLuminanceGradient();
+            if (g_DRAWSTATE->m_technique == Technique::Luminance)
+            {
+                RenderLuminanceGradient();
+            }
+            else
+            {
+                RenderPrincipalCurvatureDirection();
+            }
 
             RenderStrokes();
 
@@ -479,11 +486,25 @@ namespace KrakEngine{
         BindShaderResources(m_spD3DDeviceContext1, resources);
     }
 
+    void GraphicsSystem::DrawBufferTeardown(ComPtr<ID3D11ShaderResourceView> &buffer)
+    {
+        // Should match resources in DrawBufferSetup
+        ShaderResources resources(
+        {}, // Vertex Shader Textures
+        {}, // Vertex Shader Samplers
+        { buffer.Get() }, // Pixel Shader Textures
+        { m_spPointSampler.Get() } // Pixel Shader Samplers
+        );
+        UnBindShaderResources(m_spD3DDeviceContext1, resources);
+    }
+
     void GraphicsSystem::DrawBuffer(ComPtr<ID3D11ShaderResourceView> &buffer)
     {
         DrawBufferSetup(buffer);
         // Draw a fullscreen quad with the output
         DrawFullScreenQuad(m_spBufferVisualizerVertexShader, m_spBufferVisualizerPixelShader);
+        
+        DrawBufferTeardown(buffer);
     }
 
     void GraphicsSystem::DrawBufferRed(ComPtr<ID3D11ShaderResourceView> &buffer)
@@ -491,6 +512,8 @@ namespace KrakEngine{
         DrawBufferSetup(buffer);
         // Draw a fullscreen quad with the output
         DrawFullScreenQuad(m_spBufferVisualizerVertexShader, m_spBufferVisualizerRedPixelShader);
+
+        DrawBufferTeardown(buffer);
     }
 
     void GraphicsSystem::DrawBufferGreen(ComPtr<ID3D11ShaderResourceView> &buffer)
@@ -498,6 +521,8 @@ namespace KrakEngine{
         DrawBufferSetup(buffer);
         // Draw a fullscreen quad with the output
         DrawFullScreenQuad(m_spBufferVisualizerVertexShader, m_spBufferVisualizerGreenPixelShader);
+
+        DrawBufferTeardown(buffer);
     }
 
     void GraphicsSystem::DrawBufferBlue(ComPtr<ID3D11ShaderResourceView> &buffer)
@@ -505,53 +530,60 @@ namespace KrakEngine{
         DrawBufferSetup(buffer);
         // Draw a fullscreen quad with the output
         DrawFullScreenQuad(m_spBufferVisualizerVertexShader, m_spBufferVisualizerBluePixelShader);
+
+        DrawBufferTeardown(buffer);
     }
 
     void GraphicsSystem::RenderLuminanceGradient() {
         // Down-res the luminance buffer
         m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spQuarterResBufferRTV.GetAddressOf(), nullptr);
 
-        // Bind Shader Resources        
-        BindShaderResources(m_spD3DDeviceContext1, ShaderResources(
+        ShaderResources shaderResources(
         {}, // Vertex Shader Textures
         {}, // Vertex Shader Samplers
         { m_spLuminanceBufferSRV.Get() }, // Pixel Shader Textures
         { m_spPointSampler.Get(), m_spMirrorSampler.Get() } // Pixel Shader Samplers
-        ));
+        );
+
+        // Bind Shader Resources        
+        BindShaderResources(m_spD3DDeviceContext1, shaderResources);
 
         // Draw a fullscreen quad with the output
         DrawFullScreenQuad(m_spDownSampleVertexShader, m_spQuarterResDownSamplePixelShader);
-
+        
+        UnBindShaderResources(m_spD3DDeviceContext1, shaderResources);
 
         m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spQuarterResBufferRTV2.GetAddressOf(), nullptr);
 
         // Bind Shader Resources
-        
-        BindShaderResources(m_spD3DDeviceContext1, ShaderResources(
+        shaderResources = ShaderResources(
         {}, // Vertex Shader Textures
         {}, // Vertex Shader Samplers
         { m_spQuarterResBufferSRV.Get() }, // Pixel Shader Textures
         { m_spPointSampler.Get(), m_spMirrorSampler.Get() } // Pixel Shader Samplers
-        ));
+        );
+        BindShaderResources(m_spD3DDeviceContext1, shaderResources);
 
         // Draw a fullscreen quad with the output
         DrawFullScreenQuad(m_spBufferVisualizerVertexShader, m_spHorizontalSobelPixelShader);
 
+        UnBindShaderResources(m_spD3DDeviceContext1, shaderResources);
 
         m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spQuarterResBufferRTV.GetAddressOf(), nullptr);
 
         // Bind Shader Resources
-
-        BindShaderResources(m_spD3DDeviceContext1, ShaderResources(
+        shaderResources = ShaderResources(
         {}, // Vertex Shader Textures
         {}, // Vertex Shader Samplers
         { m_spQuarterResBufferSRV2.Get() }, // Pixel Shader Textures
         { m_spPointSampler.Get(), m_spMirrorSampler.Get() } // Pixel Shader Samplers
-        ));
+        );
+        BindShaderResources(m_spD3DDeviceContext1, shaderResources);
 
         // Draw a fullscreen quad with the output
         DrawFullScreenQuad(m_spBufferVisualizerVertexShader, m_spVerticalSobelPixelShader);
 
+        UnBindShaderResources(m_spD3DDeviceContext1, shaderResources);
         //=============================================
         // Two pass Gaussian Blur
         //=============================================
@@ -561,36 +593,40 @@ namespace KrakEngine{
             {
                 m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spQuarterResBufferRTV2.GetAddressOf(), nullptr);
                 // Bind Shader Resources
-
-                BindShaderResources(m_spD3DDeviceContext1, ShaderResources(
+                shaderResources = ShaderResources(
                 {}, // Vertex Shader Textures
                 {}, // Vertex Shader Samplers
                 { m_spQuarterResBufferSRV.Get() }, // Pixel Shader Textures
                 { m_spPointSampler.Get(), m_spMirrorSampler.Get() } // Pixel Shader Samplers
-                ));
+                );
+                BindShaderResources(m_spD3DDeviceContext1, shaderResources);
 
                 // Draw a fullscreen quad with the output
                 DrawFullScreenQuad(m_spBufferVisualizerVertexShader, m_spHorizontalGaussianBlurPixelShader);
 
+                UnBindShaderResources(m_spD3DDeviceContext1, shaderResources);
 
                 m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spQuarterResBufferRTV.GetAddressOf(), nullptr);
 
                 // Bind Shader Resources
-                BindShaderResources(m_spD3DDeviceContext1, ShaderResources(
+                shaderResources = ShaderResources(
                 {}, // Vertex Shader Textures
                 {}, // Vertex Shader Samplers
                 { m_spQuarterResBufferSRV2.Get() }, // Pixel Shader Textures
                 { m_spPointSampler.Get(), m_spMirrorSampler.Get() } // Pixel Shader Samplers
-                ));
+                );
+                BindShaderResources(m_spD3DDeviceContext1, shaderResources);
 
                 // Draw a fullscreen quad with the output
                 DrawFullScreenQuad(m_spBufferVisualizerVertexShader, m_spVerticalGaussianBlurPixelShader);
+
+                UnBindShaderResources(m_spD3DDeviceContext1, shaderResources);
             }
         }
 
         // UpRes the resulting gradient texture
         m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spGradientBufferRTV.GetAddressOf(), nullptr);
-        ShaderResources shaderResources = ShaderResources(
+        shaderResources = ShaderResources(
         {}, // Vertex Shader Textures
         {}, // Vertex Shader Samplers
         { m_spQuarterResBufferSRV.Get() }, // Pixel Shader Textures
@@ -619,6 +655,21 @@ namespace KrakEngine{
 
         // Draw the models and output the stroke direction buffer
         DrawModels(m_spLuminanceStrokeDirectionVertexShader, m_spLuminanceStrokeDirectionPixelShader, shaderResources);
+
+        UnBindShaderResources(m_spD3DDeviceContext1, shaderResources);
+    }
+
+
+    void GraphicsSystem::RenderPrincipalCurvatureDirection()
+    {
+        // Target the stroke direction render target
+        m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spStrokeDirectionBufferRTV.GetAddressOf(), nullptr);
+        
+        BindGBufferAsInput();
+
+        DrawFullScreenQuad(m_spPrincipalCurvatureStrokeDirectionVertexShader, m_spPrincipalCurvatureStrokeDirectionPixelShader);
+
+        UnbindGBuffer();
     }
 
     void GraphicsSystem::RenderStrokes()
@@ -2022,6 +2073,7 @@ namespace KrakEngine{
         CreatePixelShader(L"Shaders\\BufferVisualizer.fx", "PS_Green", m_spBufferVisualizerGreenPixelShader);
         CreatePixelShader(L"Shaders\\BufferVisualizer.fx", "PS_Blue", m_spBufferVisualizerBluePixelShader);
         CreateShaders(L"Shaders\\LuminanceStrokeDirection.fx", FBXBinModelLayout, ARRAYSIZE(FBXBinModelLayout), m_spFBXBinModelVertexLayout, "LuminanceStrokeDirection_VS", m_spLuminanceStrokeDirectionVertexShader, "LuminanceStrokeDirection_PS", m_spLuminanceStrokeDirectionPixelShader);
+        CreateShaders(L"Shaders\\PrincipalCurvatureStrokeDirection.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spPrincipalCurvatureStrokeDirectionVertexShader, "PS", m_spPrincipalCurvatureStrokeDirectionPixelShader);
         CreatePixelShader(L"Shaders\\RenderStrokes.fx", "RenderStrokes_PS", m_spRenderStrokesPixelShader);
 
         CreateBuffers();

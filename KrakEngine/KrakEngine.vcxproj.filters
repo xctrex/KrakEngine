@@ -646,6 +646,15 @@
     <FxCompile Include="Shaders\LuminanceStrokeDirection_VS.hlsl">
       <Filter>Systems\Graphics\Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="Shaders\PrincipalCurvatureStrokeDirection.fx">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\PrincipalCurvatureStrokeDirection_PS.hlsl">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders\PrincipalCurvatureStrokeDirection_VS.hlsl">
+      <Filter>Systems\Graphics\Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Common.hlsli">
