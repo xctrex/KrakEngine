@@ -318,8 +318,8 @@ namespace KrakEngine{
         ComPtr<ID3D11PixelShader> m_spBufferVisualizerGreenPixelShader;
         ComPtr<ID3D11PixelShader> m_spBufferVisualizerBluePixelShader;
 
-        ComPtr<ID3D11VertexShader> m_spLuminanceStrokeDirectionVertexShader;
-        ComPtr<ID3D11PixelShader> m_spLuminanceStrokeDirectionPixelShader;
+        ComPtr<ID3D11VertexShader> m_spPerPixelToPerVertexStrokeDirectionVertexShader;
+        ComPtr<ID3D11PixelShader> m_spPerPixelToPerVertexStrokeDirectionPixelShader;
         
         ComPtr<ID3D11VertexShader> m_spPrincipalCurvatureStrokeDirectionVertexShader;
         ComPtr<ID3D11PixelShader> m_spPrincipalCurvatureStrokeDirectionPixelShader;

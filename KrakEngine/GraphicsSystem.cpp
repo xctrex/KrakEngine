@@ -659,7 +659,7 @@ namespace KrakEngine{
         BindShaderResources(m_spD3DDeviceContext1, shaderResources);
 
         // Draw the models and output the stroke direction buffer
-        DrawModels(m_spLuminanceStrokeDirectionVertexShader, m_spLuminanceStrokeDirectionPixelShader, shaderResources);
+        DrawModels(m_spPerPixelToPerVertexStrokeDirectionVertexShader, m_spPerPixelToPerVertexStrokeDirectionPixelShader, shaderResources);
 
         UnBindShaderResources(m_spD3DDeviceContext1, shaderResources);
     }
@@ -2078,7 +2078,7 @@ namespace KrakEngine{
         CreatePixelShader(L"Shaders\\BufferVisualizer.fx", "PS_Red", m_spBufferVisualizerRedPixelShader);
         CreatePixelShader(L"Shaders\\BufferVisualizer.fx", "PS_Green", m_spBufferVisualizerGreenPixelShader);
         CreatePixelShader(L"Shaders\\BufferVisualizer.fx", "PS_Blue", m_spBufferVisualizerBluePixelShader);
-        CreateShaders(L"Shaders\\LuminanceStrokeDirection.fx", FBXBinModelLayout, ARRAYSIZE(FBXBinModelLayout), m_spFBXBinModelVertexLayout, "LuminanceStrokeDirection_VS", m_spLuminanceStrokeDirectionVertexShader, "LuminanceStrokeDirection_PS", m_spLuminanceStrokeDirectionPixelShader);
+        CreateShaders(L"Shaders\\LuminanceStrokeDirection.fx", FBXBinModelLayout, ARRAYSIZE(FBXBinModelLayout), m_spFBXBinModelVertexLayout, "LuminanceStrokeDirection_VS", m_spPerPixelToPerVertexStrokeDirectionVertexShader, "LuminanceStrokeDirection_PS", m_spPerPixelToPerVertexStrokeDirectionPixelShader);
         CreateShaders(L"Shaders\\PrincipalCurvatureStrokeDirection.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spPrincipalCurvatureStrokeDirectionVertexShader, "PS", m_spPrincipalCurvatureStrokeDirectionPixelShader);
         CreatePixelShader(L"Shaders\\RenderStrokes.fx", "RenderStrokes_PS", m_spRenderStrokesPixelShader);
 

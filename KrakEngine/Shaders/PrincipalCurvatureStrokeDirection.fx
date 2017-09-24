@@ -172,7 +172,8 @@ float4 PS(VS_OUTPUT input) : SV_TARGET
     //     alternate slit directions :
     // [u1 dot kappa1 + sigma1, v1 dot kappa1 + tau1, 0]
     // [u1 dot kappa2 + sigma1, v1 dot kappa2 + tau1, 0]
-
+    float kappa = 1.0f / bestLambda;
+    float2 pcd = float2(dot(u1, kappa + sigma1), dot(v1, kappa) + tau1);
 
     float4 finalColor = float4(1.0, 1.0, 1.0, 1.0);
     // If the pixel is in the rect for displaying depth (as determined in the vertex shader), SampleMask.x will equal 1 here and SampleMask.yzw will all equal 0.
@@ -189,6 +190,7 @@ float4 PS(VS_OUTPUT input) : SV_TARGET
     xyprojection /= sqrt(xyprojection.x * xyprojection.x + xyprojection.y * xyprojection.y);
     float direction = GetRotationFromDirection(xyprojection);
     finalColor.rg = xyprojection;
+    finalColor.rg = pcd;
     //finalColor.rgb = GBufferData.Normal.xyz;
     return finalColor;
 }
