@@ -465,7 +465,7 @@ namespace KrakEngine{
 
         // Render the directional lights
         // Draw a fullscreen quad with the output
-        DrawFullScreenQuad(m_spLuminanceVertexShader, m_spLuminancePixelShader);
+        DrawFullScreenQuad(m_spLuminanceStrokeDirectionVertexShader, m_spLuminanceStrokeDirectionPixelShader);
 
         // Unbind input
         UnbindGBuffer();
@@ -2066,7 +2066,7 @@ namespace KrakEngine{
         
         CreateShaders(L"Shaders\\ContourDetectionPass1.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spContourDetectionPass1VertexShader, "PS", m_spContourDetectionPass1PixelShader);
         CreateShaders(L"Shaders\\ContourDetectionPass2.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spContourDetectionPass2VertexShader, "PS", m_spContourDetectionPass2PixelShader);
-        CreateShaders(L"Shaders\\LuminanceVisualizer.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spLuminanceVertexShader, "PS", m_spLuminancePixelShader);
+        //CreateShaders(L"Shaders\\LuminanceVisualizer.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spLuminanceVertexShader, "PS", m_spLuminancePixelShader);
         CreateShaders(L"Shaders\\DownSample.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "DownSample_VS", m_spDownSampleVertexShader, "DownSampleQuarterRes_PS", m_spQuarterResDownSamplePixelShader);
         CreatePixelShader(L"Shaders\\DownSample.fx", "UpSampleQuarterRes_PS", m_spQuarterResUpSamplePixelShader);
         CreatePixelShader(L"Shaders\\GradientBuffer.fx", "HorizontalSobel_PS", m_spHorizontalSobelPixelShader);
@@ -2078,7 +2078,7 @@ namespace KrakEngine{
         CreatePixelShader(L"Shaders\\BufferVisualizer.fx", "PS_Red", m_spBufferVisualizerRedPixelShader);
         CreatePixelShader(L"Shaders\\BufferVisualizer.fx", "PS_Green", m_spBufferVisualizerGreenPixelShader);
         CreatePixelShader(L"Shaders\\BufferVisualizer.fx", "PS_Blue", m_spBufferVisualizerBluePixelShader);
-        CreateShaders(L"Shaders\\LuminanceStrokeDirection.fx", FBXBinModelLayout, ARRAYSIZE(FBXBinModelLayout), m_spFBXBinModelVertexLayout, "LuminanceStrokeDirection_VS", m_spPerPixelToPerVertexStrokeDirectionVertexShader, "LuminanceStrokeDirection_PS", m_spPerPixelToPerVertexStrokeDirectionPixelShader);
+        CreateShaders(L"Shaders\\LuminanceStrokeDirection.fx", FBXBinModelLayout, ARRAYSIZE(FBXBinModelLayout), m_spFBXBinModelVertexLayout, "LuminanceStrokeDirection_VS", m_spLuminanceStrokeDirectionVertexShader, "LuminanceStrokeDirection_PS", m_spLuminanceStrokeDirectionPixelShader);
         CreateShaders(L"Shaders\\PrincipalCurvatureStrokeDirection.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spPrincipalCurvatureStrokeDirectionVertexShader, "PS", m_spPrincipalCurvatureStrokeDirectionPixelShader);
         CreatePixelShader(L"Shaders\\RenderStrokes.fx", "RenderStrokes_PS", m_spRenderStrokesPixelShader);
 

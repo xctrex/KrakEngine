@@ -70,30 +70,18 @@ namespace KrakEngine{
 
 	void Camera::Update(float dt){
         if(GetOwner()){
-            // Get the position of the owner
-            Transform* t = GetOwner()->has(Transform);
-
             // Set the x position and of the camera and target to the x coordinate of the parent object, and
             // set the height of the camera, depth of the camera, and height of the target based on the values specified in the xml
-			XMVECTOR Eye;
-			XMVECTOR LookAt;
+            XMVECTOR Eye;
+            XMVECTOR LookAt;
 
-			if(!m_freeCamera)
-			{
-                Eye = DirectX::XMVectorSet(t->GetPosition().x, m_Height + m_YOffset, m_Depth, 0.0f);
-                LookAt = DirectX::XMVectorSet(t->GetPosition().x, m_LookHeight, t->GetPosition().z, 0.0f);
-
-                XMVECTOR Up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-                XMStoreFloat4x4(&m_View, XMMatrixLookAtLH(Eye, LookAt, Up));
-			}
-			else
-			{
-                /*// Calculate camera positions for free camera movement mode
+            {
+                // Calculate camera positions for free camera movement mode
 
                 // Set the camera's target
                 XMStoreFloat4x4(&m_CamRotationMatrix, XMMatrixRotationRollPitchYaw(m_CamPitch, m_CamYaw, 0.0f));
-                XMStoreFloat4(&m_CamTarget, XMVector3TransformCoord(XMLoadFloat4(&m_DefaultForward), XMLoadFloat4x4(&m_CamRotationMatrix)));
-                XMStoreFloat4(&m_CamTarget, XMVector3Normalize(XMLoadFloat4(&m_CamTarget)));
+                XMStoreFloat3(&m_CamTarget, XMVector3TransformCoord(XMLoadFloat4(&m_DefaultForward), XMLoadFloat4x4(&m_CamRotationMatrix)));
+                XMStoreFloat3(&m_CamTarget, XMVector3Normalize(XMLoadFloat3(&m_CamTarget)));
 
                 // Find the new right and forward directions for the camera
                 XMFLOAT4X4 RotateYTempMatrix;
@@ -131,47 +119,47 @@ namespace KrakEngine{
                 m_CamTarget.y = m_CamPosition.y + m_CamTarget.y;
                 m_CamTarget.z = m_CamPosition.z + m_CamTarget.z;
 
-                XMStoreFloat4x4(&m_CamView, XMMatrixLookAtLH(XMLoadFloat4(&m_CamPosition), XMLoadFloat4(&m_CamTarget), XMLoadFloat4(&m_CamUp)));
-                m_View = m_CamView;*/
+                XMStoreFloat4x4(&m_CamView, XMMatrixLookAtLH(XMLoadFloat3(&m_CamPosition), XMLoadFloat3(&m_CamTarget), XMLoadFloat4(&m_CamUp)));
+                m_View = m_CamView;
 
-				// Simple euler method to calculate position delta
-				XMVECTOR xmvVelocity = XMLoadFloat3(&XMFLOAT3(m_MoveLeftRight, m_MoveUpDown, m_MoveBackForward));
-				XMVECTOR xmvPosDelta = xmvVelocity * dt;
+                // Simple euler method to calculate position delta
+                XMVECTOR xmvVelocity = XMLoadFloat3(&XMFLOAT3(m_MoveLeftRight, m_MoveUpDown, m_MoveBackForward));
+                XMVECTOR xmvPosDelta = xmvVelocity * dt;
 
-				// Make a rotation matrix based on the camera's yaw & pitch
-				XMMATRIX xmmCameraRot = XMMatrixRotationRollPitchYaw(m_CamPitch, m_CamYaw, 0.0f);
+                // Make a rotation matrix based on the camera's yaw & pitch
+                XMMATRIX xmmCameraRot = XMMatrixRotationRollPitchYaw(m_CamPitch, m_CamYaw, 0.0f);
 
-				// Transform vectors based on camera's rotation matrix
-				XMVECTOR xmvWorldUp = XMVector3TransformCoord(g_XMIdentityR1, xmmCameraRot);
-				XMVECTOR xmvWorldAhead = XMVector3TransformCoord(g_XMIdentityR2, xmmCameraRot);
+                // Transform vectors based on camera's rotation matrix
+                XMVECTOR xmvWorldUp = XMVector3TransformCoord(g_XMIdentityR1, xmmCameraRot);
+                XMVECTOR xmvWorldAhead = XMVector3TransformCoord(g_XMIdentityR2, xmmCameraRot);
 
-				// Transform the position delta by the camera's rotation 
-				/*if (!m_bEnableYAxisMovement)
-				{
-					// If restricting Y movement, do not include pitch
-					// when transforming position delta vector.
-					mCameraRot = XMMatrixRotationRollPitchYaw(0.0f, m_fCameraYawAngle, 0.0f);
-				}*/
-				XMVECTOR xmvPosDeltaWorld = XMVector3TransformCoord(xmvPosDelta, xmmCameraRot);
+                // Transform the position delta by the camera's rotation 
+                /*if (!m_bEnableYAxisMovement)
+                {
+                    // If restricting Y movement, do not include pitch
+                    // when transforming position delta vector.
+                    mCameraRot = XMMatrixRotationRollPitchYaw(0.0f, m_fCameraYawAngle, 0.0f);
+                }*/
+                XMVECTOR xmvPosDeltaWorld = XMVector3TransformCoord(xmvPosDelta, xmmCameraRot);
 
-				// Move the eye position 
-				XMVECTOR xmvEye = XMLoadFloat3(&m_CamPosition);
-				xmvEye += xmvPosDeltaWorld;
-				/*if (m_bClipToBoundary)
-					vEye = ConstrainToBoundary(vEye);*/
-				XMStoreFloat3(&m_CamPosition, xmvEye);
+                // Move the eye position 
+                XMVECTOR xmvEye = XMLoadFloat3(&m_CamPosition);
+                xmvEye += xmvPosDeltaWorld;
+                /*if (m_bClipToBoundary)
+                    vEye = ConstrainToBoundary(vEye);*/
+                XMStoreFloat3(&m_CamPosition, xmvEye);
 
-				// Update the lookAt position based on the eye position
-				XMVECTOR xmvLookAt = xmvEye + xmvWorldAhead;
-				XMStoreFloat3(&m_CamTarget, xmvLookAt);
+                // Update the lookAt position based on the eye position
+                XMVECTOR xmvLookAt = xmvEye + xmvWorldAhead;
+                XMStoreFloat3(&m_CamTarget, xmvLookAt);
 
-				// Update the view matrix
-				XMMATRIX xmmView = XMMatrixLookAtLH(xmvEye, xmvLookAt, xmvWorldUp);
-				XMStoreFloat4x4(&m_View, xmmView);
+                // Update the view matrix
+                XMMATRIX xmmView = XMMatrixLookAtLH(xmvEye, xmvLookAt, xmvWorldUp);
+                XMStoreFloat4x4(&m_View, xmmView);
 
-				XMMATRIX mCameraWorld = XMMatrixInverse(nullptr, xmmView);
-				XMStoreFloat4x4(&m_CamWorld, mCameraWorld);
-            }				
+                XMMATRIX mCameraWorld = XMMatrixInverse(nullptr, xmmView);
+                XMStoreFloat4x4(&m_CamWorld, mCameraWorld);
+            }
         }
     }
 	

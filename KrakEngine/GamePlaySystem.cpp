@@ -258,8 +258,8 @@ namespace KrakEngine{
             Tick();
             Spawn(dt);
             Trigger();
-           /* AdjustZCamera();
-            AdjustYCamera();*/ 
+            AdjustZCamera();
+            AdjustYCamera(); 
             ParticleRun();
             m_gameMechanics.Update();
             m_Time = 0.0f;
@@ -496,10 +496,10 @@ namespace KrakEngine{
         {
             g_GRAPHICSSYSTEM->ToggleEditPath();
         }
-        /*Camera * cam = g_GRAPHICSSYSTEM->GetCurrentCamera();
+        Camera * cam = g_GRAPHICSSYSTEM->GetCurrentCamera();
         if (cam && !g_GRAPHICSSYSTEM->IsEditPathOn()) {
             float LookSpeed = 40.0f * dt;
-            float speed = 1000.0f * dt;
+            float speed = 10.0f * dt;
             if (g_INPUTSYSTEM->IsKeyDown(DIK_A))
             {
                 cam->MoveLeftRight(-2.0f * speed);
@@ -547,7 +547,7 @@ namespace KrakEngine{
             }
 
             //cam->UpdateCamera();
-        }*/
+        }
 
         /****ACTION 1 BUTTON****/
         if (g_INPUTSYSTEM->IsButtonDown(XINPUT_GAMEPAD_B) ||
@@ -674,26 +674,17 @@ namespace KrakEngine{
         {
             g_DRAWSTATE->m_isGradientBufferBlurOn = !g_DRAWSTATE->m_isGradientBufferBlurOn;
         }
-        if (g_INPUTSYSTEM->IsKeyTriggered(DIK_C))
+        if (g_INPUTSYSTEM->IsKeyTriggered(DIK_V))
         {
             g_DRAWSTATE->m_numBlurPasses++;
         }
-        if (g_INPUTSYSTEM->IsKeyTriggered(DIK_X))
+        if (g_INPUTSYSTEM->IsKeyTriggered(DIK_C))
         {
             g_DRAWSTATE->m_numBlurPasses--;
         }
 
 #if defined(_DEBUG)
-        // TODO: Remove this. It is only being used to test the ConvertToWorldCoordinates function
-        if(g_INPUTSYSTEM->IsKeyTriggered(DIK_V) ||
-			g_INPUTSYSTEM->IsButtonTriggered(XINPUT_GAMEPAD_RIGHT_SHOULDER))
-		{          
-            XMFLOAT3 wcLeft = g_GRAPHICSSYSTEM->ConvertToWorldCoordinates(XMFLOAT2(0.25f, 0.5f));
-            XMFLOAT3 wcRight = g_GRAPHICSSYSTEM->ConvertToWorldCoordinates(XMFLOAT2(0.75f, 0.5f));
-            XMFLOAT3 wcTop = g_GRAPHICSSYSTEM->ConvertToWorldCoordinates(XMFLOAT2(0.5f, 0.25f));
-            XMFLOAT3 wcBottom = g_GRAPHICSSYSTEM->ConvertToWorldCoordinates(XMFLOAT2(0.5f, 0.75f));
-		}
-
+        
 		if(g_INPUTSYSTEM->IsKeyTriggered(DIK_8))
 		{
 			Camera * c = g_GRAPHICSSYSTEM->GetCurrentCamera();
