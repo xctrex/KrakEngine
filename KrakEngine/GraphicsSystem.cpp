@@ -261,19 +261,15 @@ namespace KrakEngine{
             {
                 DrawBufferRed(m_spLuminanceBufferSRV);
             }
-            if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::LuminanceGradientBufferX)
+            if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::XYDirectionBufferX)
             {
                 DrawBufferRed(m_spXYDirectionBufferSRV);
             }
-            if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::LuminanceGradientBufferY)
+            if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::XYDirectionBufferY)
             {
                 DrawBufferGreen(m_spXYDirectionBufferSRV);
             }
-            if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::LuminanceGradientBufferZ)
-            {
-                DrawBufferBlue(m_spXYDirectionBufferSRV);
-            }
-            if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::LuminanceGradientBuffer)
+            if (g_DRAWSTATE->m_drawingMode == DebugDrawingMode::XYDirectionBuffer)
             {
                 DrawBuffer(m_spXYDirectionBufferSRV);
             }
@@ -303,7 +299,7 @@ namespace KrakEngine{
 
         UpdateSprites(dt);
 
-        if(true){ 
+        if (true) {
             // Set the render target to the back buffer and draw the sprites
             m_spD3DDeviceContext1->OMSetRenderTargets(1, m_spD3DRenderTargetView.GetAddressOf(), m_GBuffer.GetReadOnlyDSV());
 
@@ -314,9 +310,10 @@ namespace KrakEngine{
 
             m_spD3DDeviceContext1->PSSetConstantBuffers(0, 1, m_spConstantBufferPerFrame.GetAddressOf());
             m_spD3DDeviceContext1->PSSetConstantBuffers(1, 1, m_spConstantBufferPerSpriteObject.GetAddressOf());
-            
+
             DrawSprites();
         }
+
 #ifdef D2D_ENABLED
         // Draw FPS
         m_spD2DDeviceContext->BeginDraw();
@@ -372,7 +369,7 @@ namespace KrakEngine{
         str.append(avgbuffer);
         //str.append("\rMin Framerate: ");
         //str.append(minbuffer);
-        str.append("\rPress g to toggle render mode");
+        str.append("\rPress m to cycle model\r");
         std::string debugModeString = g_DRAWSTATE->GetDebugModeString();
         str.append(debugModeString);
 		std::list<Text*>::iterator textit = m_TextList.begin();
@@ -465,7 +462,7 @@ namespace KrakEngine{
 
         // Render the directional lights
         // Draw a fullscreen quad with the output
-        DrawFullScreenQuad(m_spLuminanceStrokeDirectionVertexShader, m_spLuminanceStrokeDirectionPixelShader);
+        DrawFullScreenQuad(m_spLuminanceVertexShader, m_spLuminancePixelShader);
 
         // Unbind input
         UnbindGBuffer();
@@ -2066,7 +2063,7 @@ namespace KrakEngine{
         
         CreateShaders(L"Shaders\\ContourDetectionPass1.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spContourDetectionPass1VertexShader, "PS", m_spContourDetectionPass1PixelShader);
         CreateShaders(L"Shaders\\ContourDetectionPass2.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spContourDetectionPass2VertexShader, "PS", m_spContourDetectionPass2PixelShader);
-        //CreateShaders(L"Shaders\\LuminanceVisualizer.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spLuminanceVertexShader, "PS", m_spLuminancePixelShader);
+        CreateShaders(L"Shaders\\LuminanceVisualizer.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spLuminanceVertexShader, "PS", m_spLuminancePixelShader);
         CreateShaders(L"Shaders\\DownSample.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "DownSample_VS", m_spDownSampleVertexShader, "DownSampleQuarterRes_PS", m_spQuarterResDownSamplePixelShader);
         CreatePixelShader(L"Shaders\\DownSample.fx", "UpSampleQuarterRes_PS", m_spQuarterResUpSamplePixelShader);
         CreatePixelShader(L"Shaders\\GradientBuffer.fx", "HorizontalSobel_PS", m_spHorizontalSobelPixelShader);
@@ -2078,7 +2075,7 @@ namespace KrakEngine{
         CreatePixelShader(L"Shaders\\BufferVisualizer.fx", "PS_Red", m_spBufferVisualizerRedPixelShader);
         CreatePixelShader(L"Shaders\\BufferVisualizer.fx", "PS_Green", m_spBufferVisualizerGreenPixelShader);
         CreatePixelShader(L"Shaders\\BufferVisualizer.fx", "PS_Blue", m_spBufferVisualizerBluePixelShader);
-        CreateShaders(L"Shaders\\LuminanceStrokeDirection.fx", FBXBinModelLayout, ARRAYSIZE(FBXBinModelLayout), m_spFBXBinModelVertexLayout, "LuminanceStrokeDirection_VS", m_spLuminanceStrokeDirectionVertexShader, "LuminanceStrokeDirection_PS", m_spLuminanceStrokeDirectionPixelShader);
+        CreateShaders(L"Shaders\\LuminanceStrokeDirection.fx", FBXBinModelLayout, ARRAYSIZE(FBXBinModelLayout), m_spFBXBinModelVertexLayout, "LuminanceStrokeDirection_VS", m_spPerPixelToPerVertexStrokeDirectionVertexShader, "LuminanceStrokeDirection_PS", m_spPerPixelToPerVertexStrokeDirectionPixelShader);
         CreateShaders(L"Shaders\\PrincipalCurvatureStrokeDirection.fx", FullScreenQuadLayout, ARRAYSIZE(FullScreenQuadLayout), m_spFullScreenQuadVertexLayout, "VS", m_spPrincipalCurvatureStrokeDirectionVertexShader, "PS", m_spPrincipalCurvatureStrokeDirectionPixelShader);
         CreatePixelShader(L"Shaders\\RenderStrokes.fx", "RenderStrokes_PS", m_spRenderStrokesPixelShader);
 

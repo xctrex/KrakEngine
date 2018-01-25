@@ -17,10 +17,9 @@ namespace KrakEngine
         DirectionBufferX,
         DirectionBufferY,
         DirectionBufferZ,
-        LuminanceGradientBuffer,
-        LuminanceGradientBufferX,
-        LuminanceGradientBufferY,
-        LuminanceGradientBufferZ,
+        XYDirectionBuffer,
+        XYDirectionBufferX,
+        XYDirectionBufferY,
         UniformDirection,
         EndCycle,
         GBufferNormal,
@@ -77,56 +76,67 @@ namespace KrakEngine
         std::string GetDebugModeString()
         {
             std::string str = "";
+
             switch (m_drawingMode)
             {
             case DebugDrawingMode::Default:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Default\r";
+                str = "Cycle Render Mode(g): "  + std::to_string((int)m_drawingMode) + ": Default\r";
                 break;
             case DebugDrawingMode::DirectionBuffer:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Direction Buffer\r";
+                str = "Cycle Render Mode(g): "  + std::to_string((int)m_drawingMode) + ": Direction Buffer\r";
                 break;
             case DebugDrawingMode::DirectionBufferX:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Direction BufferX\r";
+                str = "Cycle Render Mode(g): "  + std::to_string((int)m_drawingMode) + ": Direction BufferX\r";
                 break;
             case DebugDrawingMode::DirectionBufferY:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Direction BufferY\r";
+                str = "Cycle Render Mode(g): "  + std::to_string((int)m_drawingMode) + ": Direction BufferY\r";
                 break;
             case DebugDrawingMode::DirectionBufferZ:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Direction BufferZ\r";
+                str = "Cycle Render Mode(g): "  + std::to_string((int)m_drawingMode) + ": Direction BufferZ\r";
                 break;
             case DebugDrawingMode::GBufferNormal:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Normal Buffer\r";
+                str = "Cycle Render Mode(g): "  + std::to_string((int)m_drawingMode) + ": Normal Buffer\r";
                 break;
             case DebugDrawingMode::GBufferDepth:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Depth Buffer\r";
+                str = "Cycle Render Mode(g): "  + std::to_string((int)m_drawingMode) + ": Depth Buffer\r";
                 break;
             case DebugDrawingMode::LuminanceBuffer:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Luminance Buffer\r";
+                str = "Cycle Render Mode(g): "  + std::to_string((int)m_drawingMode) + ": Luminance Buffer\r";
                 break;
             case DebugDrawingMode::UniformDirection:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Uniform Direction\r";
+                str = "Cycle Render Mode(g): "  + std::to_string((int)m_drawingMode) + ": Uniform Direction\r";
                 break;
-            case DebugDrawingMode::LuminanceGradientBuffer:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Luminance Gradient Buffer\r";
+            case DebugDrawingMode::XYDirectionBuffer:
+                str = "Cycle Render Mode(g): "  + std::to_string((int)m_drawingMode) + ": XY Direction Buffer\r";
                 break;
-            case DebugDrawingMode::LuminanceGradientBufferX:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Luminance Gradient Buffer X\r";
+            case DebugDrawingMode::XYDirectionBufferX:
+                str = "Cycle Render Mode(g): " + std::to_string((int)m_drawingMode) + ": XY Direction Buffer X\r";
                 break;
-            case DebugDrawingMode::LuminanceGradientBufferY:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Luminance Gradient Buffer Y\r";
-                break;
-            case DebugDrawingMode::LuminanceGradientBufferZ:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Luminance Gradient Buffer Z\r";
+            case DebugDrawingMode::XYDirectionBufferY:
+                str = "Cycle Render Mode(g): " + std::to_string((int)m_drawingMode) + ": XY Direction Buffer Y\r";
                 break;
             case DebugDrawingMode::AmbientOcclusion:
-                str = "\rRender Mode " + std::to_string((int)m_drawingMode) + ": Ambient Occlusion\r";
+                str = "Cycle Render Mode(g): " + std::to_string((int)m_drawingMode) + ": Ambient Occlusion\r";
                 break;
 
             default:
                 break;
             }
-            str.append("\rToggle Blur(b): " + m_isGradientBufferBlurOn ? "On" : "Off");
-            str.append("\rNum Blur Passes(-x, +c): " + std::to_string(m_numBlurPasses));
+
+            switch (m_technique)
+            {
+            case Technique::Luminance:
+                str.append("Cycle Technique(t): Luminance\r");
+                break;
+            case Technique::PrincipalCurvature:
+                str.append("Cycle Technique(t): Principal Curvature\r");
+                break;
+            default:
+                break;
+            }
+
+            str.append("Toggle Blur(b): " + std::string(m_isGradientBufferBlurOn ? "On\r" : "Off\r"));
+            str.append("Num Blur Passes(-c, +v): " + std::to_string(m_numBlurPasses) + "\r");
             return str;
         }
 

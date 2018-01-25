@@ -299,6 +299,9 @@ namespace KrakEngine{
         ComPtr<ID3D11VertexShader> m_spContourDetectionPass2VertexShader;
         ComPtr<ID3D11PixelShader> m_spContourDetectionPass2PixelShader;
 
+        ComPtr<ID3D11VertexShader> m_spLuminanceVertexShader;
+        ComPtr<ID3D11PixelShader> m_spLuminancePixelShader;
+
         ComPtr<ID3D11VertexShader> m_spLuminanceStrokeDirectionVertexShader;
         ComPtr<ID3D11PixelShader> m_spLuminanceStrokeDirectionPixelShader;
 
